@@ -559,12 +559,12 @@
     </div>
 
     <script>
-        // Supabase настройки
-        const SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
+        // Supabase настройки - используем уникальное имя переменной
+        const _SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
+        const _SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
         
-        // Создаем клиент
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Создаем клиент с уникальным именем
+        const zeusSupabase = window.supabase.createClient(_SUPABASE_URL, _SUPABASE_KEY);
         
         // Имя файла для скачивания
         const FILE_NAME = 'ZeusClient1-12-2.jar';
@@ -614,7 +614,6 @@
             const password2 = document.getElementById('regPass2').value;
             const msgDiv = document.getElementById('regMsg');
             
-            // Валидация
             if (!nick || !email || !password || !password2) {
                 msgDiv.innerHTML = '<span class="error">❌ Заполните все поля!</span>';
                 return;
@@ -624,20 +623,18 @@
                 return;
             }
             if (password.length < 6) {
-                msgDiv.innerHTML = '<span class="error">❌ Пароль должен быть минимум 6 символов!</span>';
+                msgDiv.innerHTML = '<span class="error">❌ Пароль минимум 6 символов!</span>';
                 return;
             }
             
             msgDiv.innerHTML = '<span>⏳ Отправка...</span>';
             
             try {
-                const { data, error } = await supabase.auth.signUp({
+                const { data, error } = await zeusSupabase.auth.signUp({
                     email: email,
                     password: password,
                     options: {
-                        data: {
-                            nickname: nick
-                        }
+                        data: { nickname: nick }
                     }
                 });
                 
@@ -645,7 +642,6 @@
                     msgDiv.innerHTML = '<span class="error">❌ ' + error.message + '</span>';
                 } else {
                     msgDiv.innerHTML = '<span class="success">✅ Проверьте почту для подтверждения!</span>';
-                    // Очищаем поля
                     document.getElementById('regNick').value = '';
                     document.getElementById('regEmail').value = '';
                     document.getElementById('regPass').value = '';
@@ -670,7 +666,7 @@
             msgDiv.innerHTML = '<span>⏳ Вход...</span>';
             
             try {
-                const { data, error } = await supabase.auth.signInWithPassword({
+                const { data, error } = await zeusSupabase.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
@@ -688,16 +684,16 @@
         
         // Выход
         window.logout = async function() {
-            await supabase.auth.signOut();
+            await zeusSupabase.auth.signOut();
             location.reload();
         };
         
         // Проверка пользователя и обновление UI
         async function checkUserAndUpdateUI() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await zeusSupabase.auth.getSession();
             
             if (session) {
-                const { data: { user } } = await supabase.auth.getUser();
+                const { data: { user } } = await zeusSupabase.auth.getUser();
                 if (user) {
                     const nickname = user.user_metadata?.nickname || user.email.split('@')[0];
                     navNickSpan.innerText = nickname;
@@ -710,14 +706,12 @@
                     }
                 }
                 
-                // Показываем профиль
                 publicDiv.classList.add('hidden');
                 authDiv.classList.add('hidden');
                 profileDiv.classList.remove('hidden');
                 navAuthDiv.classList.add('hidden');
                 navProfileDiv.classList.remove('hidden');
             } else {
-                // Показываем публичный контент
                 publicDiv.classList.remove('hidden');
                 authDiv.classList.add('hidden');
                 profileDiv.classList.add('hidden');
@@ -743,25 +737,22 @@
                 const refreshToken = params.get('refresh_token');
                 
                 if (accessToken && refreshToken) {
-                    const { data, error } = await supabase.auth.setSession({
+                    const { data, error } = await zeusSupabase.auth.setSession({
                         access_token: accessToken,
                         refresh_token: refreshToken
                     });
                     
                     if (!error && data.session) {
-                        // Очищаем URL
                         window.history.replaceState({}, document.title, window.location.pathname);
                         await checkUserAndUpdateUI();
-                        alert('✅ Email успешно подтвержден! Добро пожаловать в ZeusClient!');
-                    } else {
-                        console.error('Ошибка подтверждения:', error);
+                        alert('✅ Email подтвержден! Добро пожаловать в ZeusClient!');
                     }
                 }
             }
         }
         
-        // Слушаем изменения состояния авторизации
-        supabase.auth.onAuthStateChange((event, session) => {
+        // Слушаем изменения авторизации
+        zeusSupabase.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_IN') {
                 checkUserAndUpdateUI();
             } else if (event === 'SIGNED_OUT') {
@@ -769,7 +760,7 @@
             }
         });
         
-        // Инициализация
+        // Запуск
         async function init() {
             await handleEmailConfirmation();
             await checkUserAndUpdateUI();
