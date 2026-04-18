@@ -559,33 +559,44 @@
     </div>
 
     <script>
-        // ИСПРАВЛЕНО: используем другое имя переменной
-        const _supabaseUrl = 'https://itnymezviisjmkttzlag.supabase.co';
-        const _supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
-        const supabaseClient = window.supabase.createClient(_supabaseUrl, _supabaseKey);
+        // Supabase настройки
+        const SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
         
+        // Создаем клиент
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Имя файла для скачивания
         const FILE_NAME = 'ZeusClient1-12-2.jar';
         
+        // DOM элементы
         const publicDiv = document.getElementById('publicContent');
         const authDiv = document.getElementById('authContent');
         const profileDiv = document.getElementById('profileContent');
-        const navAuth = document.getElementById('nav-auth');
-        const navProfile = document.getElementById('nav-profile');
-        const navNick = document.getElementById('navNick');
+        const navAuthDiv = document.getElementById('nav-auth');
+        const navProfileDiv = document.getElementById('nav-profile');
+        const navNickSpan = document.getElementById('navNick');
         
+        // Плавный скролл
         function scrollToSection(id) {
-            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
         }
         
+        // Переключение форм
         function showRegister() {
             document.getElementById('registerCard').classList.remove('hidden');
             document.getElementById('loginCard').classList.add('hidden');
         }
+        
         function showLogin() {
             document.getElementById('loginCard').classList.remove('hidden');
             document.getElementById('registerCard').classList.add('hidden');
         }
         
+        // Скачивание
         window.downloadCheat = function() {
             const link = document.createElement('a');
             link.href = './' + FILE_NAME;
@@ -595,62 +606,127 @@
             document.body.removeChild(link);
         };
         
+        // Регистрация
         window.register = async function() {
             const nick = document.getElementById('regNick').value.trim();
             const email = document.getElementById('regEmail').value.trim();
-            const pass = document.getElementById('regPass').value;
-            const pass2 = document.getElementById('regPass2').value;
-            const msg = document.getElementById('regMsg');
-            if (!nick || !email || !pass || !pass2) { msg.innerHTML = '<span class="error">Заполните все поля</span>'; return; }
-            if (pass !== pass2) { msg.innerHTML = '<span class="error">Пароли не совпадают</span>'; return; }
-            if (pass.length < 6) { msg.innerHTML = '<span class="error">Пароль минимум 6 символов</span>'; return; }
-            msg.innerHTML = '<span>Отправка...</span>';
-            const { error } = await supabaseClient.auth.signUp({
-                email, password: pass,
-                options: { data: { nickname: nick }, emailRedirectTo: window.location.origin }
-            });
-            if (error) msg.innerHTML = '<span class="error">' + error.message + '</span>';
-            else msg.innerHTML = '<span class="success">Проверьте почту для подтверждения!</span>';
+            const password = document.getElementById('regPass').value;
+            const password2 = document.getElementById('regPass2').value;
+            const msgDiv = document.getElementById('regMsg');
+            
+            // Валидация
+            if (!nick || !email || !password || !password2) {
+                msgDiv.innerHTML = '<span class="error">❌ Заполните все поля!</span>';
+                return;
+            }
+            if (password !== password2) {
+                msgDiv.innerHTML = '<span class="error">❌ Пароли не совпадают!</span>';
+                return;
+            }
+            if (password.length < 6) {
+                msgDiv.innerHTML = '<span class="error">❌ Пароль должен быть минимум 6 символов!</span>';
+                return;
+            }
+            
+            msgDiv.innerHTML = '<span>⏳ Отправка...</span>';
+            
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            nickname: nick
+                        }
+                    }
+                });
+                
+                if (error) {
+                    msgDiv.innerHTML = '<span class="error">❌ ' + error.message + '</span>';
+                } else {
+                    msgDiv.innerHTML = '<span class="success">✅ Проверьте почту для подтверждения!</span>';
+                    // Очищаем поля
+                    document.getElementById('regNick').value = '';
+                    document.getElementById('regEmail').value = '';
+                    document.getElementById('regPass').value = '';
+                    document.getElementById('regPass2').value = '';
+                }
+            } catch (err) {
+                msgDiv.innerHTML = '<span class="error">❌ Ошибка: ' + err.message + '</span>';
+            }
         };
         
+        // Вход
         window.login = async function() {
             const email = document.getElementById('loginEmail').value.trim();
-            const pass = document.getElementById('loginPass').value;
-            const msg = document.getElementById('loginMsg');
-            if (!email || !pass) { msg.innerHTML = '<span class="error">Заполните поля</span>'; return; }
-            msg.innerHTML = '<span>Вход...</span>';
-            const { error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
-            if (error) msg.innerHTML = '<span class="error">' + error.message + '</span>';
-            else await checkSession();
+            const password = document.getElementById('loginPass').value;
+            const msgDiv = document.getElementById('loginMsg');
+            
+            if (!email || !password) {
+                msgDiv.innerHTML = '<span class="error">❌ Заполните все поля!</span>';
+                return;
+            }
+            
+            msgDiv.innerHTML = '<span>⏳ Вход...</span>';
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) {
+                    msgDiv.innerHTML = '<span class="error">❌ ' + error.message + '</span>';
+                } else if (data.user) {
+                    msgDiv.innerHTML = '<span class="success">✅ Успешный вход!</span>';
+                    await checkUserAndUpdateUI();
+                }
+            } catch (err) {
+                msgDiv.innerHTML = '<span class="error">❌ Ошибка: ' + err.message + '</span>';
+            }
         };
         
-        window.logout = async function() { await supabaseClient.auth.signOut(); location.reload(); };
+        // Выход
+        window.logout = async function() {
+            await supabase.auth.signOut();
+            location.reload();
+        };
         
-        async function checkSession() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
+        // Проверка пользователя и обновление UI
+        async function checkUserAndUpdateUI() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
             if (session) {
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                const nick = user.user_metadata?.nickname || user.email.split('@')[0];
-                navNick.innerText = nick;
-                document.getElementById('profileNick').innerText = nick;
-                document.getElementById('profileEmail').innerText = user.email;
-                if (user.created_at) {
-                    document.getElementById('regDate').innerText = new Date(user.created_at).toLocaleDateString('ru-RU');
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    const nickname = user.user_metadata?.nickname || user.email.split('@')[0];
+                    navNickSpan.innerText = nickname;
+                    document.getElementById('profileNick').innerText = nickname;
+                    document.getElementById('profileEmail').innerText = user.email;
+                    
+                    if (user.created_at) {
+                        const date = new Date(user.created_at).toLocaleDateString('ru-RU');
+                        document.getElementById('regDate').innerText = date;
+                    }
                 }
+                
+                // Показываем профиль
                 publicDiv.classList.add('hidden');
                 authDiv.classList.add('hidden');
                 profileDiv.classList.remove('hidden');
-                navAuth.classList.add('hidden');
-                navProfile.classList.remove('hidden');
+                navAuthDiv.classList.add('hidden');
+                navProfileDiv.classList.remove('hidden');
             } else {
+                // Показываем публичный контент
                 publicDiv.classList.remove('hidden');
                 authDiv.classList.add('hidden');
                 profileDiv.classList.add('hidden');
-                navAuth.classList.remove('hidden');
-                navProfile.classList.add('hidden');
+                navAuthDiv.classList.remove('hidden');
+                navProfileDiv.classList.add('hidden');
             }
         }
         
+        // Показать форму авторизации
         window.showAuthForm = function() {
             publicDiv.classList.add('hidden');
             authDiv.classList.remove('hidden');
@@ -658,24 +734,48 @@
             showRegister();
         };
         
-        async function handleConfirm() {
+        // Обработка подтверждения email из URL
+        async function handleEmailConfirmation() {
             const hash = window.location.hash;
             if (hash && hash.includes('access_token')) {
                 const params = new URLSearchParams(hash.substring(1));
                 const accessToken = params.get('access_token');
                 const refreshToken = params.get('refresh_token');
+                
                 if (accessToken && refreshToken) {
-                    await supabaseClient.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                    await checkSession();
-                    alert('Email подтвержден! Добро пожаловать в ZeusClient!');
+                    const { data, error } = await supabase.auth.setSession({
+                        access_token: accessToken,
+                        refresh_token: refreshToken
+                    });
+                    
+                    if (!error && data.session) {
+                        // Очищаем URL
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        await checkUserAndUpdateUI();
+                        alert('✅ Email успешно подтвержден! Добро пожаловать в ZeusClient!');
+                    } else {
+                        console.error('Ошибка подтверждения:', error);
+                    }
                 }
             }
         }
         
-        handleConfirm();
-        checkSession();
-        supabaseClient.auth.onAuthStateChange(() => checkSession());
+        // Слушаем изменения состояния авторизации
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN') {
+                checkUserAndUpdateUI();
+            } else if (event === 'SIGNED_OUT') {
+                location.reload();
+            }
+        });
+        
+        // Инициализация
+        async function init() {
+            await handleEmailConfirmation();
+            await checkUserAndUpdateUI();
+        }
+        
+        init();
     </script>
 </body>
 </html>
