@@ -5,50 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мой Сайт с Supabase</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; padding: 20px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; max-width: 100%; text-align: center; }
         input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #3ecf8e; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 8px; background: #3ecf8e; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
         button:hover { background: #34b27b; }
         .hidden { display: none; }
-        #msg { margin-top: 15px; font-size: 13px; color: #666; }
+        #msg, #login-msg { margin-top: 15px; font-size: 13px; }
         .error { color: #e74c3c; }
         .success { color: #27ae60; }
         .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #f3f3f3; border-top: 2px solid #3ecf8e; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 10px; vertical-align: middle; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        hr { margin: 20px 0; border: none; border-top: 1px solid #eee; }
+        .info { background: #e8f4f8; padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 12px; color: #2980b9; }
     </style>
 </head>
 <body>
 
     <div class="card">
+        <!-- Форма регистрации -->
         <div id="auth-ui">
-            <h2>Регистрация</h2>
-            <input type="text" id="nick" placeholder="Никнейм">
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="pass" placeholder="Пароль">
+            <h2>📝 Регистрация</h2>
+            <input type="text" id="nick" placeholder="Никнейм" autocomplete="off">
+            <input type="email" id="email" placeholder="Email" autocomplete="off">
+            <input type="password" id="pass" placeholder="Пароль (мин. 6 символов)">
             <input type="password" id="pass2" placeholder="Повторите пароль">
             <button onclick="signUp()">Зарегистрироваться</button>
             <div id="msg"></div>
             <hr>
-            <button onclick="showLoginForm()" style="background: #3498db;">Уже есть аккаунт? Войти</button>
+            <button onclick="showLoginForm()" style="background: #3498db;">🔐 Войти в аккаунт</button>
+            <div class="info">
+                💡 После регистрации проверьте почту (включая спам) и нажмите на ссылку подтверждения
+            </div>
         </div>
 
+        <!-- Форма входа -->
         <div id="login-ui" class="hidden">
-            <h2>Вход</h2>
+            <h2>🔐 Вход</h2>
             <input type="email" id="login-email" placeholder="Email">
             <input type="password" id="login-pass" placeholder="Пароль">
             <button onclick="signIn()">Войти</button>
             <div id="login-msg"></div>
             <hr>
-            <button onclick="showRegisterForm()" style="background: #95a5a6;">Нет аккаунта? Регистрация</button>
+            <button onclick="showRegisterForm()" style="background: #95a5a6;">📝 Создать аккаунт</button>
         </div>
 
+        <!-- Личный кабинет -->
         <div id="profile-ui" class="hidden">
-            <h2>Личный кабинет</h2>
-            <p>Привет, <b id="u-nick"></b>!</p>
-            <p id="u-email" style="color:gray"></p>
-            <p id="u-id" style="color:gray; font-size: 12px;"></p>
-            <button onclick="logout()" style="background:#ff4d4d">Выйти</button>
+            <h2>👤 Личный кабинет</h2>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <p>Привет, <b id="u-nick"></b>! 🎉</p>
+                <p id="u-email" style="color:gray; font-size: 14px;"></p>
+                <p id="u-status" style="color:green; font-size: 12px;">✓ Email подтвержден</p>
+            </div>
+            <button onclick="logout()" style="background:#ff4d4d">🚪 Выйти</button>
         </div>
     </div>
 
@@ -59,86 +69,106 @@
         const supabaseUrl = 'https://itnymezviisjmkttzlag.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
         
-        // Создаем клиент
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
         
-        // Функция для показа формы входа
+        // Получаем текущий URL для редиректа
+        const getCurrentUrl = () => {
+            return window.location.origin + window.location.pathname;
+        };
+        
+        // Показать форму входа
         function showLoginForm() {
             document.getElementById('auth-ui').classList.add('hidden');
             document.getElementById('login-ui').classList.remove('hidden');
+            document.getElementById('profile-ui').classList.add('hidden');
         }
         
-        // Функция для показа формы регистрации
+        // Показать форму регистрации
         function showRegisterForm() {
             document.getElementById('login-ui').classList.add('hidden');
             document.getElementById('auth-ui').classList.remove('hidden');
+            document.getElementById('profile-ui').classList.add('hidden');
         }
         
-        // Функция для отображения профиля
+        // Показать профиль
         async function showProfile(user) {
             const nickname = user.user_metadata?.nickname || user.email.split('@')[0];
             document.getElementById('u-nick').textContent = nickname;
             document.getElementById('u-email').textContent = user.email;
-            document.getElementById('u-id').textContent = 'ID: ' + user.id.substring(0, 20) + '...';
             
             document.getElementById('auth-ui').classList.add('hidden');
             document.getElementById('login-ui').classList.add('hidden');
             document.getElementById('profile-ui').classList.remove('hidden');
         }
         
-        // Проверка авторизации и обработка URL с токеном
+        // Обработка подтверждения email из URL
+        async function handleEmailConfirmation() {
+            // Проверяем hash в URL (там находятся токены)
+            const hash = window.location.hash;
+            
+            if (hash && hash.includes('access_token')) {
+                console.log('Обнаружен токен подтверждения, обрабатываем...');
+                
+                // Показываем индикатор загрузки
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'card';
+                loadingDiv.innerHTML = '<div style="padding: 20px;"><div class="loading"></div><br>⏳ Подтверждение email...<br>Пожалуйста, подождите</div>';
+                document.body.innerHTML = '';
+                document.body.appendChild(loadingDiv);
+                
+                // Извлекаем токены из hash
+                const params = new URLSearchParams(hash.substring(1));
+                const accessToken = params.get('access_token');
+                const refreshToken = params.get('refresh_token');
+                
+                if (accessToken && refreshToken) {
+                    // Устанавливаем сессию
+                    const { data, error } = await supabaseClient.auth.setSession({
+                        access_token: accessToken,
+                        refresh_token: refreshToken
+                    });
+                    
+                    if (!error && data.session) {
+                        // Успешное подтверждение
+                        loadingDiv.innerHTML = '<div style="padding: 20px;"><span class="success">✓ Email успешно подтвержден!</span><br><br>Перенаправление в личный кабинет...</div>';
+                        
+                        setTimeout(() => {
+                            // Очищаем URL и показываем профиль
+                            window.history.replaceState({}, document.title, window.location.pathname);
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        loadingDiv.innerHTML = '<div style="padding: 20px;"><span class="error">❌ Ошибка подтверждения: ' + (error?.message || 'Неизвестная ошибка') + '</span><br><br><button onclick="location.reload()">Обновить страницу</button></div>';
+                    }
+                } else {
+                    loadingDiv.innerHTML = '<div style="padding: 20px;"><span class="error">❌ Неверная ссылка подтверждения</span><br><br><button onclick="location.reload()">Обновить страницу</button></div>';
+                }
+                
+                return true;
+            }
+            
+            return false;
+        }
+        
+        // Проверка авторизации
         async function checkAuth() {
-            // Получаем текущую сессию
+            // Сначала проверяем, не обрабатываем ли мы подтверждение
+            const isHandlingConfirmation = await handleEmailConfirmation();
+            if (isHandlingConfirmation) return;
+            
+            // Проверяем активную сессию
             const { data: { session }, error } = await supabaseClient.auth.getSession();
             
             if (session && !error) {
-                // Есть активная сессия - показываем профиль
                 const { data: { user } } = await supabaseClient.auth.getUser();
                 if (user) {
                     await showProfile(user);
                 }
             } else {
-                // Проверяем, есть ли токен в URL (подтверждение email)
-                const hashParams = new URLSearchParams(window.location.hash.substring(1));
-                const accessToken = hashParams.get('access_token');
-                const refreshToken = hashParams.get('refresh_token');
-                const type = hashParams.get('type');
-                
-                if (accessToken && type === 'signup') {
-                    // Показываем индикатор загрузки
-                    document.getElementById('auth-ui').classList.add('hidden');
-                    document.getElementById('login-ui').classList.add('hidden');
-                    document.getElementById('profile-ui').classList.add('hidden');
-                    
-                    const msgDiv = document.createElement('div');
-                    msgDiv.className = 'card';
-                    msgDiv.innerHTML = '<div style="text-align: center; padding: 20px;"><div class="loading"></div><br>Подтверждение email...<br>Пожалуйста, подождите</div>';
-                    document.body.appendChild(msgDiv);
-                    
-                    // Устанавливаем сессию из токенов
-                    const { data, error: sessionError } = await supabaseClient.auth.setSession({
-                        access_token: accessToken,
-                        refresh_token: refreshToken
-                    });
-                    
-                    // Удаляем индикатор загрузки
-                    document.body.removeChild(msgDiv);
-                    
-                    if (!sessionError && data.session) {
-                        // Успешный вход - показываем профиль
-                        await showProfile(data.user);
-                        // Очищаем URL от токенов
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    } else {
-                        alert('Ошибка подтверждения: ' + (sessionError?.message || 'Неизвестная ошибка'));
-                        document.getElementById('auth-ui').classList.remove('hidden');
-                    }
-                } else {
-                    // Нет сессии и нет токена - показываем форму регистрации
-                    document.getElementById('auth-ui').classList.remove('hidden');
-                    document.getElementById('login-ui').classList.add('hidden');
-                    document.getElementById('profile-ui').classList.add('hidden');
-                }
+                // Показываем форму регистрации
+                document.getElementById('auth-ui').classList.remove('hidden');
+                document.getElementById('login-ui').classList.add('hidden');
+                document.getElementById('profile-ui').classList.add('hidden');
             }
         }
         
@@ -150,19 +180,18 @@
             const password2 = document.getElementById('pass2').value;
             const msgDiv = document.getElementById('msg');
             
-            // Валидация
             if (!nick || !email || !password || !password2) {
-                msgDiv.innerHTML = '<span class="error">Заполните все поля!</span>';
+                msgDiv.innerHTML = '<span class="error">❌ Заполните все поля!</span>';
                 return;
             }
             
             if (password !== password2) {
-                msgDiv.innerHTML = '<span class="error">Пароли не совпадают!</span>';
+                msgDiv.innerHTML = '<span class="error">❌ Пароли не совпадают!</span>';
                 return;
             }
             
             if (password.length < 6) {
-                msgDiv.innerHTML = '<span class="error">Пароль должен быть не менее 6 символов!</span>';
+                msgDiv.innerHTML = '<span class="error">❌ Пароль должен быть не менее 6 символов!</span>';
                 return;
             }
             
@@ -176,26 +205,23 @@
                         data: {
                             nickname: nick
                         },
-                        emailRedirectTo: window.location.origin + window.location.pathname
+                        emailRedirectTo: getCurrentUrl() // Важно! Редирект обратно на эту же страницу
                     }
                 });
                 
                 if (error) {
-                    msgDiv.innerHTML = `<span class="error">Ошибка: ${error.message}</span>`;
+                    msgDiv.innerHTML = `<span class="error">❌ ${error.message}</span>`;
                 } else {
-                    if (data.user) {
-                        msgDiv.innerHTML = '<span class="success">✓ На вашу почту отправлено письмо с подтверждением!<br>После подтверждения вы будете автоматически перенаправлены в личный кабинет.</span>';
-                        // Очищаем поля
-                        document.getElementById('nick').value = '';
-                        document.getElementById('email').value = '';
-                        document.getElementById('pass').value = '';
-                        document.getElementById('pass2').value = '';
-                    } else {
-                        msgDiv.innerHTML = '<span class="success">✓ Проверьте вашу почту для подтверждения регистрации!</span>';
-                    }
+                    msgDiv.innerHTML = '<span class="success">✓ Письмо с подтверждением отправлено!<br>📧 Проверьте почту (и папку Спам)</span>';
+                    
+                    // Очищаем поля
+                    document.getElementById('nick').value = '';
+                    document.getElementById('email').value = '';
+                    document.getElementById('pass').value = '';
+                    document.getElementById('pass2').value = '';
                 }
             } catch (err) {
-                msgDiv.innerHTML = `<span class="error">Ошибка соединения: ${err.message}</span>`;
+                msgDiv.innerHTML = `<span class="error">❌ Ошибка: ${err.message}</span>`;
             }
         }
         
@@ -206,7 +232,7 @@
             const msgDiv = document.getElementById('login-msg');
             
             if (!email || !password) {
-                msgDiv.innerHTML = '<span class="error">Заполните все поля!</span>';
+                msgDiv.innerHTML = '<span class="error">❌ Заполните все поля!</span>';
                 return;
             }
             
@@ -218,7 +244,7 @@
             });
             
             if (error) {
-                msgDiv.innerHTML = `<span class="error">Ошибка: ${error.message}</span>`;
+                msgDiv.innerHTML = `<span class="error">❌ ${error.message}</span>`;
             } else if (data.user) {
                 msgDiv.innerHTML = '<span class="success">✓ Успешный вход!</span>';
                 await showProfile(data.user);
@@ -231,18 +257,15 @@
             location.reload();
         }
         
-        // Слушаем изменения состояния авторизации
+        // Слушаем изменения авторизации
         supabaseClient.auth.onAuthStateChange((event, session) => {
+            console.log('Auth event:', event);
             if (event === 'SIGNED_IN' && session) {
                 checkAuth();
-            } else if (event === 'SIGNED_OUT') {
-                document.getElementById('auth-ui').classList.remove('hidden');
-                document.getElementById('login-ui').classList.add('hidden');
-                document.getElementById('profile-ui').classList.add('hidden');
             }
         });
         
-        // Запускаем проверку авторизации при загрузке страницы
+        // Запускаем проверку
         checkAuth();
     </script>
 </body>
