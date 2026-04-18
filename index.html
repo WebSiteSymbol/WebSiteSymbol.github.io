@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация Supabase</title>
-    <!-- Подключаем библиотеку через альтернативный сервис unpkg -->
-    <script src="https://unpkg.com"></script>
+    <!-- Теперь подключаем локальный файл вместо ссылки -->
+    <script src="supabase.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 380px; text-align: center; }
@@ -21,7 +21,6 @@
 <body>
 
     <div class="card">
-        <!-- Блок регистрации -->
         <div id="auth-section">
             <h2>Регистрация</h2>
             <input type="text" id="nick" placeholder="Никнейм">
@@ -32,7 +31,6 @@
             <div id="message"></div>
         </div>
 
-        <!-- Блок личного кабинета -->
         <div id="user-section" class="hidden">
             <h2>Личный кабинет</h2>
             <div class="profile-box">
@@ -44,22 +42,20 @@
     </div>
 
     <script>
-        // Твои данные подключения
         const SB_URL = 'https://supabase.co';
         const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
         
         let client;
 
-        // Инициализация при загрузке
         window.addEventListener('DOMContentLoaded', () => {
+            // Проверяем объект из локального файла
             if (typeof supabase === 'undefined') {
-                document.getElementById('message').innerHTML = "<b style='color:red'>Ошибка: библиотека не загружена. Попробуйте обновить страницу.</b>";
+                document.getElementById('message').innerHTML = "<b style='color:red'>Файл supabase.js не найден рядом с index.html</b>";
                 return;
             }
             
             client = supabase.createClient(SB_URL, SB_KEY);
             checkSession();
-
             document.getElementById('btn-signup').addEventListener('click', handleSignUp);
         });
 
@@ -74,21 +70,18 @@
             if (pass !== confirm) return alert("Пароли не совпадают");
 
             msg.innerText = "Отправка данных...";
-            msg.style.color = "#666";
 
             const { data, error } = await client.auth.signUp({
                 email: email,
                 password: pass,
-                options: {
-                    data: { nickname: nick }
-                }
+                options: { data: { nickname: nick } }
             });
 
             if (error) {
                 msg.innerText = "Ошибка: " + error.message;
                 msg.style.color = "red";
             } else {
-                msg.innerHTML = "<b style='color:green'>Успешно!</b><br>Письмо отправлено на " + email + ". Подтвердите его, чтобы войти.";
+                msg.innerHTML = "<b style='color:green'>Успешно!</b><br>Письмо отправлено на " + email;
             }
         }
 
