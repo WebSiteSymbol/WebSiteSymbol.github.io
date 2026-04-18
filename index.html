@@ -19,17 +19,15 @@
             box-sizing: border-box;
         }
 
-        /* ФОН - ЕСЛИ НЕТ ФАЙЛА, БУДЕТ ТЕМНЫЙ ГРАДИЕНТ */
         body {
             font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-            /* Раскомментируйте строку ниже, когда добавите файл bg.jpg в ту же папку */
+            /* Для фона - раскомментируйте строку ниже и добавьте файл bg.jpg */
             /* background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('bg.jpg') center/cover fixed no-repeat; */
             color: white;
             min-height: 100vh;
         }
 
-        /* Навигация */
         .navbar {
             background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(10px);
@@ -57,8 +55,6 @@
         .logo i {
             color: #3ecf8e;
             background: none;
-            -webkit-background-clip: unset;
-            background-clip: unset;
         }
 
         .nav-links {
@@ -108,14 +104,12 @@
             background: #c0392b;
         }
 
-        /* Контейнер */
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 40px 20px;
         }
 
-        /* Секции */
         .section {
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(5px);
@@ -133,7 +127,6 @@
             padding-left: 20px;
         }
 
-        /* Карточки */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -170,7 +163,6 @@
             line-height: 1.6;
         }
 
-        /* Кнопка скачивания */
         .download-btn {
             display: inline-block;
             background: linear-gradient(135deg, #3ecf8e, #2ecc71);
@@ -191,7 +183,6 @@
             box-shadow: 0 5px 25px rgba(62, 207, 142, 0.4);
         }
 
-        /* Инструкция */
         .instruction-steps {
             display: flex;
             flex-direction: column;
@@ -238,7 +229,6 @@
             color: #3ecf8e;
         }
 
-        /* Формы авторизации */
         .auth-forms {
             max-width: 450px;
             margin: 0 auto;
@@ -325,7 +315,6 @@
             display: none;
         }
 
-        /* Профиль */
         .profile-header {
             text-align: center;
             padding: 30px;
@@ -343,7 +332,6 @@
             margin: 15px 0 5px;
         }
 
-        /* Футер */
         .footer {
             text-align: center;
             padding: 30px;
@@ -351,7 +339,6 @@
             margin-top: 40px;
         }
 
-        /* Адаптив */
         @media (max-width: 768px) {
             .navbar {
                 padding: 15px 20px;
@@ -368,15 +355,13 @@
         }
     </style>
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <!-- Навигация -->
     <nav class="navbar">
         <div class="logo">
-            <i class="fas fa-crown"></i> Nursultan Client
+            <i class="fas fa-crown"></i> Zeus Client
         </div>
         <div class="nav-links">
             <a onclick="scrollToSection('home')">Главная</a>
@@ -397,12 +382,10 @@
     </nav>
 
     <div class="container">
-        <!-- Блок для неавторизованных -->
         <div id="unauth-content">
-            <!-- Главная секция -->
             <section id="home" class="section">
                 <div style="text-align: center;">
-                    <h1 style="font-size: 48px; margin-bottom: 20px;">Nursultan Client</h1>
+                    <h1 style="font-size: 48px; margin-bottom: 20px;">Zeus Client</h1>
                     <p style="font-size: 20px; margin-bottom: 30px;">Лучший клиент для комфортной игры на Minecraft 1.12.2</p>
                     <div class="cards-grid">
                         <div class="card">
@@ -424,7 +407,6 @@
                 </div>
             </section>
 
-            <!-- Возможности -->
             <section id="features" class="section">
                 <h2><i class="fas fa-star"></i> Возможности</h2>
                 <div class="cards-grid">
@@ -461,12 +443,11 @@
                 </div>
             </section>
 
-            <!-- Скачать -->
             <section id="download" class="section" style="text-align: center;">
                 <h2><i class="fas fa-download"></i> Скачать</h2>
                 <div class="card" style="display: inline-block; max-width: 500px;">
                     <i class="fas fa-file-archive" style="font-size: 60px;"></i>
-                    <h3>Nursultan Client v2.0</h3>
+                    <h3>Zeus Client v1.0</h3>
                     <p>Версия для Minecraft 1.12.2 Forge</p>
                     <p style="font-size: 14px; margin: 10px 0;">Требуется Java 8+</p>
                     <button class="download-btn" onclick="downloadCheat()">
@@ -476,7 +457,6 @@
                 </div>
             </section>
 
-            <!-- Инструкция -->
             <section id="instructions" class="section">
                 <h2><i class="fas fa-book"></i> Инструкция по установке</h2>
                 <div class="instruction-steps">
@@ -492,7 +472,7 @@
                         <div class="step-number">2</div>
                         <div class="step-content">
                             <h4>Установите Java 8</h4>
-                            <p>Если у вас не установлена Java 8, скачайте её с официального сайта Oracle или Adoptium</p>
+                            <p>Если у вас не установлена Java 8, скачайте её с официального сайта</p>
                             <div class="code-block">java -version (должно показывать 1.8.x)</div>
                         </div>
                     </div>
@@ -510,29 +490,26 @@
                         <div class="step-content">
                             <h4>Запустите игру</h4>
                             <p>Запустите Minecraft через Forge профиль и наслаждайтесь!</p>
-                            <div class="code-block">При открытии меню модов проверьте наличие Nursultan Client</div>
                         </div>
                     </div>
                     <div class="step">
                         <div class="step-number">5</div>
                         <div class="step-content">
                             <h4>Настройка чита</h4>
-                            <p>В игре нажмите <strong>RShift</strong> для открытия GUI и настройте функции под себя</p>
+                            <p>В игре нажмите <strong>RShift</strong> для открытия GUI</p>
                         </div>
                     </div>
                 </div>
 
                 <div style="margin-top: 30px; padding: 20px; background: rgba(231, 76, 60, 0.1); border-radius: 12px; border-left: 4px solid #e74c3c;">
                     <h4><i class="fas fa-exclamation-triangle"></i> Важно!</h4>
-                    <p style="color: #ccc;">Используйте чит только на серверах, где это разрешено. Администрация не несет ответственности за бан вашего аккаунта.</p>
+                    <p style="color: #ccc;">Используйте чит только на серверах, где это разрешено.</p>
                 </div>
             </section>
         </div>
 
-        <!-- Блок авторизации -->
         <div id="auth-content" class="hidden">
             <div class="auth-forms">
-                <!-- Форма регистрации -->
                 <div id="register-form" class="auth-card">
                     <h3><i class="fas fa-user-plus"></i> Регистрация</h3>
                     <input type="text" id="reg-nick" class="auth-input" placeholder="Никнейм">
@@ -546,7 +523,6 @@
                     </div>
                 </div>
 
-                <!-- Форма входа -->
                 <div id="login-form" class="auth-card hidden">
                     <h3><i class="fas fa-sign-in-alt"></i> Вход</h3>
                     <input type="email" id="login-email" class="auth-input" placeholder="Email">
@@ -560,7 +536,6 @@
             </div>
         </div>
 
-        <!-- Личный кабинет -->
         <div id="profile-content" class="hidden">
             <div class="profile-header">
                 <i class="fas fa-user-circle"></i>
@@ -579,7 +554,7 @@
                 <div class="card">
                     <i class="fas fa-ticket-alt"></i>
                     <h3>Ваша лицензия</h3>
-                    <p id="license-info">Бесплатная лицензия</p>
+                    <p>Бесплатная лицензия</p>
                     <p style="font-size: 12px;">Действует бессрочно</p>
                 </div>
             </div>
@@ -614,17 +589,19 @@
     </div>
 
     <div class="footer">
-        <p>&copy; 2024 Nursultan Client. Все права защищены.</p>
+        <p>&copy; 2025 Zeus Client. Все права защищены.</p>
         <p>Minecraft 1.12.2 | Forge | Java 8+</p>
     </div>
 
     <script>
-        // Supabase конфигурация - используем другое имя переменной
+        // Supabase конфигурация
         const SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Элементы DOM
+        // ВАЖНО: Укажите имя вашего файла
+        const FILE_NAME = 'ZeusClient1-12-2.jar';  // ← ИМЯ ВАШЕГО ФАЙЛА
+
         const unauthContent = document.getElementById('unauth-content');
         const authContent = document.getElementById('auth-content');
         const profileContent = document.getElementById('profile-content');
@@ -632,7 +609,6 @@
         const navProfile = document.getElementById('nav-profile');
         const navNick = document.getElementById('nav-nick');
 
-        // Функция плавной прокрутки
         function scrollToSection(sectionId) {
             const element = document.getElementById(sectionId);
             if (element) {
@@ -640,7 +616,6 @@
             }
         }
 
-        // Функции переключения форм
         function showRegister() {
             document.getElementById('register-form').classList.remove('hidden');
             document.getElementById('login-form').classList.add('hidden');
@@ -653,14 +628,8 @@
 
         // Функция скачивания
         window.downloadCheat = function() {
-            // ВАЖНО: Поместите ваш .jar файл в ту же папку что и HTML файл
-            // и назовите его "Nursultan-Client-v2.0.jar"
-            // ИЛИ измените название файла ниже на ваше
+            const fileUrl = './' + FILE_NAME;
             
-            const fileName = 'Nursultan-Client-v2.0.jar';
-            const fileUrl = './' + fileName;
-            
-            // Показываем уведомление
             const btn = event ? event.target : document.querySelector('.download-btn');
             const originalText = btn ? btn.innerHTML : 'Скачать';
             
@@ -669,14 +638,12 @@
                 btn.disabled = true;
             }
             
-            // Пробуем скачать файл
             fetch(fileUrl, { method: 'HEAD' })
                 .then(response => {
                     if (response.ok) {
-                        // Файл существует - скачиваем
                         const link = document.createElement('a');
                         link.href = fileUrl;
-                        link.download = fileName;
+                        link.download = FILE_NAME;
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
@@ -693,59 +660,14 @@
                     }
                 })
                 .catch(() => {
-                    // Файл не найден - показываем инструкцию
                     if (btn) {
                         btn.innerHTML = originalText;
                         btn.disabled = false;
                     }
-                    showDownloadInstructions(fileName);
+                    alert(`Файл ${FILE_NAME} не найден!\n\nПоложите файл в ту же папку, где находится index.html`);
                 });
         };
 
-        // Инструкция по скачиванию
-        function showDownloadInstructions(fileName) {
-            const modal = document.createElement('div');
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.95);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 10000;
-            `;
-            
-            modal.innerHTML = `
-                <div style="background: #1e1e1e; padding: 30px; border-radius: 15px; max-width: 450px; text-align: center; border: 1px solid #3ecf8e;">
-                    <i class="fas fa-download" style="font-size: 50px; color: #3ecf8e;"></i>
-                    <h3 style="margin: 20px 0;">Скачивание файла</h3>
-                    <p style="margin-bottom: 15px; color: #ccc;">Файл <strong>${fileName}</strong> не найден на сервере.</p>
-                    <div style="background: #2d2d2d; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: left;">
-                        <p style="color: #3ecf8e; margin-bottom: 10px;"><strong>Как добавить файл:</strong></p>
-                        <p style="font-size: 13px; margin: 5px 0;">1. Создайте файл <strong>${fileName}</strong></p>
-                        <p style="font-size: 13px; margin: 5px 0;">2. Поместите его в ту же папку, где находится этот HTML файл</p>
-                        <p style="font-size: 13px; margin: 5px 0;">3. Обновите страницу и нажмите скачать снова</p>
-                    </div>
-                    <div style="background: #2d2d2d; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: left;">
-                        <p style="color: #f39c12; margin-bottom: 10px;"><strong>Или используйте прямую ссылку:</strong></p>
-                        <p style="font-size: 12px; word-break: break-all;">Измените в коде функцию downloadCheat() и укажите URL вашего файла</p>
-                    </div>
-                    <button onclick="this.closest('div').parentElement.remove()" style="background: #3ecf8e; border: none; padding: 10px 30px; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                        Понятно
-                    </button>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            modal.onclick = (e) => {
-                if (e.target === modal) modal.remove();
-            };
-        }
-
-        // Регистрация
         window.register = async function() {
             const nick = document.getElementById('reg-nick').value.trim();
             const email = document.getElementById('reg-email').value.trim();
@@ -788,7 +710,6 @@
             }
         };
 
-        // Вход
         window.login = async function() {
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-pass').value;
@@ -815,13 +736,11 @@
             }
         };
 
-        // Выход
         window.logout = async function() {
             await supabaseClient.auth.signOut();
             location.reload();
         };
 
-        // Проверка пользователя
         async function checkUser() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
@@ -837,7 +756,6 @@
             return false;
         }
 
-        // Показать UI для авторизованных
         async function showProfileUI() {
             const isLoggedIn = await checkUser();
             if (isLoggedIn) {
@@ -855,7 +773,6 @@
             }
         }
 
-        // Показать форму авторизации
         window.showAuthForm = function() {
             unauthContent.classList.add('hidden');
             authContent.classList.remove('hidden');
@@ -863,7 +780,6 @@
             showRegister();
         };
 
-        // Обработка подтверждения email
         async function handleEmailConfirmation() {
             const hash = window.location.hash;
             if (hash && hash.includes('access_token')) {
@@ -886,7 +802,6 @@
             }
         }
 
-        // Инициализация
         async function init() {
             await handleEmailConfirmation();
             await showProfileUI();
