@@ -3,100 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация и Вход</title>
-    <!-- Подключаем библиотеку напрямую из надежного источника -->
-    <script src="https://jsdelivr.net"></script>
+    <title>Вход и Регистрация</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 380px; text-align: center; }
-        h2 { color: #2c3e50; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 8px; background-color: #3ecf8e; color: white; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        button:hover { background-color: #34b27b; }
+        body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        h2 { margin-bottom: 20px; color: #333; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #3ecf8e; color: white; font-weight: bold; cursor: pointer; }
         .hidden { display: none; }
-        #message { margin-top: 15px; font-size: 13px; color: #666; min-height: 20px; }
+        #msg { margin-top: 15px; font-size: 13px; color: #666; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <div id="auth-section">
+        <div id="auth-ui">
             <h2>Регистрация</h2>
             <input type="text" id="nick" placeholder="Никнейм">
-            <input type="email" id="email" placeholder="Электронная почта">
+            <input type="email" id="email" placeholder="Email">
             <input type="password" id="pass" placeholder="Пароль">
-            <input type="password" id="pass_confirm" placeholder="Подтвердите пароль">
-            <button id="btn-signup">Создать аккаунт</button>
-            <div id="message"></div>
+            <input type="password" id="pass2" placeholder="Повторите пароль">
+            <button id="reg-btn">Зарегистрироваться</button>
+            <div id="msg"></div>
         </div>
 
-        <div id="user-section" class="hidden">
+        <div id="profile-ui" class="hidden">
             <h2>Личный кабинет</h2>
-            <p>Привет, <b id="display-nick"></b>!</p>
-            <p>Твой email: <b id="display-email"></b></p>
-            <button onclick="logout()" style="background-color: #e74c3c;">Выйти</button>
+            <p>Привет, <b id="user-name"></b>!</p>
+            <p id="user-mail" style="color: gray;"></p>
+            <button onclick="logout()" style="background: #ff4d4d;">Выйти</button>
         </div>
     </div>
 
-    <script>
-        const SB_URL = 'https://supabase.co';
-        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
+    <script type="module">
+        // Используем самый стабильный сервер для загрузки библиотеки
+        import { createClient } from 'https://esm.sh'
+
+        const SB_URL = 'https://supabase.co'
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso'
         
-        let client;
+        const supabase = createClient(SB_URL, SB_KEY)
 
-        window.onload = () => {
-            // Проверяем, загрузилась ли библиотека из CDN
-            if (typeof supabase === 'undefined') {
-                document.getElementById('message').innerHTML = "<b style='color:red'>Библиотека не загружена. Проверьте интернет.</b>";
-                return;
+        // Проверка входа
+        async function checkUser() {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (user) {
+                document.getElementById('auth-ui').classList.add('hidden')
+                document.getElementById('profile-ui').classList.remove('hidden')
+                document.getElementById('user-name').innerText = user.user_metadata.nickname || 'Пользователь'
+                document.getElementById('user-mail').innerText = user.email
             }
+        }
+
+        // Регистрация
+        document.getElementById('reg-btn').onclick = async () => {
+            const n = document.getElementById('nick').value
+            const e = document.getElementById('email').value
+            const p = document.getElementById('pass').value
+            const p2 = document.getElementById('pass2').value
+            const m = document.getElementById('msg')
+
+            if (p !== p2) return alert("Пароли не совпадают!")
             
-            client = supabase.createClient(SB_URL, SB_KEY);
-            checkSession();
-
-            document.getElementById('btn-signup').onclick = handleSignUp;
-        };
-
-        async function handleSignUp() {
-            const nick = document.getElementById('nick').value;
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('pass').value;
-            const confirm = document.getElementById('pass_confirm').value;
-            const msg = document.getElementById('message');
-
-            if (!nick || !email || !pass) return alert("Заполните все поля");
-            if (pass !== confirm) return alert("Пароли не совпадают");
-
-            msg.innerText = "Отправка данных...";
-
-            const { data, error } = await client.auth.signUp({
-                email: email,
-                password: pass,
-                options: { data: { nickname: nick } }
-            });
+            m.innerText = "Отправка..."
+            const { error } = await supabase.auth.signUp({
+                email: e,
+                password: p,
+                options: { data: { nickname: n } }
+            })
 
             if (error) {
-                msg.innerText = "Ошибка: " + error.message;
-                msg.style.color = "red";
+                m.style.color = "red"
+                m.innerText = "Ошибка: " + error.message
             } else {
-                msg.innerHTML = "<b style='color:green'>Готово!</b><br>Проверь почту и кликни по ссылке в письме.";
+                m.style.color = "green"
+                m.innerHTML = "<b>Успех!</b> Проверьте почту и подтвердите регистрацию."
             }
         }
 
-        async function checkSession() {
-            const { data: { user } } = await client.auth.getUser();
-            if (user) {
-                document.getElementById('auth-section').classList.add('hidden');
-                document.getElementById('user-section').classList.remove('hidden');
-                document.getElementById('display-nick').innerText = user.user_metadata.nickname || 'Пользователь';
-                document.getElementById('display-email').innerText = user.email;
-            }
+        window.logout = async () => {
+            await supabase.auth.signOut()
+            location.reload()
         }
 
-        async function logout() {
-            await client.auth.signOut();
-            window.location.reload();
-        }
+        checkUser()
     </script>
 </body>
 </html>
