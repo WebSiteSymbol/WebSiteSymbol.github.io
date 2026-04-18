@@ -20,7 +20,6 @@
             min-height: 100vh;
         }
 
-        /* ФОН */
         .bg {
             position: fixed;
             top: 0;
@@ -42,7 +41,6 @@
             z-index: -1;
         }
 
-        /* НАВИГАЦИЯ */
         .navbar {
             background: rgba(0,0,0,0.95);
             padding: 15px 40px;
@@ -127,14 +125,12 @@
             cursor: pointer;
         }
 
-        /* КОНТЕЙНЕР */
         .container {
             max-width: 1300px;
             margin: 0 auto;
             padding: 40px 20px;
         }
 
-        /* ГЛАВНАЯ */
         .hero {
             text-align: center;
             padding: 70px 20px;
@@ -171,7 +167,6 @@
             opacity: 0.7;
         }
 
-        /* СЕКЦИИ */
         .section {
             background: rgba(0,0,0,0.6);
             backdrop-filter: blur(5px);
@@ -191,7 +186,6 @@
             margin-right: 12px;
         }
 
-        /* КАРТОЧКИ */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -231,7 +225,6 @@
             opacity: 0.8;
         }
 
-        /* КНОПКА СКАЧИВАНИЯ */
         .download-btn {
             background: linear-gradient(135deg, #ffd700, #ffaa00);
             color: #1a1a1a;
@@ -249,7 +242,6 @@
             box-shadow: 0 5px 20px rgba(255,215,0,0.4);
         }
 
-        /* ИНСТРУКЦИЯ */
         .steps-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -290,7 +282,6 @@
             color: #ffd700;
         }
 
-        /* ФОРМЫ */
         .auth-container {
             max-width: 450px;
             margin: 0 auto;
@@ -360,7 +351,6 @@
             display: none;
         }
 
-        /* ПРОФИЛЬ */
         .profile-header {
             text-align: center;
             padding: 45px;
@@ -393,7 +383,6 @@
             font-weight: 600;
         }
 
-        /* ФУТЕР */
         .footer {
             text-align: center;
             padding: 40px;
@@ -428,7 +417,6 @@
     <div class="bg"></div>
     <div class="overlay"></div>
 
-    <!-- НАВИГАЦИЯ -->
     <nav class="navbar">
         <div class="logo">
             <div class="logo-icon"><i class="fas fa-bolt"></i></div>
@@ -451,7 +439,6 @@
     </nav>
 
     <div class="container">
-        <!-- НЕАВТОРИЗОВАННЫЙ КОНТЕНТ -->
         <div id="publicContent">
             <div id="home" class="hero">
                 <h1>ZEUS CLIENT</h1>
@@ -498,7 +485,6 @@
             </div>
         </div>
 
-        <!-- АВТОРИЗАЦИЯ -->
         <div id="authContent" class="hidden">
             <div class="auth-container">
                 <div id="registerCard" class="auth-card">
@@ -522,7 +508,6 @@
             </div>
         </div>
 
-        <!-- ЛИЧНЫЙ КАБИНЕТ -->
         <div id="profileContent" class="hidden">
             <div class="profile-header">
                 <div class="profile-avatar"><i class="fas fa-bolt"></i></div>
@@ -574,10 +559,10 @@
     </div>
 
     <script>
-        // Supabase
-        const supabaseUrl = 'https://itnymezviisjmkttzlag.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        // ИСПРАВЛЕНО: используем другое имя переменной
+        const _supabaseUrl = 'https://itnymezviisjmkttzlag.supabase.co';
+        const _supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
+        const supabaseClient = window.supabase.createClient(_supabaseUrl, _supabaseKey);
         
         const FILE_NAME = 'ZeusClient1-12-2.jar';
         
@@ -605,7 +590,9 @@
             const link = document.createElement('a');
             link.href = './' + FILE_NAME;
             link.download = FILE_NAME;
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
         };
         
         window.register = async function() {
@@ -618,7 +605,7 @@
             if (pass !== pass2) { msg.innerHTML = '<span class="error">Пароли не совпадают</span>'; return; }
             if (pass.length < 6) { msg.innerHTML = '<span class="error">Пароль минимум 6 символов</span>'; return; }
             msg.innerHTML = '<span>Отправка...</span>';
-            const { error } = await supabase.auth.signUp({
+            const { error } = await supabaseClient.auth.signUp({
                 email, password: pass,
                 options: { data: { nickname: nick }, emailRedirectTo: window.location.origin }
             });
@@ -632,17 +619,17 @@
             const msg = document.getElementById('loginMsg');
             if (!email || !pass) { msg.innerHTML = '<span class="error">Заполните поля</span>'; return; }
             msg.innerHTML = '<span>Вход...</span>';
-            const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
             if (error) msg.innerHTML = '<span class="error">' + error.message + '</span>';
             else await checkSession();
         };
         
-        window.logout = async function() { await supabase.auth.signOut(); location.reload(); };
+        window.logout = async function() { await supabaseClient.auth.signOut(); location.reload(); };
         
         async function checkSession() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
-                const { data: { user } } = await supabase.auth.getUser();
+                const { data: { user } } = await supabaseClient.auth.getUser();
                 const nick = user.user_metadata?.nickname || user.email.split('@')[0];
                 navNick.innerText = nick;
                 document.getElementById('profileNick').innerText = nick;
@@ -678,7 +665,7 @@
                 const accessToken = params.get('access_token');
                 const refreshToken = params.get('refresh_token');
                 if (accessToken && refreshToken) {
-                    await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+                    await supabaseClient.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
                     window.history.replaceState({}, document.title, window.location.pathname);
                     await checkSession();
                     alert('Email подтвержден! Добро пожаловать в ZeusClient!');
@@ -688,7 +675,7 @@
         
         handleConfirm();
         checkSession();
-        supabase.auth.onAuthStateChange(() => checkSession());
+        supabaseClient.auth.onAuthStateChange(() => checkSession());
     </script>
 </body>
 </html>
