@@ -3,270 +3,852 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой Сайт с Supabase</title>
+    <meta name="keywords" content="nursultan, minecraft cheat, майнкрафт чит, читы 1.12.2, forge mod">
+    <meta name="description" content="Nursultan Client - лучший клиент для Minecraft 1.12.2">
+    <title>Nursultan Client - Лучший чит для Minecraft</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; padding: 20px; }
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; max-width: 100%; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 8px; background: #3ecf8e; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #34b27b; }
-        .hidden { display: none; }
-        #msg, #login-msg { margin-top: 15px; font-size: 13px; }
-        .error { color: #e74c3c; }
-        .success { color: #27ae60; }
-        .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #f3f3f3; border-top: 2px solid #3ecf8e; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 10px; vertical-align: middle; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        hr { margin: 20px 0; border: none; border-top: 1px solid #eee; }
-        .info { background: #e8f4f8; padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 12px; color: #2980b9; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ФОН - ВАМ НУЖНО ДОБАВИТЬ ФАЙЛ ФОНА */
+        /* 
+           ПОМЕСТИТЕ ФАЙЛ ФОНА В ТУ ЖЕ ПАПКУ, ЧТО И ЭТОТ HTML ФАЙЛ
+           И НАЗОВИТЕ ЕГО "bg.jpg" ИЛИ "bg.png"
+           ИЛИ УКАЖИТЕ ПУТЬ К ВАШЕМУ ФАЙЛУ НИЖЕ
+        */
+        body {
+            font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
+                        url('bg.jpg') center/cover fixed no-repeat;
+            /* ЕСЛИ ФАЙЛ НАЗЫВАЕТСЯ ИНАЧЕ - ЗАМЕНИТЕ 'bg.jpg' НА ВАШЕ ИМЯ ФАЙЛА */
+            /* ПРИМЕР: url('minecraft-bg.png') или url('images/background.jpg') */
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* Навигация */
+        .navbar {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid #3ecf8e;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #3ecf8e, #2ecc71);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo i {
+            color: #3ecf8e;
+            background: none;
+            -webkit-background-clip: unset;
+            background-clip: unset;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #3ecf8e;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(62, 207, 142, 0.2);
+            padding: 8px 20px;
+            border-radius: 50px;
+        }
+
+        .user-info span {
+            color: #3ecf8e;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        /* Контейнер */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Секции */
+        .section {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(62, 207, 142, 0.3);
+        }
+
+        .section h2 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            color: #3ecf8e;
+            border-left: 4px solid #3ecf8e;
+            padding-left: 20px;
+        }
+
+        /* Карточки */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            transition: 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #3ecf8e;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .card i {
+            font-size: 50px;
+            color: #3ecf8e;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        /* Кнопка скачивания */
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #3ecf8e, #2ecc71);
+            color: white;
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 25px rgba(62, 207, 142, 0.4);
+        }
+
+        /* Инструкция */
+        .instruction-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .step {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .step-number {
+            background: #3ecf8e;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .step-content p {
+            color: #ccc;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            margin-top: 10px;
+            color: #3ecf8e;
+        }
+
+        /* Формы авторизации */
+        .auth-forms {
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        .auth-card {
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 20px;
+            padding: 35px;
+            border: 1px solid rgba(62, 207, 142, 0.3);
+        }
+
+        .auth-card h3 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #3ecf8e;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: #3ecf8e;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            background: #3ecf8e;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+
+        .auth-btn:hover {
+            background: #2ecc71;
+        }
+
+        .switch-auth {
+            text-align: center;
+            margin-top: 20px;
+            color: #aaa;
+        }
+
+        .switch-auth a {
+            color: #3ecf8e;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .msg {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .error {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .success {
+            background: rgba(62, 207, 142, 0.2);
+            color: #3ecf8e;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Профиль */
+        .profile-header {
+            text-align: center;
+            padding: 30px;
+            background: rgba(62, 207, 142, 0.1);
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+
+        .profile-header i {
+            font-size: 80px;
+            color: #3ecf8e;
+        }
+
+        .profile-header h3 {
+            margin: 15px 0 5px;
+        }
+
+        /* Футер */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            margin-top: 40px;
+        }
+
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+                flex-direction: column;
+            }
+            .section {
+                padding: 25px;
+            }
+            .step {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
     </style>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <div class="card">
-        <!-- Форма регистрации -->
-        <div id="auth-ui">
-            <h2>📝 Регистрация</h2>
-            <input type="text" id="nick" placeholder="Никнейм" autocomplete="off">
-            <input type="email" id="email" placeholder="Email" autocomplete="off">
-            <input type="password" id="pass" placeholder="Пароль (мин. 6 символов)">
-            <input type="password" id="pass2" placeholder="Повторите пароль">
-            <button onclick="signUp()">Зарегистрироваться</button>
-            <div id="msg"></div>
-            <hr>
-            <button onclick="showLoginForm()" style="background: #3498db;">🔐 Войти в аккаунт</button>
-            <div class="info">
-                💡 После регистрации проверьте почту (включая спам) и нажмите на ссылку подтверждения
+    <!-- Навигация -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-crown"></i> Nursultan Client
+        </div>
+        <div class="nav-links">
+            <a href="#home">Главная</a>
+            <a href="#features">Возможности</a>
+            <a href="#download">Скачать</a>
+            <a href="#instructions">Инструкция</a>
+            <div id="nav-auth">
+                <a href="#auth" id="auth-link">Войти / Регистрация</a>
+            </div>
+            <div id="nav-profile" class="hidden">
+                <div class="user-info">
+                    <i class="fas fa-user"></i>
+                    <span id="nav-nick">Пользователь</span>
+                    <button class="logout-btn" onclick="logout()">Выйти</button>
+                </div>
             </div>
         </div>
+    </nav>
 
-        <!-- Форма входа -->
-        <div id="login-ui" class="hidden">
-            <h2>🔐 Вход</h2>
-            <input type="email" id="login-email" placeholder="Email">
-            <input type="password" id="login-pass" placeholder="Пароль">
-            <button onclick="signIn()">Войти</button>
-            <div id="login-msg"></div>
-            <hr>
-            <button onclick="showRegisterForm()" style="background: #95a5a6;">📝 Создать аккаунт</button>
+    <div class="container">
+        <!-- Блок для неавторизованных -->
+        <div id="unauth-content">
+            <!-- Главная секция -->
+            <section id="home" class="section">
+                <div style="text-align: center;">
+                    <h1 style="font-size: 48px; margin-bottom: 20px;">Nursultan Client</h1>
+                    <p style="font-size: 20px; margin-bottom: 30px;">Лучший клиент для комфортной игры на Minecraft 1.12.2</p>
+                    <div class="cards-grid">
+                        <div class="card">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Анти-детект</h3>
+                            <p>Лучшая защита от серверных античитов</p>
+                        </div>
+                        <div class="card">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <h3>Высокий FPS</h3>
+                            <p>Оптимизация для слабых ПК</p>
+                        </div>
+                        <div class="card">
+                            <i class="fas fa-sliders-h"></i>
+                            <h3>Гибкие настройки</h3>
+                            <p>Полная кастомизация под ваш стиль игры</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Возможности -->
+            <section id="features" class="section">
+                <h2><i class="fas fa-star"></i> Возможности</h2>
+                <div class="cards-grid">
+                    <div class="card">
+                        <i class="fas fa-crosshairs"></i>
+                        <h3>Aimbot</h3>
+                        <p>Умное наведение на противников с настройкой плавности</p>
+                    </div>
+                    <div class="card">
+                        <i class="fas fa-eye"></i>
+                        <h3>ESP</h3>
+                        <p>Подсветка игроков, мобов и сундуков через стены</p>
+                    </div>
+                    <div class="card">
+                        <i class="fas fa-fighter-jet"></i>
+                        <h3>Fly & Speed</h3>
+                        <p>Различные режимы полета и ускорения</p>
+                    </div>
+                    <div class="card">
+                        <i class="fas fa-tint"></i>
+                        <h3>X-Ray</h3>
+                        <p>Просмотр руд через стены</p>
+                    </div>
+                    <div class="card">
+                        <i class="fas fa-shield-virus"></i>
+                        <h3>KillAura</h3>
+                        <p>Автоматическая атака по противникам</p>
+                    </div>
+                    <div class="card">
+                        <i class="fas fa-cog"></i>
+                        <h3>Clicker & AutoTool</h3>
+                        <p>Автокликер и автоматическая смена инструментов</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Скачать -->
+            <section id="download" class="section" style="text-align: center;">
+                <h2><i class="fas fa-download"></i> Скачать</h2>
+                <div class="card" style="display: inline-block; max-width: 500px;">
+                    <i class="fas fa-file-archive" style="font-size: 60px;"></i>
+                    <h3>Nursultan Client v2.0</h3>
+                    <p>Версия для Minecraft 1.12.2 Forge</p>
+                    <p style="font-size: 14px; margin: 10px 0;">Требуется Java 8+</p>
+                    <a href="#" id="download-link" class="download-btn" onclick="downloadCheat(event)">
+                        <i class="fas fa-download"></i> Скачать сейчас
+                    </a>
+                    <p style="margin-top: 15px; font-size: 12px; color: #aaa;">Размер: ~15 MB</p>
+                </div>
+            </section>
+
+            <!-- Инструкция -->
+            <section id="instructions" class="section">
+                <h2><i class="fas fa-book"></i> Инструкция по установке</h2>
+                <div class="instruction-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Установите Minecraft Forge</h4>
+                            <p>Скачайте и установите Minecraft Forge для версии 1.12.2 с официального сайта</p>
+                            <div class="code-block">forge-1.12.2-14.23.5.2854-installer.jar</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Установите Java 8</h4>
+                            <p>Если у вас не установлена Java 8, скачайте её с официального сайта Oracle или Adoptium</p>
+                            <div class="code-block">java -version (должно показывать 1.8.x)</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Скопируйте мод в папку mods</h4>
+                            <p>После установки Forge, откройте папку .minecraft/mods и поместите туда файл клиента</p>
+                            <div class="code-block">%appdata%/.minecraft/mods (Windows)</div>
+                            <div class="code-block">~/Library/Application Support/minecraft/mods (Mac)</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Запустите игру</h4>
+                            <p>Запустите Minecraft через Forge профиль и наслаждайтесь!</p>
+                            <div class="code-block">При открытии меню модов проверьте наличие Nursultan Client</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Настройка чита</h4>
+                            <p>В игре нажмите <strong>RShift</strong> для открытия GUI и настройте функции под себя</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background: rgba(231, 76, 60, 0.1); border-radius: 12px; border-left: 4px solid #e74c3c;">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Важно!</h4>
+                    <p style="color: #ccc;">Используйте чит только на серверах, где это разрешено. Администрация не несет ответственности за бан вашего аккаунта.</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Блок авторизации -->
+        <div id="auth-content" class="hidden">
+            <div class="auth-forms">
+                <!-- Форма регистрации -->
+                <div id="register-form" class="auth-card">
+                    <h3><i class="fas fa-user-plus"></i> Регистрация</h3>
+                    <input type="text" id="reg-nick" class="auth-input" placeholder="Никнейм">
+                    <input type="email" id="reg-email" class="auth-input" placeholder="Email">
+                    <input type="password" id="reg-pass" class="auth-input" placeholder="Пароль (мин. 6 символов)">
+                    <input type="password" id="reg-pass2" class="auth-input" placeholder="Повторите пароль">
+                    <button class="auth-btn" onclick="register()">Зарегистрироваться</button>
+                    <div id="reg-msg" class="msg"></div>
+                    <div class="switch-auth">
+                        Уже есть аккаунт? <a onclick="showLogin()">Войти</a>
+                    </div>
+                </div>
+
+                <!-- Форма входа -->
+                <div id="login-form" class="auth-card hidden">
+                    <h3><i class="fas fa-sign-in-alt"></i> Вход</h3>
+                    <input type="email" id="login-email" class="auth-input" placeholder="Email">
+                    <input type="password" id="login-pass" class="auth-input" placeholder="Пароль">
+                    <button class="auth-btn" onclick="login()">Войти</button>
+                    <div id="login-msg" class="msg"></div>
+                    <div class="switch-auth">
+                        Нет аккаунта? <a onclick="showRegister()">Зарегистрироваться</a>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Личный кабинет -->
-        <div id="profile-ui" class="hidden">
-            <h2>👤 Личный кабинет</h2>
-            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                <p>Привет, <b id="u-nick"></b>! 🎉</p>
-                <p id="u-email" style="color:gray; font-size: 14px;"></p>
-                <p id="u-status" style="color:green; font-size: 12px;">✓ Email подтвержден</p>
+        <div id="profile-content" class="hidden">
+            <div class="profile-header">
+                <i class="fas fa-user-circle"></i>
+                <h3 id="profile-nick">Пользователь</h3>
+                <p id="profile-email">email@example.com</p>
+                <span style="background: #3ecf8e; padding: 5px 15px; border-radius: 20px; font-size: 12px;">Аккаунт подтвержден</span>
             </div>
-            <button onclick="logout()" style="background:#ff4d4d">🚪 Выйти</button>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <i class="fas fa-download"></i>
+                    <h3>Быстрое скачивание</h3>
+                    <p>Нажмите ниже, чтобы скачать последнюю версию клиента</p>
+                    <a href="#" onclick="downloadCheat(event)" class="download-btn" style="display: inline-block; margin-top: 15px; padding: 10px 25px; font-size: 16px;">Скачать</a>
+                </div>
+                <div class="card">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h3>Ваша лицензия</h3>
+                    <p id="license-info">Бесплатная лицензия</p>
+                    <p style="font-size: 12px;">Действует бессрочно</p>
+                </div>
+            </div>
+
+            <section class="section">
+                <h2><i class="fas fa-question-circle"></i> Быстрая инструкция</h2>
+                <div class="instruction-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Скачайте файл выше</h4>
+                            <p>Файл клиента в формате .jar</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Переместите в mods</h4>
+                            <p>Путь: .minecraft/mods/</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Запустите Forge</h4>
+                            <p>Выберите профиль Forge в лаунчере</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <div class="footer">
+        <p>&copy; 2024 Nursultan Client. Все права защищены.</p>
+        <p>Minecraft 1.12.2 | Forge | Java 8+</p>
+    </div>
 
     <script>
-        // Конфигурация Supabase
+        // Supabase конфигурация
         const supabaseUrl = 'https://itnymezviisjmkttzlag.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
-        
-        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-        
-        // Получаем текущий URL для редиректа
-        const getCurrentUrl = () => {
-            return window.location.origin + window.location.pathname;
-        };
-        
-        // Показать форму входа
-        function showLoginForm() {
-            document.getElementById('auth-ui').classList.add('hidden');
-            document.getElementById('login-ui').classList.remove('hidden');
-            document.getElementById('profile-ui').classList.add('hidden');
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Элементы DOM
+        const unauthContent = document.getElementById('unauth-content');
+        const authContent = document.getElementById('auth-content');
+        const profileContent = document.getElementById('profile-content');
+        const navAuth = document.getElementById('nav-auth');
+        const navProfile = document.getElementById('nav-profile');
+        const navNick = document.getElementById('nav-nick');
+        const authLink = document.getElementById('auth-link');
+
+        // Функции переключения форм
+        function showRegister() {
+            document.getElementById('register-form').classList.remove('hidden');
+            document.getElementById('login-form').classList.add('hidden');
         }
-        
-        // Показать форму регистрации
-        function showRegisterForm() {
-            document.getElementById('login-ui').classList.add('hidden');
-            document.getElementById('auth-ui').classList.remove('hidden');
-            document.getElementById('profile-ui').classList.add('hidden');
+
+        function showLogin() {
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('register-form').classList.add('hidden');
         }
-        
-        // Показать профиль
-        async function showProfile(user) {
-            const nickname = user.user_metadata?.nickname || user.email.split('@')[0];
-            document.getElementById('u-nick').textContent = nickname;
-            document.getElementById('u-email').textContent = user.email;
+
+        // Регистрация
+        async function register() {
+            const nick = document.getElementById('reg-nick').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-pass').value;
+            const password2 = document.getElementById('reg-pass2').value;
+            const msgDiv = document.getElementById('reg-msg');
+
+            if (!nick || !email || !password || !password2) {
+                msgDiv.innerHTML = '<span class="error">❌ Заполните все поля!</span>';
+                return;
+            }
+            if (password !== password2) {
+                msgDiv.innerHTML = '<span class="error">❌ Пароли не совпадают!</span>';
+                return;
+            }
+            if (password.length < 6) {
+                msgDiv.innerHTML = '<span class="error">❌ Пароль должен быть не менее 6 символов!</span>';
+                return;
+            }
+
+            msgDiv.innerHTML = '<span>⏳ Отправка...</span>';
+
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: { nickname: nick },
+                    emailRedirectTo: window.location.origin + window.location.pathname
+                }
+            });
+
+            if (error) {
+                msgDiv.innerHTML = `<span class="error">❌ ${error.message}</span>`;
+            } else {
+                msgDiv.innerHTML = '<span class="success">✓ Проверьте почту для подтверждения!</span>';
+                document.getElementById('reg-nick').value = '';
+                document.getElementById('reg-email').value = '';
+                document.getElementById('reg-pass').value = '';
+                document.getElementById('reg-pass2').value = '';
+            }
+        }
+
+        // Вход
+        async function login() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-pass').value;
+            const msgDiv = document.getElementById('login-msg');
+
+            if (!email || !password) {
+                msgDiv.innerHTML = '<span class="error">❌ Заполните все поля!</span>';
+                return;
+            }
+
+            msgDiv.innerHTML = '<span>⏳ Вход...</span>';
+
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            if (error) {
+                msgDiv.innerHTML = `<span class="error">❌ ${error.message}</span>`;
+            } else if (data.user) {
+                msgDiv.innerHTML = '<span class="success">✓ Успешный вход!</span>';
+                await checkUser();
+                showProfileUI();
+            }
+        }
+
+        // Выход
+        async function logout() {
+            await supabase.auth.signOut();
+            location.reload();
+        }
+
+        // Скачивание чита
+        function downloadCheat(event) {
+            event.preventDefault();
+            // ВАЖНО: ЗАМЕНИТЕ ССЫЛКУ НА РЕАЛЬНУЮ ССЫЛКУ ДЛЯ СКАЧИВАНИЯ ВАШЕГО ФАЙЛА
+            // Поместите ваш .jar файл в ту же папку или на любой хостинг
+            const downloadUrl = './Nursultan-Client-v2.0.jar';
+            // ИЛИ ИСПОЛЬЗУЙТЕ ПРЯМУЮ ССЫЛКУ:
+            // const downloadUrl = 'https://ваш-сайт.com/Nursultan-Client-v2.0.jar';
             
-            document.getElementById('auth-ui').classList.add('hidden');
-            document.getElementById('login-ui').classList.add('hidden');
-            document.getElementById('profile-ui').classList.remove('hidden');
+            // Создаем временную ссылку
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = 'Nursultan-Client-v2.0.jar';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('Скачивание началось! Если файл не скачался, проверьте наличие файла в папке с сайтом.');
         }
-        
-        // Обработка подтверждения email из URL
+
+        // Проверка пользователя
+        async function checkUser() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    const nickname = user.user_metadata?.nickname || user.email.split('@')[0];
+                    navNick.textContent = nickname;
+                    document.getElementById('profile-nick').textContent = nickname;
+                    document.getElementById('profile-email').textContent = user.email;
+                }
+                return true;
+            }
+            return false;
+        }
+
+        // Показать UI для авторизованных
+        async function showProfileUI() {
+            const isLoggedIn = await checkUser();
+            if (isLoggedIn) {
+                unauthContent.classList.add('hidden');
+                authContent.classList.add('hidden');
+                profileContent.classList.remove('hidden');
+                navAuth.classList.add('hidden');
+                navProfile.classList.remove('hidden');
+            } else {
+                unauthContent.classList.remove('hidden');
+                authContent.classList.add('hidden');
+                profileContent.classList.add('hidden');
+                navAuth.classList.remove('hidden');
+                navProfile.classList.add('hidden');
+            }
+        }
+
+        // Показать форму авторизации
+        function showAuthForm() {
+            unauthContent.classList.add('hidden');
+            authContent.classList.remove('hidden');
+            profileContent.classList.add('hidden');
+            showRegister();
+        }
+
+        // Обработка подтверждения email
         async function handleEmailConfirmation() {
-            // Проверяем hash в URL (там находятся токены)
             const hash = window.location.hash;
-            
             if (hash && hash.includes('access_token')) {
-                console.log('Обнаружен токен подтверждения, обрабатываем...');
-                
-                // Показываем индикатор загрузки
-                const loadingDiv = document.createElement('div');
-                loadingDiv.className = 'card';
-                loadingDiv.innerHTML = '<div style="padding: 20px;"><div class="loading"></div><br>⏳ Подтверждение email...<br>Пожалуйста, подождите</div>';
-                document.body.innerHTML = '';
-                document.body.appendChild(loadingDiv);
-                
-                // Извлекаем токены из hash
                 const params = new URLSearchParams(hash.substring(1));
                 const accessToken = params.get('access_token');
                 const refreshToken = params.get('refresh_token');
                 
                 if (accessToken && refreshToken) {
-                    // Устанавливаем сессию
-                    const { data, error } = await supabaseClient.auth.setSession({
+                    const { data, error } = await supabase.auth.setSession({
                         access_token: accessToken,
                         refresh_token: refreshToken
                     });
                     
                     if (!error && data.session) {
-                        // Успешное подтверждение
-                        loadingDiv.innerHTML = '<div style="padding: 20px;"><span class="success">✓ Email успешно подтвержден!</span><br><br>Перенаправление в личный кабинет...</div>';
-                        
-                        setTimeout(() => {
-                            // Очищаем URL и показываем профиль
-                            window.history.replaceState({}, document.title, window.location.pathname);
-                            location.reload();
-                        }, 1500);
-                    } else {
-                        loadingDiv.innerHTML = '<div style="padding: 20px;"><span class="error">❌ Ошибка подтверждения: ' + (error?.message || 'Неизвестная ошибка') + '</span><br><br><button onclick="location.reload()">Обновить страницу</button></div>';
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        await showProfileUI();
+                        alert('Email успешно подтвержден!');
                     }
-                } else {
-                    loadingDiv.innerHTML = '<div style="padding: 20px;"><span class="error">❌ Неверная ссылка подтверждения</span><br><br><button onclick="location.reload()">Обновить страницу</button></div>';
                 }
-                
-                return true;
-            }
-            
-            return false;
-        }
-        
-        // Проверка авторизации
-        async function checkAuth() {
-            // Сначала проверяем, не обрабатываем ли мы подтверждение
-            const isHandlingConfirmation = await handleEmailConfirmation();
-            if (isHandlingConfirmation) return;
-            
-            // Проверяем активную сессию
-            const { data: { session }, error } = await supabaseClient.auth.getSession();
-            
-            if (session && !error) {
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                if (user) {
-                    await showProfile(user);
-                }
-            } else {
-                // Показываем форму регистрации
-                document.getElementById('auth-ui').classList.remove('hidden');
-                document.getElementById('login-ui').classList.add('hidden');
-                document.getElementById('profile-ui').classList.add('hidden');
             }
         }
-        
-        // Регистрация
-        async function signUp() {
-            const nick = document.getElementById('nick').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('pass').value;
-            const password2 = document.getElementById('pass2').value;
-            const msgDiv = document.getElementById('msg');
-            
-            if (!nick || !email || !password || !password2) {
-                msgDiv.innerHTML = '<span class="error">❌ Заполните все поля!</span>';
-                return;
-            }
-            
-            if (password !== password2) {
-                msgDiv.innerHTML = '<span class="error">❌ Пароли не совпадают!</span>';
-                return;
-            }
-            
-            if (password.length < 6) {
-                msgDiv.innerHTML = '<span class="error">❌ Пароль должен быть не менее 6 символов!</span>';
-                return;
-            }
-            
-            msgDiv.innerHTML = '<div class="loading"></div> Отправка...';
-            
-            try {
-                const { data, error } = await supabaseClient.auth.signUp({
-                    email: email,
-                    password: password,
-                    options: {
-                        data: {
-                            nickname: nick
-                        },
-                        emailRedirectTo: getCurrentUrl() // Важно! Редирект обратно на эту же страницу
+
+        // Навигация по якорям
+        authLink.onclick = (e) => {
+            e.preventDefault();
+            showAuthForm();
+        };
+
+        // Плавная прокрутка для якорей
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href === '#auth') {
+                    e.preventDefault();
+                    showAuthForm();
+                } else if (href !== '#' && href !== '#download' && href.includes('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
                     }
-                });
-                
-                if (error) {
-                    msgDiv.innerHTML = `<span class="error">❌ ${error.message}</span>`;
-                } else {
-                    msgDiv.innerHTML = '<span class="success">✓ Письмо с подтверждением отправлено!<br>📧 Проверьте почту (и папку Спам)</span>';
-                    
-                    // Очищаем поля
-                    document.getElementById('nick').value = '';
-                    document.getElementById('email').value = '';
-                    document.getElementById('pass').value = '';
-                    document.getElementById('pass2').value = '';
                 }
-            } catch (err) {
-                msgDiv.innerHTML = `<span class="error">❌ Ошибка: ${err.message}</span>`;
-            }
-        }
-        
-        // Вход
-        async function signIn() {
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-pass').value;
-            const msgDiv = document.getElementById('login-msg');
-            
-            if (!email || !password) {
-                msgDiv.innerHTML = '<span class="error">❌ Заполните все поля!</span>';
-                return;
-            }
-            
-            msgDiv.innerHTML = '<div class="loading"></div> Вход...';
-            
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password
             });
-            
-            if (error) {
-                msgDiv.innerHTML = `<span class="error">❌ ${error.message}</span>`;
-            } else if (data.user) {
-                msgDiv.innerHTML = '<span class="success">✓ Успешный вход!</span>';
-                await showProfile(data.user);
-            }
-        }
-        
-        // Выход
-        async function logout() {
-            await supabaseClient.auth.signOut();
-            location.reload();
-        }
-        
-        // Слушаем изменения авторизации
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            console.log('Auth event:', event);
-            if (event === 'SIGNED_IN' && session) {
-                checkAuth();
-            }
         });
-        
-        // Запускаем проверку
-        checkAuth();
+
+        // Инициализация
+        async function init() {
+            await handleEmailConfirmation();
+            await showProfileUI();
+            
+            // Слушаем изменения авторизации
+            supabase.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_IN') {
+                    showProfileUI();
+                } else if (event === 'SIGNED_OUT') {
+                    location.reload();
+                }
+            });
+        }
+
+        init();
     </script>
 </body>
 </html>
