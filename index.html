@@ -2,16 +2,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="keywords" content="zeusclient, minecraft cheat, майнкрафт чит, читы 1.12.2, forge mod">
-    <meta name="description" content="ZeusClient - мощный и бесплатный клиент для Minecraft 1.12.2">
-    <meta name="theme-color" content="#ffd700">
-    <title>ZeusClient - Бесплатный чит для Minecraft</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZeusClient | Бесплатный чит для Minecraft 1.12.2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -20,14 +14,14 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #0a0a0a;
-            color: #fff;
+            color: white;
             min-height: 100vh;
         }
 
-        /* Фон */
-        .bg-layer {
+        /* ФОН */
+        .bg {
             position: fixed;
             top: 0;
             left: 0;
@@ -36,23 +30,21 @@
             background-image: url('https://expensiveclient.su/images/landing/background.svg');
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
             z-index: -2;
         }
-
-        .bg-overlay {
+        .overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0,0,0,0.75);
             z-index: -1;
         }
 
-        /* Навигация */
+        /* НАВИГАЦИЯ */
         .navbar {
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0,0,0,0.95);
             padding: 15px 40px;
             display: flex;
             justify-content: space-between;
@@ -64,13 +56,11 @@
             flex-wrap: wrap;
             gap: 15px;
         }
-
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
-
         .logo-icon {
             width: 45px;
             height: 45px;
@@ -79,10 +69,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 24px;
             color: #1a1a1a;
         }
-
         .logo-text {
             font-size: 28px;
             font-weight: 800;
@@ -91,226 +80,187 @@
             background-clip: text;
             color: transparent;
         }
-
-        .logo-text span {
-            font-size: 11px;
+        .logo-text small {
+            font-size: 10px;
             font-weight: 400;
             background: none;
             -webkit-background-clip: unset;
             color: rgba(255,255,255,0.5);
         }
-
         .nav-links {
             display: flex;
             gap: 25px;
             align-items: center;
             flex-wrap: wrap;
         }
-
         .nav-links a {
-            color: #fff;
+            color: white;
             text-decoration: none;
-            font-size: 15px;
-            font-weight: 500;
             cursor: pointer;
-            padding: 8px 14px;
+            font-weight: 500;
+            padding: 8px 12px;
             border-radius: 8px;
             transition: 0.2s;
         }
-
         .nav-links a:hover {
             color: #ffd700;
             background: rgba(255,215,0,0.1);
         }
-
         .user-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             background: rgba(255,215,0,0.15);
-            padding: 6px 18px;
+            padding: 5px 18px;
             border-radius: 40px;
         }
-
         .user-info span {
             color: #ffd700;
             font-weight: 600;
         }
-
         .logout-btn {
             background: #e74c3c;
-            color: white;
             border: none;
-            padding: 5px 16px;
+            color: white;
+            padding: 5px 15px;
             border-radius: 30px;
             cursor: pointer;
-            font-size: 13px;
-            transition: 0.2s;
         }
 
-        .logout-btn:hover {
-            background: #c0392b;
-        }
-
+        /* КОНТЕЙНЕР */
         .container {
             max-width: 1300px;
             margin: 0 auto;
             padding: 40px 20px;
         }
 
-        /* Hero секция */
+        /* ГЛАВНАЯ */
         .hero {
             text-align: center;
-            padding: 70px 30px;
-            background: rgba(0, 0, 0, 0.5);
+            padding: 70px 20px;
+            background: rgba(0,0,0,0.5);
             border-radius: 30px;
             margin-bottom: 35px;
         }
-
         .hero h1 {
             font-size: 64px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ffd700, #ffaa00, #ff8800);
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             margin-bottom: 15px;
         }
-
         .hero p {
             font-size: 20px;
-            color: rgba(255,255,255,0.85);
-            margin-bottom: 35px;
+            margin-bottom: 30px;
+            opacity: 0.9;
         }
-
         .stats {
             display: flex;
             justify-content: center;
-            gap: 60px;
+            gap: 50px;
             flex-wrap: wrap;
         }
-
-        .stat {
-            text-align: center;
-        }
-
         .stat-number {
             font-size: 36px;
             font-weight: 800;
             color: #ffd700;
         }
-
         .stat-label {
             font-size: 14px;
-            color: rgba(255,255,255,0.6);
+            opacity: 0.7;
         }
 
-        /* Секции */
+        /* СЕКЦИИ */
         .section {
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0,0,0,0.6);
             backdrop-filter: blur(5px);
             border-radius: 24px;
             padding: 40px;
             margin-bottom: 35px;
             border: 1px solid rgba(255,215,0,0.2);
         }
-
         .section h2 {
             font-size: 32px;
-            margin-bottom: 30px;
             color: #ffd700;
             border-left: 4px solid #ffd700;
             padding-left: 20px;
+            margin-bottom: 30px;
         }
-
         .section h2 i {
             margin-right: 12px;
         }
 
-        /* Сетка карточек */
+        /* КАРТОЧКИ */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
         }
-
         .card {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255,255,255,0.08);
             border-radius: 20px;
-            padding: 28px;
+            padding: 25px;
             text-align: center;
-            transition: 0.2s;
             border: 1px solid rgba(255,215,0,0.15);
+            transition: 0.2s;
         }
-
         .card:hover {
             transform: translateY(-5px);
             border-color: rgba(255,215,0,0.4);
         }
-
         .card-icon {
-            width: 75px;
-            height: 75px;
+            width: 70px;
+            height: 70px;
             background: linear-gradient(135deg, #ffd700, #ffaa00);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 18px;
-            font-size: 32px;
+            margin: 0 auto 15px;
+            font-size: 30px;
             color: #1a1a1a;
         }
-
         .card h3 {
             font-size: 22px;
             margin-bottom: 10px;
             color: #ffd700;
         }
-
         .card p {
             font-size: 14px;
-            color: rgba(255,255,255,0.7);
-            line-height: 1.5;
+            opacity: 0.8;
         }
 
-        /* Кнопка скачивания */
+        /* КНОПКА СКАЧИВАНИЯ */
         .download-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
             background: linear-gradient(135deg, #ffd700, #ffaa00);
             color: #1a1a1a;
-            padding: 16px 45px;
+            border: none;
+            padding: 15px 45px;
             font-size: 20px;
             font-weight: 800;
             border-radius: 60px;
-            border: none;
             cursor: pointer;
+            margin-top: 15px;
             transition: 0.2s;
-            margin-top: 20px;
-            box-shadow: 0 5px 20px rgba(255,215,0,0.3);
         }
-
         .download-btn:hover {
             transform: scale(1.03);
-            box-shadow: 0 8px 30px rgba(255,215,0,0.5);
+            box-shadow: 0 5px 20px rgba(255,215,0,0.4);
         }
 
-        /* Шаги инструкции */
+        /* ИНСТРУКЦИЯ */
         .steps-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
             gap: 20px;
         }
-
         .step-card {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255,255,255,0.05);
             border-radius: 18px;
-            padding: 22px;
+            padding: 20px;
             text-align: center;
-            border: 1px solid rgba(255,215,0,0.15);
         }
-
         .step-number {
             width: 50px;
             height: 50px;
@@ -320,128 +270,104 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto 15px;
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 800;
             color: #1a1a1a;
         }
-
         .step-card h4 {
             font-size: 18px;
-            margin-bottom: 8px;
             color: #ffd700;
+            margin-bottom: 8px;
         }
-
-        .step-card p {
-            font-size: 13px;
-            color: rgba(255,255,255,0.7);
-        }
-
-        .code-block {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 6px 12px;
+        .code {
+            background: rgba(0,0,0,0.6);
+            padding: 5px 10px;
             border-radius: 8px;
             font-family: monospace;
             font-size: 11px;
-            margin-top: 10px;
             display: inline-block;
+            margin-top: 8px;
             color: #ffd700;
         }
 
-        /* Формы авторизации */
-        .auth-forms {
+        /* ФОРМЫ */
+        .auth-container {
             max-width: 450px;
             margin: 0 auto;
         }
-
         .auth-card {
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0,0,0,0.9);
             border-radius: 24px;
             padding: 40px;
             border: 1px solid rgba(255,215,0,0.3);
         }
-
         .auth-card h3 {
             text-align: center;
-            margin-bottom: 25px;
             color: #ffd700;
             font-size: 28px;
+            margin-bottom: 25px;
         }
-
         .auth-input {
             width: 100%;
             padding: 14px;
-            margin: 12px 0;
-            background: rgba(255, 255, 255, 0.1);
+            margin: 10px 0;
+            background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,215,0,0.3);
             border-radius: 14px;
             color: white;
             font-size: 15px;
         }
-
         .auth-input:focus {
             outline: none;
             border-color: #ffd700;
-            background: rgba(255, 255, 255, 0.15);
         }
-
         .auth-btn {
             width: 100%;
             padding: 14px;
             background: linear-gradient(135deg, #ffd700, #ffaa00);
             border: none;
             border-radius: 14px;
-            color: #1a1a1a;
             font-weight: 800;
             font-size: 17px;
             cursor: pointer;
             margin-top: 20px;
         }
-
         .switch-auth {
             text-align: center;
-            margin-top: 22px;
-            color: rgba(255,255,255,0.7);
+            margin-top: 20px;
+            opacity: 0.8;
         }
-
         .switch-auth a {
             color: #ffd700;
             cursor: pointer;
-            text-decoration: none;
-            font-weight: 600;
         }
-
         .msg {
             text-align: center;
             margin-top: 15px;
             font-size: 13px;
-            padding: 10px;
+            padding: 8px;
             border-radius: 10px;
         }
-
         .error {
-            background: rgba(231, 76, 60, 0.2);
+            background: rgba(231,76,60,0.2);
             color: #e74c3c;
         }
-
         .success {
-            background: rgba(46, 204, 113, 0.2);
+            background: rgba(46,204,113,0.2);
             color: #2ecc71;
         }
-
         .hidden {
             display: none;
         }
 
-        /* Профиль */
+        /* ПРОФИЛЬ */
         .profile-header {
             text-align: center;
             padding: 45px;
             background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,170,0,0.05));
             border-radius: 24px;
             margin-bottom: 30px;
-            border: 1px solid rgba(255,215,0,0.2);
         }
-
         .profile-avatar {
             width: 100px;
             height: 100px;
@@ -454,109 +380,71 @@
             font-size: 45px;
             color: #1a1a1a;
         }
-
         .profile-header h3 {
             font-size: 28px;
-            margin-bottom: 8px;
         }
-
         .license-badge {
             display: inline-block;
-            background: rgba(46, 204, 113, 0.2);
+            background: rgba(46,204,113,0.2);
+            color: #2ecc71;
             padding: 8px 25px;
             border-radius: 40px;
-            font-size: 14px;
+            margin-top: 15px;
             font-weight: 600;
-            margin-top: 18px;
-            color: #2ecc71;
         }
 
-        .license-badge i {
-            margin-right: 8px;
-        }
-
-        /* Футер */
+        /* ФУТЕР */
         .footer {
             text-align: center;
             padding: 40px;
-            background: rgba(0, 0, 0, 0.85);
-            margin-top: 50px;
-            border-top: 1px solid rgba(255,215,0,0.2);
+            background: rgba(0,0,0,0.85);
+            margin-top: 40px;
         }
-
         .social-links {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-bottom: 25px;
+            gap: 25px;
+            margin-bottom: 20px;
         }
-
         .social-links a {
             color: white;
             font-size: 24px;
             transition: 0.2s;
         }
-
         .social-links a:hover {
             color: #ffd700;
-            transform: translateY(-3px);
         }
 
-        /* Адаптив */
         @media (max-width: 768px) {
-            .navbar {
-                padding: 12px 20px;
-            }
-            .logo-text {
-                font-size: 20px;
-            }
-            .hero h1 {
-                font-size: 38px;
-            }
-            .hero p {
-                font-size: 16px;
-            }
-            .section {
-                padding: 20px;
-            }
-            .section h2 {
-                font-size: 24px;
-            }
-            .stat-number {
-                font-size: 24px;
-            }
-            .download-btn {
-                padding: 12px 30px;
-                font-size: 16px;
-            }
+            .navbar { padding: 12px 20px; }
+            .hero h1 { font-size: 38px; }
+            .section { padding: 20px; }
+            .section h2 { font-size: 24px; }
+            .download-btn { padding: 12px 30px; font-size: 16px; }
         }
     </style>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div class="bg-layer"></div>
-    <div class="bg-overlay"></div>
+    <div class="bg"></div>
+    <div class="overlay"></div>
 
-    <!-- Навигация -->
+    <!-- НАВИГАЦИЯ -->
     <nav class="navbar">
         <div class="logo">
             <div class="logo-icon"><i class="fas fa-bolt"></i></div>
-            <div class="logo-text">ZEUS<span>CLIENT</span></div>
+            <div class="logo-text">ZEUS<small>CLIENT</small></div>
         </div>
         <div class="nav-links">
-            <a onclick="scrollToSection('home')"><i class="fas fa-home"></i> Главная</a>
-            <a onclick="scrollToSection('features')"><i class="fas fa-star"></i> Возможности</a>
-            <a onclick="scrollToSection('download')"><i class="fas fa-download"></i> Скачать</a>
-            <a onclick="scrollToSection('instructions')"><i class="fas fa-book"></i> Инструкция</a>
-            <div id="nav-auth">
-                <a onclick="showAuthForm()"><i class="fas fa-user"></i> Войти</a>
-            </div>
+            <a onclick="scrollToSection('home')">Главная</a>
+            <a onclick="scrollToSection('features')">Возможности</a>
+            <a onclick="scrollToSection('download')">Скачать</a>
+            <a onclick="scrollToSection('instructions')">Инструкция</a>
+            <div id="nav-auth"><a onclick="showAuthForm()">Войти</a></div>
             <div id="nav-profile" class="hidden">
                 <div class="user-info">
-                    <i class="fas fa-crown"></i>
-                    <span id="nav-nick">Пользователь</span>
-                    <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Выйти</button>
+                    <i class="fas fa-user"></i>
+                    <span id="navNick">...</span>
+                    <button class="logout-btn" onclick="logout()">Выйти</button>
                 </div>
             </div>
         </div>
@@ -564,8 +452,7 @@
 
     <div class="container">
         <!-- НЕАВТОРИЗОВАННЫЙ КОНТЕНТ -->
-        <div id="unauth-content">
-            <!-- Hero -->
+        <div id="publicContent">
             <div id="home" class="hero">
                 <h1>ZEUS CLIENT</h1>
                 <p>Мощный и бесплатный клиент для Minecraft 1.12.2</p>
@@ -576,117 +463,101 @@
                 </div>
             </div>
 
-            <!-- Возможности -->
             <div id="features" class="section">
-                <h2><i class="fas fa-star"></i> Ключевые возможности</h2>
+                <h2><i class="fas fa-star"></i> Возможности</h2>
                 <div class="grid">
-                    <div class="card"><div class="card-icon"><i class="fas fa-shield-alt"></i></div><h3>Анти-детект</h3><p>Лучшая защита от серверных античитов. Оставайтесь незамеченными.</p></div>
-                    <div class="card"><div class="card-icon"><i class="fas fa-tachometer-alt"></i></div><h3>Оптимизация</h3><p>Высокий FPS даже на слабых ПК. Плавная игра без лагов.</p></div>
-                    <div class="card"><div class="card-icon"><i class="fas fa-crosshairs"></i></div><h3>Aimbot</h3><p>Умное наведение на противников с точной настройкой.</p></div>
-                    <div class="card"><div class="card-icon"><i class="fas fa-eye"></i></div><h3>ESP & X-Ray</h3><p>Подсветка игроков, мобов, сундуков и руд через стены.</p></div>
-                    <div class="card"><div class="card-icon"><i class="fas fa-fighter-jet"></i></div><h3>Fly & Speed</h3><p>Различные режимы полета и ускорения для быстрого перемещения.</p></div>
-                    <div class="card"><div class="card-icon"><i class="fas fa-sliders-h"></i></div><h3>Гибкие настройки</h3><p>Полная кастомизация под ваш стиль игры и предпочтения.</p></div>
+                    <div class="card"><div class="card-icon"><i class="fas fa-shield-alt"></i></div><h3>Анти-детект</h3><p>Защита от серверных античитов</p></div>
+                    <div class="card"><div class="card-icon"><i class="fas fa-tachometer-alt"></i></div><h3>Оптимизация</h3><p>Высокий FPS на любом ПК</p></div>
+                    <div class="card"><div class="card-icon"><i class="fas fa-crosshairs"></i></div><h3>Aimbot</h3><p>Умное наведение на цель</p></div>
+                    <div class="card"><div class="card-icon"><i class="fas fa-eye"></i></div><h3>ESP & X-Ray</h3><p>Подсветка через стены</p></div>
+                    <div class="card"><div class="card-icon"><i class="fas fa-fighter-jet"></i></div><h3>Fly & Speed</h3><p>Режимы полета и скорости</p></div>
+                    <div class="card"><div class="card-icon"><i class="fas fa-cog"></i></div><h3>Clicker & AutoTool</h3><p>Автоматизация действий</p></div>
                 </div>
             </div>
 
-            <!-- Скачивание -->
-            <div id="download" class="section" style="text-align: center;">
-                <h2><i class="fas fa-download"></i> Скачать ZeusClient</h2>
-                <div>
-                    <i class="fas fa-file-archive" style="font-size: 80px; color: #ffd700; margin-bottom: 20px; display: block;"></i>
-                    <h3 style="font-size: 32px; margin-bottom: 10px;">ZeusClient v1.0</h3>
-                    <p style="font-size: 16px; margin-bottom: 15px;">Minecraft 1.12.2 | Forge | Java 8+</p>
-                    <button class="download-btn" onclick="downloadCheat()">
-                        <i class="fas fa-download"></i> Скачать сейчас
-                    </button>
-                    <p style="margin-top: 20px; font-size: 13px; opacity: 0.7;">Размер: ~15 MB | Бесплатно</p>
-                </div>
+            <div id="download" class="section" style="text-align:center">
+                <h2><i class="fas fa-download"></i> Скачать</h2>
+                <i class="fas fa-file-archive" style="font-size: 70px; color:#ffd700; margin-bottom:15px; display:block"></i>
+                <h3 style="font-size:28px">ZeusClient v1.0</h3>
+                <p>Minecraft 1.12.2 | Forge | Java 8+</p>
+                <button class="download-btn" onclick="downloadCheat()"><i class="fas fa-download"></i> Скачать сейчас</button>
+                <p style="margin-top:15px; font-size:12px; opacity:0.6">Размер: ~15 MB | Бесплатно</p>
             </div>
 
-            <!-- Инструкция -->
             <div id="instructions" class="section">
-                <h2><i class="fas fa-book-open"></i> Инструкция по установке</h2>
+                <h2><i class="fas fa-book"></i> Инструкция</h2>
                 <div class="steps-grid">
-                    <div class="step-card"><div class="step-number">1</div><h4>Установите Forge</h4><p>Скачайте Minecraft Forge 1.12.2</p><div class="code-block">forge-1.12.2-xxx.jar</div></div>
-                    <div class="step-card"><div class="step-number">2</div><h4>Установите Java 8</h4><p>Java 8 обязательна для работы</p><div class="code-block">java -version 1.8.x</div></div>
-                    <div class="step-card"><div class="step-number">3</div><h4>Скопируйте файл</h4><p>Поместите ZeusClient.jar в mods</p><div class="code-block">%appdata%/.minecraft/mods</div></div>
-                    <div class="step-card"><div class="step-number">4</div><h4>Запустите игру</h4><p>Выберите профиль Forge</p><div class="code-block">Нажмите RShift для меню</div></div>
+                    <div class="step-card"><div class="step-number">1</div><h4>Установите Forge</h4><p>Forge 1.12.2</p><div class="code">forge-1.12.2-xxx.jar</div></div>
+                    <div class="step-card"><div class="step-number">2</div><h4>Установите Java 8</h4><p>Java 8 обязательна</p><div class="code">java -version 1.8.x</div></div>
+                    <div class="step-card"><div class="step-number">3</div><h4>Скопируйте в mods</h4><p>Папка .minecraft/mods</p><div class="code">%appdata%/.minecraft/mods</div></div>
+                    <div class="step-card"><div class="step-number">4</div><h4>Запустите игру</h4><p>Профиль Forge</p><div class="code">Нажмите RShift</div></div>
                 </div>
-                <div style="margin-top: 30px; padding: 20px; background: rgba(255,215,0,0.1); border-radius: 16px; border-left: 4px solid #ffd700;">
-                    <h4><i class="fas fa-exclamation-triangle"></i> Важно!</h4>
-                    <p style="color: rgba(255,255,255,0.8);">Используйте чит только на серверах, где это разрешено. Администрация не несет ответственности за блокировки аккаунта.</p>
+                <div style="margin-top:25px; padding:15px; background:rgba(255,215,0,0.1); border-radius:16px; border-left:4px solid #ffd700">
+                    <i class="fas fa-exclamation-triangle"></i> Используйте чит только на разрешенных серверах
                 </div>
             </div>
         </div>
 
         <!-- АВТОРИЗАЦИЯ -->
-        <div id="auth-content" class="hidden">
-            <div class="auth-forms">
-                <div id="register-form" class="auth-card">
+        <div id="authContent" class="hidden">
+            <div class="auth-container">
+                <div id="registerCard" class="auth-card">
                     <h3><i class="fas fa-user-plus"></i> Регистрация</h3>
-                    <input type="text" id="reg-nick" class="auth-input" placeholder="Никнейм">
-                    <input type="email" id="reg-email" class="auth-input" placeholder="Email">
-                    <input type="password" id="reg-pass" class="auth-input" placeholder="Пароль (мин. 6 символов)">
-                    <input type="password" id="reg-pass2" class="auth-input" placeholder="Повторите пароль">
+                    <input type="text" id="regNick" class="auth-input" placeholder="Никнейм">
+                    <input type="email" id="regEmail" class="auth-input" placeholder="Email">
+                    <input type="password" id="regPass" class="auth-input" placeholder="Пароль (6+ символов)">
+                    <input type="password" id="regPass2" class="auth-input" placeholder="Повторите пароль">
                     <button class="auth-btn" onclick="register()">Зарегистрироваться</button>
-                    <div id="reg-msg" class="msg"></div>
+                    <div id="regMsg" class="msg"></div>
                     <div class="switch-auth">Уже есть аккаунт? <a onclick="showLogin()">Войти</a></div>
                 </div>
-                <div id="login-form" class="auth-card hidden">
-                    <h3><i class="fas fa-sign-in-alt"></i> Вход в аккаунт</h3>
-                    <input type="email" id="login-email" class="auth-input" placeholder="Email">
-                    <input type="password" id="login-pass" class="auth-input" placeholder="Пароль">
+                <div id="loginCard" class="auth-card hidden">
+                    <h3><i class="fas fa-sign-in-alt"></i> Вход</h3>
+                    <input type="email" id="loginEmail" class="auth-input" placeholder="Email">
+                    <input type="password" id="loginPass" class="auth-input" placeholder="Пароль">
                     <button class="auth-btn" onclick="login()">Войти</button>
-                    <div id="login-msg" class="msg"></div>
+                    <div id="loginMsg" class="msg"></div>
                     <div class="switch-auth">Нет аккаунта? <a onclick="showRegister()">Регистрация</a></div>
                 </div>
             </div>
         </div>
 
         <!-- ЛИЧНЫЙ КАБИНЕТ -->
-        <div id="profile-content" class="hidden">
+        <div id="profileContent" class="hidden">
             <div class="profile-header">
                 <div class="profile-avatar"><i class="fas fa-bolt"></i></div>
-                <h3 id="profile-nick">Пользователь</h3>
-                <p id="profile-email" style="opacity: 0.7;">email@example.com</p>
-                <div class="license-badge" id="license-badge">
-                    <i class="fas fa-gem"></i> Бесплатная лицензия
-                </div>
+                <h3 id="profileNick">Пользователь</h3>
+                <p id="profileEmail" style="opacity:0.7">email@example.com</p>
+                <div class="license-badge"><i class="fas fa-gem"></i> Бесплатная лицензия</div>
             </div>
-
             <div class="grid">
                 <div class="card">
                     <div class="card-icon"><i class="fas fa-download"></i></div>
                     <h3>Скачать ZeusClient</h3>
-                    <p>Последняя версия клиента</p>
-                    <button class="download-btn" onclick="downloadCheat()" style="margin-top: 15px; padding: 10px 25px; font-size: 16px;"><i class="fas fa-download"></i> Скачать</button>
+                    <button class="download-btn" onclick="downloadCheat()" style="padding:10px 25px; font-size:16px">Скачать</button>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i class="fas fa-ticket-alt"></i></div>
-                    <h3>Статус лицензии</h3>
+                    <h3>Лицензия</h3>
                     <p>Бесплатная навсегда</p>
-                    <p style="font-size: 12px; margin-top: 8px;"><i class="fas fa-check-circle"></i> Активна</p>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i class="fas fa-headset"></i></div>
                     <h3>Поддержка</h3>
                     <p>Telegram: @zeus_support</p>
-                    <p style="font-size: 12px;">Discord: discord.gg/zeus</p>
                 </div>
                 <div class="card">
-                    <div class="card-icon"><i class="fas fa-chart-line"></i></div>
-                    <h3>Статистика</h3>
-                    <p>Дата регистрации</p>
-                    <p id="reg-date" style="font-size: 12px;">-</p>
+                    <div class="card-icon"><i class="fas fa-calendar"></i></div>
+                    <h3>Дата регистрации</h3>
+                    <p id="regDate">-</p>
                 </div>
             </div>
-
             <div class="section">
                 <h2><i class="fas fa-rocket"></i> Быстрый старт</h2>
                 <div class="steps-grid">
-                    <div class="step-card"><div class="step-number">1</div><h4>Скачай</h4><p>Нажми кнопку скачивания выше</p></div>
-                    <div class="step-card"><div class="step-number">2</div><h4>Установи</h4><p>Перемести в .minecraft/mods</p></div>
-                    <div class="step-card"><div class="step-number">3</div><h4>Играй</h4><p>Запусти Forge профиль</p></div>
+                    <div class="step-card"><div class="step-number">1</div><h4>Скачай</h4><p>Нажми кнопку выше</p></div>
+                    <div class="step-card"><div class="step-number">2</div><h4>Установи</h4><p>В папку mods</p></div>
+                    <div class="step-card"><div class="step-number">3</div><h4>Играй</h4><p>Запусти Forge</p></div>
                 </div>
             </div>
         </div>
@@ -700,225 +571,124 @@
             <a href="#"><i class="fab fa-youtube"></i></a>
         </div>
         <p>ZeusClient © 2025 | Бесплатный клиент для Minecraft</p>
-        <p style="font-size: 12px; margin-top: 10px;">Minecraft 1.12.2 | Forge | Java 8+</p>
     </div>
 
     <script>
         // Supabase
-        const SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
+        const supabaseUrl = 'https://itnymezviisjmkttzlag.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
         const FILE_NAME = 'ZeusClient1-12-2.jar';
-
-        const unauthContent = document.getElementById('unauth-content');
-        const authContent = document.getElementById('auth-content');
-        const profileContent = document.getElementById('profile-content');
+        
+        const publicDiv = document.getElementById('publicContent');
+        const authDiv = document.getElementById('authContent');
+        const profileDiv = document.getElementById('profileContent');
         const navAuth = document.getElementById('nav-auth');
         const navProfile = document.getElementById('nav-profile');
-        const navNick = document.getElementById('nav-nick');
-
+        const navNick = document.getElementById('navNick');
+        
         function scrollToSection(id) {
-            const el = document.getElementById(id);
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
         }
-
+        
         function showRegister() {
-            document.getElementById('register-form').classList.remove('hidden');
-            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('registerCard').classList.remove('hidden');
+            document.getElementById('loginCard').classList.add('hidden');
         }
-
         function showLogin() {
-            document.getElementById('login-form').classList.remove('hidden');
-            document.getElementById('register-form').classList.add('hidden');
+            document.getElementById('loginCard').classList.remove('hidden');
+            document.getElementById('registerCard').classList.add('hidden');
         }
-
+        
         window.downloadCheat = function() {
-            const fileUrl = './' + FILE_NAME;
-            const btn = event ? event.target.closest('.download-btn') : document.querySelector('.download-btn');
-            const originalText = btn ? btn.innerHTML : 'Скачать';
-            
-            if (btn) {
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
-                btn.disabled = true;
-            }
-            
-            fetch(fileUrl, { method: 'HEAD' })
-                .then(response => {
-                    if (response.ok) {
-                        const link = document.createElement('a');
-                        link.href = fileUrl;
-                        link.download = FILE_NAME;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        if (btn) {
-                            btn.innerHTML = '<i class="fas fa-check"></i> Скачано!';
-                            setTimeout(() => {
-                                btn.innerHTML = originalText;
-                                btn.disabled = false;
-                            }, 2000);
-                        }
-                    } else {
-                        throw new Error('Файл не найден');
-                    }
-                })
-                .catch(() => {
-                    if (btn) {
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    }
-                    alert(`Файл ${FILE_NAME} не найден!\n\nПоложите файл в ту же папку, где находится index.html`);
-                });
+            const link = document.createElement('a');
+            link.href = './' + FILE_NAME;
+            link.download = FILE_NAME;
+            link.click();
         };
-
+        
         window.register = async function() {
-            const nick = document.getElementById('reg-nick').value.trim();
-            const email = document.getElementById('reg-email').value.trim();
-            const password = document.getElementById('reg-pass').value;
-            const password2 = document.getElementById('reg-pass2').value;
-            const msgDiv = document.getElementById('reg-msg');
-
-            if (!nick || !email || !password || !password2) {
-                msgDiv.innerHTML = '<span class="error">❌ Заполните все поля!</span>';
-                return;
-            }
-            if (password !== password2) {
-                msgDiv.innerHTML = '<span class="error">❌ Пароли не совпадают!</span>';
-                return;
-            }
-            if (password.length < 6) {
-                msgDiv.innerHTML = '<span class="error">❌ Пароль должен быть не менее 6 символов!</span>';
-                return;
-            }
-
-            msgDiv.innerHTML = '<span>⏳ Отправка...</span>';
-
-            const { data, error } = await supabaseClient.auth.signUp({
-                email: email,
-                password: password,
-                options: {
-                    data: { nickname: nick },
-                    emailRedirectTo: window.location.origin + window.location.pathname
-                }
+            const nick = document.getElementById('regNick').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const pass = document.getElementById('regPass').value;
+            const pass2 = document.getElementById('regPass2').value;
+            const msg = document.getElementById('regMsg');
+            if (!nick || !email || !pass || !pass2) { msg.innerHTML = '<span class="error">Заполните все поля</span>'; return; }
+            if (pass !== pass2) { msg.innerHTML = '<span class="error">Пароли не совпадают</span>'; return; }
+            if (pass.length < 6) { msg.innerHTML = '<span class="error">Пароль минимум 6 символов</span>'; return; }
+            msg.innerHTML = '<span>Отправка...</span>';
+            const { error } = await supabase.auth.signUp({
+                email, password: pass,
+                options: { data: { nickname: nick }, emailRedirectTo: window.location.origin }
             });
-
-            if (error) {
-                msgDiv.innerHTML = `<span class="error">❌ ${error.message}</span>`;
-            } else {
-                msgDiv.innerHTML = '<span class="success">✓ Проверьте почту для подтверждения!</span>';
-                document.getElementById('reg-nick').value = '';
-                document.getElementById('reg-email').value = '';
-                document.getElementById('reg-pass').value = '';
-                document.getElementById('reg-pass2').value = '';
-            }
+            if (error) msg.innerHTML = '<span class="error">' + error.message + '</span>';
+            else msg.innerHTML = '<span class="success">Проверьте почту для подтверждения!</span>';
         };
-
+        
         window.login = async function() {
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-pass').value;
-            const msgDiv = document.getElementById('login-msg');
-
-            if (!email || !password) {
-                msgDiv.innerHTML = '<span class="error">❌ Заполните все поля!</span>';
-                return;
-            }
-
-            msgDiv.innerHTML = '<span>⏳ Вход...</span>';
-
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password
-            });
-
-            if (error) {
-                msgDiv.innerHTML = `<span class="error">❌ ${error.message}</span>`;
-            } else if (data.user) {
-                msgDiv.innerHTML = '<span class="success">✓ Успешный вход!</span>';
-                await checkUser();
-                showProfileUI();
-            }
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPass').value;
+            const msg = document.getElementById('loginMsg');
+            if (!email || !pass) { msg.innerHTML = '<span class="error">Заполните поля</span>'; return; }
+            msg.innerHTML = '<span>Вход...</span>';
+            const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+            if (error) msg.innerHTML = '<span class="error">' + error.message + '</span>';
+            else await checkSession();
         };
-
-        window.logout = async function() {
-            await supabaseClient.auth.signOut();
-            location.reload();
-        };
-
-        async function checkUser() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
+        
+        window.logout = async function() { await supabase.auth.signOut(); location.reload(); };
+        
+        async function checkSession() {
+            const { data: { session } } = await supabase.auth.getSession();
             if (session) {
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                if (user) {
-                    const nickname = user.user_metadata?.nickname || user.email.split('@')[0];
-                    navNick.textContent = nickname;
-                    document.getElementById('profile-nick').textContent = nickname;
-                    document.getElementById('profile-email').textContent = user.email;
-                    
-                    if (user.created_at) {
-                        const date = new Date(user.created_at).toLocaleDateString('ru-RU');
-                        document.getElementById('reg-date').textContent = date;
-                    }
+                const { data: { user } } = await supabase.auth.getUser();
+                const nick = user.user_metadata?.nickname || user.email.split('@')[0];
+                navNick.innerText = nick;
+                document.getElementById('profileNick').innerText = nick;
+                document.getElementById('profileEmail').innerText = user.email;
+                if (user.created_at) {
+                    document.getElementById('regDate').innerText = new Date(user.created_at).toLocaleDateString('ru-RU');
                 }
-                return true;
-            }
-            return false;
-        }
-
-        async function showProfileUI() {
-            const isLoggedIn = await checkUser();
-            if (isLoggedIn) {
-                unauthContent.classList.add('hidden');
-                authContent.classList.add('hidden');
-                profileContent.classList.remove('hidden');
+                publicDiv.classList.add('hidden');
+                authDiv.classList.add('hidden');
+                profileDiv.classList.remove('hidden');
                 navAuth.classList.add('hidden');
                 navProfile.classList.remove('hidden');
             } else {
-                unauthContent.classList.remove('hidden');
-                authContent.classList.add('hidden');
-                profileContent.classList.add('hidden');
+                publicDiv.classList.remove('hidden');
+                authDiv.classList.add('hidden');
+                profileDiv.classList.add('hidden');
                 navAuth.classList.remove('hidden');
                 navProfile.classList.add('hidden');
             }
         }
-
+        
         window.showAuthForm = function() {
-            unauthContent.classList.add('hidden');
-            authContent.classList.remove('hidden');
-            profileContent.classList.add('hidden');
+            publicDiv.classList.add('hidden');
+            authDiv.classList.remove('hidden');
+            profileDiv.classList.add('hidden');
             showRegister();
         };
-
-        async function handleEmailConfirmation() {
+        
+        async function handleConfirm() {
             const hash = window.location.hash;
             if (hash && hash.includes('access_token')) {
                 const params = new URLSearchParams(hash.substring(1));
                 const accessToken = params.get('access_token');
                 const refreshToken = params.get('refresh_token');
                 if (accessToken && refreshToken) {
-                    const { data, error } = await supabaseClient.auth.setSession({
-                        access_token: accessToken,
-                        refresh_token: refreshToken
-                    });
-                    if (!error && data.session) {
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                        await showProfileUI();
-                        alert('Email успешно подтвержден! Добро пожаловать в ZeusClient!');
-                    }
+                    await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    await checkSession();
+                    alert('Email подтвержден! Добро пожаловать в ZeusClient!');
                 }
             }
         }
-
-        async function init() {
-            await handleEmailConfirmation();
-            await showProfileUI();
-            supabaseClient.auth.onAuthStateChange((event, session) => {
-                if (event === 'SIGNED_IN') showProfileUI();
-                if (event === 'SIGNED_OUT') location.reload();
-            });
-        }
-
-        init();
+        
+        handleConfirm();
+        checkSession();
+        supabase.auth.onAuthStateChange(() => checkSession());
     </script>
 </body>
 </html>
