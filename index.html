@@ -14,6 +14,8 @@
         #msg { margin-top: 15px; font-size: 13px; color: #666; }
         .error { color: #e74c3c; }
         .success { color: #27ae60; }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #f3f3f3; border-top: 2px solid #3ecf8e; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 10px; vertical-align: middle; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -27,40 +29,115 @@
             <input type="password" id="pass2" placeholder="Повторите пароль">
             <button onclick="signUp()">Зарегистрироваться</button>
             <div id="msg"></div>
+            <hr>
+            <button onclick="showLoginForm()" style="background: #3498db;">Уже есть аккаунт? Войти</button>
+        </div>
+
+        <div id="login-ui" class="hidden">
+            <h2>Вход</h2>
+            <input type="email" id="login-email" placeholder="Email">
+            <input type="password" id="login-pass" placeholder="Пароль">
+            <button onclick="signIn()">Войти</button>
+            <div id="login-msg"></div>
+            <hr>
+            <button onclick="showRegisterForm()" style="background: #95a5a6;">Нет аккаунта? Регистрация</button>
         </div>
 
         <div id="profile-ui" class="hidden">
             <h2>Личный кабинет</h2>
             <p>Привет, <b id="u-nick"></b>!</p>
             <p id="u-email" style="color:gray"></p>
+            <p id="u-id" style="color:gray; font-size: 12px;"></p>
             <button onclick="logout()" style="background:#ff4d4d">Выйти</button>
         </div>
     </div>
 
-    <!-- Подключаем правильную библиотеку Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // ВАЖНО: Используйте ваш реальный URL проекта Supabase!
+        // Конфигурация Supabase
         const supabaseUrl = 'https://itnymezviisjmkttzlag.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
         
-        // Создаем клиент с другим именем переменной, чтобы избежать конфликта
+        // Создаем клиент
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
         
-        // Функция для проверки авторизации при загрузке страницы
+        // Функция для показа формы входа
+        function showLoginForm() {
+            document.getElementById('auth-ui').classList.add('hidden');
+            document.getElementById('login-ui').classList.remove('hidden');
+        }
+        
+        // Функция для показа формы регистрации
+        function showRegisterForm() {
+            document.getElementById('login-ui').classList.add('hidden');
+            document.getElementById('auth-ui').classList.remove('hidden');
+        }
+        
+        // Функция для отображения профиля
+        async function showProfile(user) {
+            const nickname = user.user_metadata?.nickname || user.email.split('@')[0];
+            document.getElementById('u-nick').textContent = nickname;
+            document.getElementById('u-email').textContent = user.email;
+            document.getElementById('u-id').textContent = 'ID: ' + user.id.substring(0, 20) + '...';
+            
+            document.getElementById('auth-ui').classList.add('hidden');
+            document.getElementById('login-ui').classList.add('hidden');
+            document.getElementById('profile-ui').classList.remove('hidden');
+        }
+        
+        // Проверка авторизации и обработка URL с токеном
         async function checkAuth() {
+            // Получаем текущую сессию
             const { data: { session }, error } = await supabaseClient.auth.getSession();
             
             if (session && !error) {
-                // Пользователь авторизован, получаем его данные
+                // Есть активная сессия - показываем профиль
                 const { data: { user } } = await supabaseClient.auth.getUser();
                 if (user) {
-                    const nickname = user.user_metadata?.nickname || 'Пользователь';
-                    document.getElementById('u-nick').textContent = nickname;
-                    document.getElementById('u-email').textContent = user.email;
+                    await showProfile(user);
+                }
+            } else {
+                // Проверяем, есть ли токен в URL (подтверждение email)
+                const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                const accessToken = hashParams.get('access_token');
+                const refreshToken = hashParams.get('refresh_token');
+                const type = hashParams.get('type');
+                
+                if (accessToken && type === 'signup') {
+                    // Показываем индикатор загрузки
                     document.getElementById('auth-ui').classList.add('hidden');
-                    document.getElementById('profile-ui').classList.remove('hidden');
+                    document.getElementById('login-ui').classList.add('hidden');
+                    document.getElementById('profile-ui').classList.add('hidden');
+                    
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'card';
+                    msgDiv.innerHTML = '<div style="text-align: center; padding: 20px;"><div class="loading"></div><br>Подтверждение email...<br>Пожалуйста, подождите</div>';
+                    document.body.appendChild(msgDiv);
+                    
+                    // Устанавливаем сессию из токенов
+                    const { data, error: sessionError } = await supabaseClient.auth.setSession({
+                        access_token: accessToken,
+                        refresh_token: refreshToken
+                    });
+                    
+                    // Удаляем индикатор загрузки
+                    document.body.removeChild(msgDiv);
+                    
+                    if (!sessionError && data.session) {
+                        // Успешный вход - показываем профиль
+                        await showProfile(data.user);
+                        // Очищаем URL от токенов
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    } else {
+                        alert('Ошибка подтверждения: ' + (sessionError?.message || 'Неизвестная ошибка'));
+                        document.getElementById('auth-ui').classList.remove('hidden');
+                    }
+                } else {
+                    // Нет сессии и нет токена - показываем форму регистрации
+                    document.getElementById('auth-ui').classList.remove('hidden');
+                    document.getElementById('login-ui').classList.add('hidden');
+                    document.getElementById('profile-ui').classList.add('hidden');
                 }
             }
         }
@@ -89,7 +166,7 @@
                 return;
             }
             
-            msgDiv.innerHTML = 'Отправка...';
+            msgDiv.innerHTML = '<div class="loading"></div> Отправка...';
             
             try {
                 const { data, error } = await supabaseClient.auth.signUp({
@@ -97,9 +174,9 @@
                     password: password,
                     options: {
                         data: {
-                            nickname: nick,
-                            email: email
-                        }
+                            nickname: nick
+                        },
+                        emailRedirectTo: window.location.origin + window.location.pathname
                     }
                 });
                 
@@ -107,7 +184,7 @@
                     msgDiv.innerHTML = `<span class="error">Ошибка: ${error.message}</span>`;
                 } else {
                     if (data.user) {
-                        msgDiv.innerHTML = '<span class="success">✓ Успешно! Проверьте вашу почту для подтверждения.</span>';
+                        msgDiv.innerHTML = '<span class="success">✓ На вашу почту отправлено письмо с подтверждением!<br>После подтверждения вы будете автоматически перенаправлены в личный кабинет.</span>';
                         // Очищаем поля
                         document.getElementById('nick').value = '';
                         document.getElementById('email').value = '';
@@ -122,24 +199,51 @@
             }
         }
         
+        // Вход
+        async function signIn() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-pass').value;
+            const msgDiv = document.getElementById('login-msg');
+            
+            if (!email || !password) {
+                msgDiv.innerHTML = '<span class="error">Заполните все поля!</span>';
+                return;
+            }
+            
+            msgDiv.innerHTML = '<div class="loading"></div> Вход...';
+            
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+            
+            if (error) {
+                msgDiv.innerHTML = `<span class="error">Ошибка: ${error.message}</span>`;
+            } else if (data.user) {
+                msgDiv.innerHTML = '<span class="success">✓ Успешный вход!</span>';
+                await showProfile(data.user);
+            }
+        }
+        
         // Выход
         async function logout() {
             await supabaseClient.auth.signOut();
             location.reload();
         }
         
-        // Проверяем авторизацию при загрузке страницы
-        checkAuth();
-        
         // Слушаем изменения состояния авторизации
         supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN') {
+            if (event === 'SIGNED_IN' && session) {
                 checkAuth();
             } else if (event === 'SIGNED_OUT') {
                 document.getElementById('auth-ui').classList.remove('hidden');
+                document.getElementById('login-ui').classList.add('hidden');
                 document.getElementById('profile-ui').classList.add('hidden');
             }
         });
+        
+        // Запускаем проверку авторизации при загрузке страницы
+        checkAuth();
     </script>
 </body>
 </html>
