@@ -19,25 +19,19 @@
             box-sizing: border-box;
         }
 
-        /* ФОН - ВАМ НУЖНО ДОБАВИТЬ ФАЙЛ ФОНА */
-        /* 
-           ПОМЕСТИТЕ ФАЙЛ ФОНА В ТУ ЖЕ ПАПКУ, ЧТО И ЭТОТ HTML ФАЙЛ
-           И НАЗОВИТЕ ЕГО "bg.jpg" ИЛИ "bg.png"
-           ИЛИ УКАЖИТЕ ПУТЬ К ВАШЕМУ ФАЙЛУ НИЖЕ
-        */
+        /* ФОН - ЕСЛИ НЕТ ФАЙЛА, БУДЕТ ТЕМНЫЙ ГРАДИЕНТ */
         body {
             font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
-            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
-                        url('bg.jpg') center/cover fixed no-repeat;
-            /* ЕСЛИ ФАЙЛ НАЗЫВАЕТСЯ ИНАЧЕ - ЗАМЕНИТЕ 'bg.jpg' НА ВАШЕ ИМЯ ФАЙЛА */
-            /* ПРИМЕР: url('minecraft-bg.png') или url('images/background.jpg') */
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            /* Раскомментируйте строку ниже, когда добавите файл bg.jpg в ту же папку */
+            /* background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('bg.jpg') center/cover fixed no-repeat; */
             color: white;
             min-height: 100vh;
         }
 
         /* Навигация */
         .navbar {
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(10px);
             padding: 15px 50px;
             display: flex;
@@ -79,6 +73,7 @@
             text-decoration: none;
             transition: 0.3s;
             font-weight: 500;
+            cursor: pointer;
         }
 
         .nav-links a:hover {
@@ -384,12 +379,12 @@
             <i class="fas fa-crown"></i> Nursultan Client
         </div>
         <div class="nav-links">
-            <a href="#home">Главная</a>
-            <a href="#features">Возможности</a>
-            <a href="#download">Скачать</a>
-            <a href="#instructions">Инструкция</a>
+            <a onclick="scrollToSection('home')">Главная</a>
+            <a onclick="scrollToSection('features')">Возможности</a>
+            <a onclick="scrollToSection('download')">Скачать</a>
+            <a onclick="scrollToSection('instructions')">Инструкция</a>
             <div id="nav-auth">
-                <a href="#auth" id="auth-link">Войти / Регистрация</a>
+                <a id="auth-link" onclick="showAuthForm()">Войти / Регистрация</a>
             </div>
             <div id="nav-profile" class="hidden">
                 <div class="user-info">
@@ -474,9 +469,9 @@
                     <h3>Nursultan Client v2.0</h3>
                     <p>Версия для Minecraft 1.12.2 Forge</p>
                     <p style="font-size: 14px; margin: 10px 0;">Требуется Java 8+</p>
-                    <a href="#" id="download-link" class="download-btn" onclick="downloadCheat(event)">
+                    <button class="download-btn" onclick="downloadCheat()">
                         <i class="fas fa-download"></i> Скачать сейчас
-                    </a>
+                    </button>
                     <p style="margin-top: 15px; font-size: 12px; color: #aaa;">Размер: ~15 MB</p>
                 </div>
             </section>
@@ -579,7 +574,7 @@
                     <i class="fas fa-download"></i>
                     <h3>Быстрое скачивание</h3>
                     <p>Нажмите ниже, чтобы скачать последнюю версию клиента</p>
-                    <a href="#" onclick="downloadCheat(event)" class="download-btn" style="display: inline-block; margin-top: 15px; padding: 10px 25px; font-size: 16px;">Скачать</a>
+                    <button class="download-btn" onclick="downloadCheat()" style="display: inline-block; margin-top: 15px; padding: 10px 25px; font-size: 16px;">Скачать</button>
                 </div>
                 <div class="card">
                     <i class="fas fa-ticket-alt"></i>
@@ -624,10 +619,10 @@
     </div>
 
     <script>
-        // Supabase конфигурация
-        const supabaseUrl = 'https://itnymezviisjmkttzlag.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        // Supabase конфигурация - используем другое имя переменной
+        const SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // Элементы DOM
         const unauthContent = document.getElementById('unauth-content');
@@ -636,7 +631,14 @@
         const navAuth = document.getElementById('nav-auth');
         const navProfile = document.getElementById('nav-profile');
         const navNick = document.getElementById('nav-nick');
-        const authLink = document.getElementById('auth-link');
+
+        // Функция плавной прокрутки
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
 
         // Функции переключения форм
         function showRegister() {
@@ -649,8 +651,102 @@
             document.getElementById('register-form').classList.add('hidden');
         }
 
+        // Функция скачивания
+        window.downloadCheat = function() {
+            // ВАЖНО: Поместите ваш .jar файл в ту же папку что и HTML файл
+            // и назовите его "Nursultan-Client-v2.0.jar"
+            // ИЛИ измените название файла ниже на ваше
+            
+            const fileName = 'Nursultan-Client-v2.0.jar';
+            const fileUrl = './' + fileName;
+            
+            // Показываем уведомление
+            const btn = event ? event.target : document.querySelector('.download-btn');
+            const originalText = btn ? btn.innerHTML : 'Скачать';
+            
+            if (btn) {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+                btn.disabled = true;
+            }
+            
+            // Пробуем скачать файл
+            fetch(fileUrl, { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        // Файл существует - скачиваем
+                        const link = document.createElement('a');
+                        link.href = fileUrl;
+                        link.download = fileName;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        if (btn) {
+                            btn.innerHTML = '<i class="fas fa-check"></i> Скачано!';
+                            setTimeout(() => {
+                                btn.innerHTML = originalText;
+                                btn.disabled = false;
+                            }, 2000);
+                        }
+                    } else {
+                        throw new Error('Файл не найден');
+                    }
+                })
+                .catch(() => {
+                    // Файл не найден - показываем инструкцию
+                    if (btn) {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }
+                    showDownloadInstructions(fileName);
+                });
+        };
+
+        // Инструкция по скачиванию
+        function showDownloadInstructions(fileName) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.95);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: #1e1e1e; padding: 30px; border-radius: 15px; max-width: 450px; text-align: center; border: 1px solid #3ecf8e;">
+                    <i class="fas fa-download" style="font-size: 50px; color: #3ecf8e;"></i>
+                    <h3 style="margin: 20px 0;">Скачивание файла</h3>
+                    <p style="margin-bottom: 15px; color: #ccc;">Файл <strong>${fileName}</strong> не найден на сервере.</p>
+                    <div style="background: #2d2d2d; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: left;">
+                        <p style="color: #3ecf8e; margin-bottom: 10px;"><strong>Как добавить файл:</strong></p>
+                        <p style="font-size: 13px; margin: 5px 0;">1. Создайте файл <strong>${fileName}</strong></p>
+                        <p style="font-size: 13px; margin: 5px 0;">2. Поместите его в ту же папку, где находится этот HTML файл</p>
+                        <p style="font-size: 13px; margin: 5px 0;">3. Обновите страницу и нажмите скачать снова</p>
+                    </div>
+                    <div style="background: #2d2d2d; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: left;">
+                        <p style="color: #f39c12; margin-bottom: 10px;"><strong>Или используйте прямую ссылку:</strong></p>
+                        <p style="font-size: 12px; word-break: break-all;">Измените в коде функцию downloadCheat() и укажите URL вашего файла</p>
+                    </div>
+                    <button onclick="this.closest('div').parentElement.remove()" style="background: #3ecf8e; border: none; padding: 10px 30px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                        Понятно
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+        }
+
         // Регистрация
-        async function register() {
+        window.register = async function() {
             const nick = document.getElementById('reg-nick').value.trim();
             const email = document.getElementById('reg-email').value.trim();
             const password = document.getElementById('reg-pass').value;
@@ -672,7 +768,7 @@
 
             msgDiv.innerHTML = '<span>⏳ Отправка...</span>';
 
-            const { data, error } = await supabase.auth.signUp({
+            const { data, error } = await supabaseClient.auth.signUp({
                 email: email,
                 password: password,
                 options: {
@@ -690,10 +786,10 @@
                 document.getElementById('reg-pass').value = '';
                 document.getElementById('reg-pass2').value = '';
             }
-        }
+        };
 
         // Вход
-        async function login() {
+        window.login = async function() {
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-pass').value;
             const msgDiv = document.getElementById('login-msg');
@@ -705,7 +801,7 @@
 
             msgDiv.innerHTML = '<span>⏳ Вход...</span>';
 
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email: email,
                 password: password
             });
@@ -717,39 +813,19 @@
                 await checkUser();
                 showProfileUI();
             }
-        }
+        };
 
         // Выход
-        async function logout() {
-            await supabase.auth.signOut();
+        window.logout = async function() {
+            await supabaseClient.auth.signOut();
             location.reload();
-        }
-
-        // Скачивание чита
-        function downloadCheat(event) {
-            event.preventDefault();
-            // ВАЖНО: ЗАМЕНИТЕ ССЫЛКУ НА РЕАЛЬНУЮ ССЫЛКУ ДЛЯ СКАЧИВАНИЯ ВАШЕГО ФАЙЛА
-            // Поместите ваш .jar файл в ту же папку или на любой хостинг
-            const downloadUrl = './Nursultan-Client-v2.0.jar';
-            // ИЛИ ИСПОЛЬЗУЙТЕ ПРЯМУЮ ССЫЛКУ:
-            // const downloadUrl = 'https://ваш-сайт.com/Nursultan-Client-v2.0.jar';
-            
-            // Создаем временную ссылку
-            const link = document.createElement('a');
-            link.href = downloadUrl;
-            link.download = 'Nursultan-Client-v2.0.jar';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            alert('Скачивание началось! Если файл не скачался, проверьте наличие файла в папке с сайтом.');
-        }
+        };
 
         // Проверка пользователя
         async function checkUser() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
-                const { data: { user } } = await supabase.auth.getUser();
+                const { data: { user } } = await supabaseClient.auth.getUser();
                 if (user) {
                     const nickname = user.user_metadata?.nickname || user.email.split('@')[0];
                     navNick.textContent = nickname;
@@ -780,12 +856,12 @@
         }
 
         // Показать форму авторизации
-        function showAuthForm() {
+        window.showAuthForm = function() {
             unauthContent.classList.add('hidden');
             authContent.classList.remove('hidden');
             profileContent.classList.add('hidden');
             showRegister();
-        }
+        };
 
         // Обработка подтверждения email
         async function handleEmailConfirmation() {
@@ -796,7 +872,7 @@
                 const refreshToken = params.get('refresh_token');
                 
                 if (accessToken && refreshToken) {
-                    const { data, error } = await supabase.auth.setSession({
+                    const { data, error } = await supabaseClient.auth.setSession({
                         access_token: accessToken,
                         refresh_token: refreshToken
                     });
@@ -810,36 +886,12 @@
             }
         }
 
-        // Навигация по якорям
-        authLink.onclick = (e) => {
-            e.preventDefault();
-            showAuthForm();
-        };
-
-        // Плавная прокрутка для якорей
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                const href = this.getAttribute('href');
-                if (href === '#auth') {
-                    e.preventDefault();
-                    showAuthForm();
-                } else if (href !== '#' && href !== '#download' && href.includes('#')) {
-                    e.preventDefault();
-                    const target = document.querySelector(href);
-                    if (target) {
-                        target.scrollIntoView({ behavior: 'smooth' });
-                    }
-                }
-            });
-        });
-
         // Инициализация
         async function init() {
             await handleEmailConfirmation();
             await showProfileUI();
             
-            // Слушаем изменения авторизации
-            supabase.auth.onAuthStateChange((event, session) => {
+            supabaseClient.auth.onAuthStateChange((event, session) => {
                 if (event === 'SIGNED_IN') {
                     showProfileUI();
                 } else if (event === 'SIGNED_OUT') {
