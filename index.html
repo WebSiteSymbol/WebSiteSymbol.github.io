@@ -12,15 +12,9 @@
         button:hover { background: #34b27b; }
         .hidden { display: none; }
         #msg { margin-top: 15px; font-size: 13px; color: #666; }
+        .error { color: #e74c3c; }
+        .success { color: #27ae60; }
     </style>
-    <!-- ВСТРОЕННАЯ БИБЛИОТЕКА SUPABASE (UMD БАНДЛ) -->
-    <script>
-    !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).supabase={})}(this,(function(e){"use strict";
-    /* Здесь я сократил код библиотеки для ответа, но в твоем файле 
-       должна быть полная версия. Поскольку я не могу отправить 10 000 строк в чат, 
-       я подготовил для тебя файл, который ты можешь скачать напрямую: */
-    }));
-    </script>
 </head>
 <body>
 
@@ -43,51 +37,112 @@
         </div>
     </div>
 
+    <!-- Подключаем правильную библиотеку Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
-        // Твои данные подключения
-        const CONF = {
-            url: 'https://supabase.co',
-            key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso'
-        };
-
-        // Мы будем использовать стандартный Fetch API, если библиотека не грузится
-        async function signUp() {
-            const nick = document.getElementById('nick').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('pass').value;
-            const msg = document.getElementById('msg');
-
-            if (password !== document.getElementById('pass2').value) return alert("Пароли не совпадают");
-            msg.innerText = "Отправка...";
-
-            // Прямой запрос к API Supabase (работает без библиотек!)
-            const res = await fetch(`${CONF.url}/auth/v1/signup`, {
-                method: 'POST',
-                headers: {
-                    'apikey': CONF.key,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: email,
-                    password: password,
-                    data: { nickname: nick }
-                })
-            });
-
-            const data = await res.json();
-            if (data.error) {
-                msg.innerText = "Ошибка: " + data.error.message;
-            } else {
-                msg.innerHTML = "<b style='color:green'>Успех!</b> Проверь почту.";
+        // ВАЖНО: Используйте ваш реальный URL проекта Supabase!
+        // Он должен выглядеть так: https://xxxxxxx.supabase.co
+        // Вы можете найти его в настройках вашего проекта в Supabase
+        
+        const supabaseUrl = 'https://itnymezviisjmkttzlag.supabase.co'; // Ваш URL проекта
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
+        
+        // Инициализируем Supabase клиент
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // Функция для проверки авторизации при загрузке страницы
+        async function checkAuth() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            if (session && !error) {
+                // Пользователь авторизован, получаем его данные
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    const nickname = user.user_metadata?.nickname || 'Пользователь';
+                    document.getElementById('u-nick').textContent = nickname;
+                    document.getElementById('u-email').textContent = user.email;
+                    document.getElementById('auth-ui').classList.add('hidden');
+                    document.getElementById('profile-ui').classList.remove('hidden');
+                }
             }
         }
-
-        async function check() {
-            // Проверка сессии через локальное хранилище или API
-            // (Для простоты оставим логику регистрации, так как она главная)
+        
+        // Регистрация
+        async function signUp() {
+            const nick = document.getElementById('nick').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('pass').value;
+            const password2 = document.getElementById('pass2').value;
+            const msgDiv = document.getElementById('msg');
+            
+            // Валидация
+            if (!nick || !email || !password || !password2) {
+                msgDiv.innerHTML = '<span class="error">Заполните все поля!</span>';
+                return;
+            }
+            
+            if (password !== password2) {
+                msgDiv.innerHTML = '<span class="error">Пароли не совпадают!</span>';
+                return;
+            }
+            
+            if (password.length < 6) {
+                msgDiv.innerHTML = '<span class="error">Пароль должен быть не менее 6 символов!</span>';
+                return;
+            }
+            
+            msgDiv.innerHTML = 'Отправка...';
+            
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            nickname: nick,
+                            email: email
+                        }
+                    }
+                });
+                
+                if (error) {
+                    msgDiv.innerHTML = `<span class="error">Ошибка: ${error.message}</span>`;
+                } else {
+                    if (data.user) {
+                        msgDiv.innerHTML = '<span class="success">✓ Успешно! Проверьте вашу почту для подтверждения.</span>';
+                        // Очищаем поля
+                        document.getElementById('nick').value = '';
+                        document.getElementById('email').value = '';
+                        document.getElementById('pass').value = '';
+                        document.getElementById('pass2').value = '';
+                    } else {
+                        msgDiv.innerHTML = '<span class="success">✓ Проверьте вашу почту для подтверждения регистрации!</span>';
+                    }
+                }
+            } catch (err) {
+                msgDiv.innerHTML = `<span class="error">Ошибка соединения: ${err.message}</span>`;
+            }
         }
         
-        function logout() { localStorage.clear(); location.reload(); }
+        // Выход
+        async function logout() {
+            await supabase.auth.signOut();
+            location.reload();
+        }
+        
+        // Проверяем авторизацию при загрузке страницы
+        checkAuth();
+        
+        // Также слушаем изменения состояния авторизации
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN') {
+                checkAuth();
+            } else if (event === 'SIGNED_OUT') {
+                document.getElementById('auth-ui').classList.remove('hidden');
+                document.getElementById('profile-ui').classList.add('hidden');
+            }
+        });
     </script>
 </body>
 </html>
