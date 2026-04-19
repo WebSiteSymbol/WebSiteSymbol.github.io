@@ -71,20 +71,85 @@
         .logout-btn { background: linear-gradient(135deg, #e74c3c, #c0392b); border: none; color: white; padding: 6px 18px; border-radius: 30px; cursor: pointer; transition: 0.3s; }
         .logout-btn:hover { transform: scale(1.05); }
         .container { max-width: 1300px; margin: 0 auto; padding: 50px 20px; }
-        .hero {
-            text-align: center;
-            padding: 80px 30px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 40px;
-            margin-bottom: 50px;
+        
+        /* Главная секция */
+        .home-section {
+            background: rgba(0,0,0,0.5);
             backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 50px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255,215,0,0.2);
+            text-align: center;
+        }
+        .home-section h1 {
+            font-size: 56px;
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+        }
+        .home-section .welcome-text {
+            font-size: 18px;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        .home-section .highlight {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        .server-list {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,215,0,0.1);
+            border-radius: 20px;
+            display: inline-block;
+        }
+        .server-list span {
+            color: #ffd700;
+            font-family: monospace;
+        }
+        
+        /* Секция возможностей */
+        .features-section {
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 40px;
+            margin-bottom: 40px;
             border: 1px solid rgba(255,215,0,0.2);
         }
-        .hero h1 { font-size: 72px; font-weight: 800; background: linear-gradient(135deg, #ffd700, #ffaa00); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .hero p { font-size: 20px; margin-top: 20px; opacity: 0.9; }
-        .section { background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border-radius: 30px; padding: 40px; margin-bottom: 40px; border: 1px solid rgba(255,215,0,0.2); }
-        .section h2 { font-size: 32px; color: #ffd700; border-left: 4px solid #ffd700; padding-left: 20px; margin-bottom: 30px; }
-        .section h2 i { margin-right: 15px; }
+        .screenshot-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .screenshot-container img {
+            max-width: 100%;
+            border-radius: 20px;
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 30px rgba(255,215,0,0.3);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .screenshot-container img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 50px rgba(255,215,0,0.5);
+        }
+        .screenshot-caption {
+            margin-top: 10px;
+            color: #ffd700;
+            font-size: 14px;
+        }
+        .section-title {
+            font-size: 32px;
+            color: #ffd700;
+            border-left: 4px solid #ffd700;
+            padding-left: 20px;
+            margin-bottom: 30px;
+        }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
         .card {
             background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
@@ -213,7 +278,7 @@
             border-bottom: 1px solid rgba(255,215,0,0.3);
         }
         .category-title:first-of-type { margin-top: 0; }
-        @media (max-width: 768px) { .navbar { padding: 15px; flex-direction: column; gap: 10px; } .hero h1 { font-size: 40px; } .section { padding: 20px; } }
+        @media (max-width: 768px) { .navbar { padding: 15px; flex-direction: column; gap: 10px; } .home-section h1 { font-size: 32px; } .section-title { font-size: 24px; } }
     </style>
 </head>
 <body>
@@ -221,13 +286,13 @@
 <div class="overlay"></div>
 
 <nav class="navbar">
-    <div class="logo" onclick="goToHome()">
+    <div class="logo" onclick="showHome()">
         <div class="logo-icon"><i class="fas fa-bolt"></i></div>
         <div class="logo-text">ZEUS<span>CLIENT</span></div>
     </div>
     <div class="nav-links">
-        <a onclick="goToHome()"><i class="fas fa-home"></i> Главная</a>
-        <a onclick="goToFeatures()"><i class="fas fa-star"></i> Возможности</a>
+        <a onclick="showHome()"><i class="fas fa-home"></i> Главная</a>
+        <a onclick="showFeatures()"><i class="fas fa-star"></i> Возможности</a>
         <a id="navMarketBtn" onclick="showMarketplace()" class="hidden"><i class="fas fa-store"></i> Магазин конфигов</a>
         <a id="navProfileBtn" onclick="showProfile()" class="hidden"><i class="fas fa-user"></i> Личный кабинет</a>
         <div id="nav-auth"><a onclick="showAuthForm()"><i class="fas fa-user"></i> Войти</a></div>
@@ -236,20 +301,45 @@
 </nav>
 
 <div class="container">
-    <!-- Публичный контент -->
+    <!-- Главная страница (публичный контент) -->
     <div id="publicContent">
-        <div id="home" class="hero">
-            <h1>ZEUS CLIENT</h1>
-            <p>Мощный чит для Minecraft | FREE 1.12.2 | PREMIUM 1.16.5</p>
+        <div class="home-section">
+            <h1>⚡ ZeusClient ⚡</h1>
+            <div class="welcome-text">
+                <p><strong>Здравствуйте!</strong> Это начинающий чит <span class="highlight">ZeusClient</span>!</p>
+                <p>Он представлен для обхода <span class="highlight">Vulkan</span> и <span class="highlight">Matrix</span> античитов.</p>
+                <p>Подходит для серверов: <span class="highlight">foxmine.net</span> и <span class="highlight">RW-GRIEF</span>!</p>
+                <p style="margin-top: 20px;">Он будет в настоящее время в <span class="highlight">БЕСПЛАТНОМ доступе</span>!</p>
+                <p>Надеюсь, вам понравится! ❤️</p>
+            </div>
+            <div class="server-list">
+                <i class="fas fa-server"></i> Поддерживаемые серверы: 
+                <span>foxmine.net</span> • 
+                <span>rw-grief.ru</span> • 
+                <span>funime.ru</span>
+            </div>
             <div class="stats">
                 <div class="stat"><div class="stat-number">80+</div><div class="stat-label">Функций</div></div>
                 <div class="stat"><div class="stat-number">5000+</div><div class="stat-label">Пользователей</div></div>
                 <div class="stat"><div class="stat-number">24/7</div><div class="stat-label">Поддержка</div></div>
             </div>
+            <button class="download-btn" onclick="showAuthForm()" style="margin-top: 30px;">
+                <i class="fas fa-download"></i> Скачать ZeusClient
+            </button>
         </div>
-        
-        <div id="features" class="section">
-            <h2><i class="fas fa-star"></i> Возможности ZeusClient</h2>
+    </div>
+
+    <!-- Страница возможностей (публичный контент) -->
+    <div id="featuresContent" class="hidden">
+        <div class="features-section">
+            <div class="screenshot-container">
+                <img src="cheat.png" alt="ZeusClient Screenshot" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 450%22><rect width=%22800%22 height=%22450%22 fill=%22%231a1a1a%22/><text x=%22400%22 y=%22225%22 text-anchor=%22middle%22 fill=%22%23ffd700%22 font-size=%2220%22>ZeusClient Screenshot</text><text x=%22400%22 y=%22255%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2214%22>Поместите cheat.png в папку с сайтом</text></svg>'">
+                <div class="screenshot-caption">
+                    <i class="fas fa-camera"></i> Интерфейс ZeusClient в игре
+                </div>
+            </div>
+            
+            <h2 class="section-title"><i class="fas fa-star"></i> Все возможности ZeusClient</h2>
             <p style="margin-bottom: 30px; opacity: 0.8;">Полный список функций чита для Minecraft. Premium версия открывает доступ ко всем возможностям!</p>
             
             <!-- Combat & PVP -->
@@ -310,7 +400,7 @@
             <!-- AntiCheat & Bypass -->
             <div class="category-title"><i class="fas fa-shield-alt"></i> AntiCheat & Bypass</div>
             <div class="grid">
-                <div class="card"><div class="card-icon"><i class="fas fa-shield-virus"></i></div><h3>AntiCheat Bypass</h3><p>Обход популярных античитов: Watchdog, AAC, Matrix, Spartan.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-shield-virus"></i></div><h3>AntiCheat Bypass</h3><p>Обход популярных античитов: Watchdog, AAC, Matrix, Spartan, Vulkan.</p><div class="feature-badge">Premium</div></div>
                 <div class="card"><div class="card-icon"><i class="fas fa-mask"></i></div><h3>AntiBan</h3><p>Защита от бана на серверах. Имитация легитимной игры.</p><div class="feature-badge">Premium</div></div>
                 <div class="card"><div class="card-icon"><i class="fas fa-flag"></i></div><h3>AntiVoid</h3><p>Сохранение жизни при падении в пустоту.</p><div class="feature-badge">Premium+Free</div></div>
                 <div class="card"><div class="card-icon"><i class="fas fa-snowplow"></i></div><h3>NoFall</h3><p>Отсутствие урона от падения с любой высоты.</p><div class="feature-badge">Premium</div></div>
@@ -484,34 +574,22 @@
     }
     
     // Функции навигации
-    window.goToHome = function() {
-        // Показываем публичный контент если не авторизован, или показываем главную в ЛК
-        if(!currentUser) {
-            publicDiv.classList.remove('hidden');
-            authDiv.classList.add('hidden');
-            profileDiv.classList.add('hidden');
-            marketplaceDiv.classList.add('hidden');
-        } else {
-            // Если авторизован, показываем профиль
-            showProfile();
-        }
-        // Скроллим к хедеру
-        document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' });
+    window.showHome = function() {
+        document.getElementById('publicContent').classList.remove('hidden');
+        document.getElementById('featuresContent').classList.add('hidden');
+        document.getElementById('authContent').classList.add('hidden');
+        document.getElementById('profileContent').classList.add('hidden');
+        document.getElementById('marketplaceContent').classList.add('hidden');
+        window.scrollTo(0, 0);
     }
     
-    window.goToFeatures = function() {
-        if(!currentUser) {
-            publicDiv.classList.remove('hidden');
-            authDiv.classList.add('hidden');
-            profileDiv.classList.add('hidden');
-            marketplaceDiv.classList.add('hidden');
-        } else {
-            showProfile();
-        }
-        // Скроллим к секции возможностей
-        setTimeout(() => {
-            document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
+    window.showFeatures = function() {
+        document.getElementById('publicContent').classList.add('hidden');
+        document.getElementById('featuresContent').classList.remove('hidden');
+        document.getElementById('authContent').classList.add('hidden');
+        document.getElementById('profileContent').classList.add('hidden');
+        document.getElementById('marketplaceContent').classList.add('hidden');
+        window.scrollTo(0, 0);
     }
     
     // Генерация HWID
@@ -645,6 +723,7 @@
     
     // DOM элементы и функции
     const publicDiv = document.getElementById('publicContent');
+    const featuresDiv = document.getElementById('featuresContent');
     const authDiv = document.getElementById('authContent');
     const profileDiv = document.getElementById('profileContent');
     const marketplaceDiv = document.getElementById('marketplaceContent');
@@ -676,6 +755,7 @@
     
     window.showAuthForm = function() { 
         publicDiv.classList.add('hidden'); 
+        featuresDiv.classList.add('hidden');
         authDiv.classList.remove('hidden'); 
         profileDiv.classList.add('hidden'); 
         marketplaceDiv.classList.add('hidden'); 
@@ -685,6 +765,7 @@
     window.showProfile = function() { 
         if(currentUser){ 
             publicDiv.classList.add('hidden'); 
+            featuresDiv.classList.add('hidden');
             authDiv.classList.add('hidden'); 
             profileDiv.classList.remove('hidden'); 
             marketplaceDiv.classList.add('hidden'); 
@@ -697,6 +778,7 @@
     window.showMarketplace = function() { 
         if(currentUser){ 
             publicDiv.classList.add('hidden'); 
+            featuresDiv.classList.add('hidden');
             authDiv.classList.add('hidden'); 
             profileDiv.classList.add('hidden'); 
             marketplaceDiv.classList.remove('hidden'); 
@@ -988,25 +1070,28 @@
             }
             
             navNickSpan.innerText = currentUser.user_metadata?.nickname || currentUser.email.split('@')[0];
-            publicDiv.classList.add('hidden'); 
-            authDiv.classList.add('hidden'); 
-            profileDiv.classList.remove('hidden');
+            
+            // Показываем публичный контент (главную) после входа
+            publicDiv.classList.remove('hidden');
+            featuresDiv.classList.add('hidden');
+            authDiv.classList.add('hidden');
+            profileDiv.classList.add('hidden');
+            marketplaceDiv.classList.add('hidden');
+            
             navAuth.classList.add('hidden'); 
             navProfile.classList.remove('hidden');
             navMarketBtn.classList.remove('hidden'); 
             navProfileBtn.classList.remove('hidden');
-            loadProfileData(); 
-            loadMyPurchases();
-            checkFilesStatus();
         } else {
             currentUser = null;
-            publicDiv.classList.remove('hidden'); 
-            authDiv.classList.add('hidden'); 
-            profileDiv.classList.add('hidden'); 
+            publicDiv.classList.remove('hidden');
+            featuresDiv.classList.add('hidden');
+            authDiv.classList.add('hidden');
+            profileDiv.classList.add('hidden');
             marketplaceDiv.classList.add('hidden');
-            navAuth.classList.remove('hidden'); 
+            navAuth.classList.remove('hidden');
             navProfile.classList.add('hidden');
-            navMarketBtn.classList.add('hidden'); 
+            navMarketBtn.classList.add('hidden');
             navProfileBtn.classList.add('hidden');
         }
     }
