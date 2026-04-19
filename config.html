@@ -105,13 +105,14 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 let allUsers=[],filtered=[],editUserId=null,passwordUserId=null,premiumUserId=null,currentAdminEmail=null;
 
-// Получение онлайн пользователей из Supabase
+// Получение онлайн пользователей из Supabase (используем last_active, а не last_activity)
 async function getOnlineUsersFromDB() {
     try {
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
         const { data, error } = await sb
             .from('online_users')
-            .select('user_id, last_activity')
-            .gte('last_activity', new Date(Date.now() - 5 * 60 * 1000).toISOString());
+            .select('user_id, last_active')
+            .gte('last_active', fiveMinutesAgo);
         
         if (error) throw error;
         return data || [];
@@ -127,7 +128,7 @@ async function updateOnlineDisplay() {
     const onlineCount = onlineUsers.length;
     
     document.getElementById('onlineCount').innerText = onlineCount;
-    document.getElementById('onlineCountBadge').innerText = onlineCount > 0 ? `👥 ${onlineCount}` : '';
+    document.getElementById('onlineCountBadge').innerHTML = onlineCount > 0 ? `👥 ${onlineCount}` : '';
     
     // Получаем детали пользователей
     const onlineUserIds = onlineUsers.map(u => u.user_id).filter(id => id);
@@ -144,8 +145,9 @@ async function updateOnlineDisplay() {
         if (profiles && profiles.length > 0) {
             let html = '';
             for (let user of profiles) {
-                const lastActivity = onlineUsers.find(u => u.user_id === user.id)?.last_activity;
-                const timeAgo = lastActivity ? Math.floor((Date.now() - new Date(lastActivity)) / 60000) : 0;
+                const onlineData = onlineUsers.find(u => u.user_id === user.id);
+                const lastActive = onlineData?.last_active;
+                const timeAgo = lastActive ? Math.floor((Date.now() - new Date(lastActive)) / 60000) : 0;
                 html += `<div class="online-user-item">
                     <i class="fas fa-circle"></i> 
                     <strong>${user.nickname || user.email.split('@')[0]}</strong> 
@@ -223,8 +225,16 @@ function renderTable(onlineUserIds){
     }
 }
 
-function searchUsers(){let s=document.getElementById('searchInput').value.toLowerCase();filtered=allUsers.filter(u=>u.email.toLowerCase().includes(s)||(u.nickname||'').toLowerCase().includes(s));getOnlineUsersFromDB().then(online=>renderTable(online.map(u=>u.user_id)));}
-function resetSearch(){document.getElementById('searchInput').value='';filtered=[...allUsers];getOnlineUsersFromDB().then(online=>renderTable(online.map(u=>u.user_id)));}
+function searchUsers(){
+    let s=document.getElementById('searchInput').value.toLowerCase();
+    filtered=allUsers.filter(u=>u.email.toLowerCase().includes(s)||(u.nickname||'').toLowerCase().includes(s));
+    getOnlineUsersFromDB().then(online=>renderTable(online.map(u=>u.user_id)));
+}
+function resetSearch(){
+    document.getElementById('searchInput').value='';
+    filtered=[...allUsers];
+    getOnlineUsersFromDB().then(online=>renderTable(online.map(u=>u.user_id)));
+}
 function openBalance(id,email,bal){editUserId=id;document.getElementById('modalUser').innerHTML=`<strong>${email}</strong>`;document.getElementById('modalCurrent').innerText=bal;document.getElementById('newBalance').value=bal;document.getElementById('balanceModal').style.display='flex';}
 function closeBalanceModal(){document.getElementById('balanceModal').style.display='none';editUserId=null;}
 async function saveBalance(){let newBal=parseInt(document.getElementById('newBalance').value);if(isNaN(newBal)||newBal<0||newBal>100000){alert('Баланс от 0 до 100000');return;}if(editUserId){const{error}=await sb.from('profiles').update({balance:newBal}).eq('id',editUserId);if(error){alert('Ошибка: '+error.message);}else{alert('✅ Баланс изменен');closeBalanceModal();loadData();}}}
