@@ -75,7 +75,7 @@
         .section { background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border-radius: 30px; padding: 40px; margin-bottom: 40px; border: 1px solid rgba(255,215,0,0.2); }
         .section h2 { font-size: 32px; color: #ffd700; border-left: 4px solid #ffd700; padding-left: 20px; margin-bottom: 30px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
-        .card { background: rgba(255,255,255,0.05); border-radius: 24px; padding: 25px; text-align: center; border: 1px solid rgba(255,215,0,0.15); transition: 0.3s; cursor: pointer; }
+        .card { background: rgba(255,255,255,0.05); border-radius: 24px; padding: 25px; text-align: center; border: 1px solid rgba(255,215,0,0.15); transition: 0.3s; }
         .card:hover { transform: translateY(-5px); border-color: #ffd700; }
         .card-icon { width: 70px; height: 70px; background: linear-gradient(135deg, #ffd700, #ffaa00); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 30px; color: #1a1a1a; }
         .download-btn { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #1a1a1a; border: none; padding: 12px 30px; font-size: 18px; font-weight: 800; border-radius: 60px; cursor: pointer; transition: 0.3s; margin-top: 15px; }
@@ -91,6 +91,8 @@
         .badge-premium { background: #f1c40f; color: #000; }
         .profile-stats { display: flex; gap: 20px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
         .info-card { background: rgba(0,0,0,0.6); padding: 15px; border-radius: 15px; min-width: 200px; }
+        .balance-card { background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,170,0,0.1)); border: 2px solid #ffd700; }
+        .balance-amount { font-size: 36px; font-weight: 800; color: #ffd700; }
         .config-price { font-size: 20px; font-weight: bold; color: #ffd700; margin: 10px 0; }
         .hidden { display: none; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -99,6 +101,33 @@
         .stat-number { font-size: 42px; font-weight: 800; color: #ffd700; }
         .stat-label { font-size: 14px; opacity: 0.7; margin-top: 5px; }
         .stats { display: flex; justify-content: center; gap: 70px; flex-wrap: wrap; margin-top: 40px; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #1a1a1a;
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid #ffd700;
+        }
+        .modal-content h3 { color: #ffd700; margin-bottom: 20px; }
+        .close-modal {
+            float: right;
+            cursor: pointer;
+            font-size: 28px;
+            color: #ffd700;
+        }
         @media (max-width: 768px) { .navbar { padding: 15px; flex-direction: column; gap: 10px; } .hero h1 { font-size: 40px; } .section { padding: 20px; } }
     </style>
 </head>
@@ -129,7 +158,7 @@
             <p>Мощный чит для Minecraft 1.12.2 | Бесплатная и Премиум версии</p>
             <div class="stats">
                 <div class="stat"><div class="stat-number">50+</div><div class="stat-label">Функций</div></div>
-                <div class="stat"><div class="stat-number">100%</div><div class="stat-label">Бесплатно</div></div>
+                <div class="stat"><div class="stat-number">1000+</div><div class="stat-label">Пользователей</div></div>
                 <div class="stat"><div class="stat-number">24/7</div><div class="stat-label">Поддержка</div></div>
             </div>
         </div>
@@ -178,12 +207,39 @@
                 <h3 id="profileNick">Загрузка...</h3>
                 <p id="profileEmail"></p>
                 <div class="profile-stats">
+                    <div class="info-card balance-card">
+                        <i class="fas fa-wallet"></i> Баланс<br>
+                        <span class="balance-amount" id="balanceAmount">0</span> ₽<br>
+                        <button class="download-btn" style="padding:8px 20px;font-size:14px;margin-top:10px;" onclick="openTopupModal()">
+                            <i class="fas fa-plus-circle"></i> Пополнить
+                        </button>
+                    </div>
                     <div class="info-card"><i class="fas fa-gem"></i> Статус подписки<br><span id="subStatus" class="badge badge-free">Бесплатная</span></div>
                     <div class="info-card"><i class="fas fa-calendar-alt"></i> Действует до<br><span id="subUntil">Навсегда (Free)</span></div>
                     <div class="info-card"><i class="fas fa-microchip"></i> HWID<br><span id="hwidText">Не привязан</span><br><button class="download-btn" style="padding:5px 15px;font-size:12px;margin-top:5px;" onclick="bindHWID()">Привязать</button></div>
-                    <div class="info-card"><i class="fas fa-download"></i> Скачать клиент<br><button class="download-btn" style="padding:5px 15px;font-size:12px;" onclick="downloadClient('free')">Zeus Free</button><button id="premiumDownloadBtn" class="download-btn" style="padding:5px 15px;font-size:12px;margin-left:5px;" onclick="downloadClient('premium')" disabled>Zeus Premium</button></div>
                 </div>
-                <div style="margin-top:20px;"><button class="auth-btn" onclick="buyPremium()" id="buyPremiumBtn" style="width:auto;padding:10px 30px;">Купить Premium (7 дней) - 199₽</button></div>
+                <div style="margin-top:20px;">
+                    <button class="auth-btn" onclick="buyPremium()" id="buyPremiumBtn" style="width:auto;padding:10px 30px;">
+                        <i class="fas fa-crown"></i> Купить Premium (30 дней) - 499₽
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2><i class="fas fa-download"></i> Скачать клиент</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-box-open"></i></div>
+                    <h3>ZeusClient FREE</h3>
+                    <p>Бесплатная версия с базовыми функциями</p>
+                    <button class="download-btn" onclick="downloadClient('free')"><i class="fas fa-download"></i> Скачать (Free)</button>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-gem"></i></div>
+                    <h3>ZeusClient PREMIUM</h3>
+                    <p>Все функции + эксклюзивные возможности</p>
+                    <button id="premiumDownloadBtn" class="download-btn" onclick="downloadClient('premium')" disabled><i class="fas fa-download"></i> Скачать (Premium)</button>
+                </div>
             </div>
         </div>
         <div class="section">
@@ -196,32 +252,46 @@
     <div id="marketplaceContent" class="hidden">
         <div class="section">
             <h2><i class="fas fa-store"></i> Маркетплейс конфигураций</h2>
-            <p style="margin-bottom:20px;">Покупайте уникальные конфиги для ZeusClient. Премиум пользователи получают все конфиги БЕСПЛАТНО!</p>
+            <p style="margin-bottom:20px;">Покупайте уникальные конфиги за баланс. Премиум пользователи получают скидку 50%!</p>
             <div id="marketplaceGrid" class="grid"><p>Загрузка конфигов...</p></div>
         </div>
     </div>
 </div>
 
+<!-- Модальное окно пополнения баланса -->
+<div id="topupModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeTopupModal()">&times;</span>
+        <h3><i class="fas fa-plus-circle"></i> Пополнение баланса</h3>
+        <p>Минимальная сумма: 100 ₽ | Максимальная: 100 000 ₽</p>
+        <input type="number" id="topupAmount" class="auth-input" placeholder="Сумма пополнения (₽)" min="100" max="100000" step="1">
+        <button class="auth-btn" onclick="processTopup()" style="margin-top:20px;">Пополнить</button>
+        <div id="topupMsg" style="margin-top:15px;"></div>
+    </div>
+</div>
+
 <script>
-    // Инициализация Supabase (используем другое имя переменной)
+    // Инициализация Supabase
     const _SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
     const _SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
     const supabaseClient = window.supabase.createClient(_SUPABASE_URL, _SUPABASE_KEY);
     
     let currentUser = null;
     
-    // Хранилище данных в localStorage
+    // Хранилище данных
     let userProfiles = JSON.parse(localStorage.getItem('zeus_profiles') || '{}');
     let userPurchases = JSON.parse(localStorage.getItem('zeus_purchases') || '{}');
     let marketplaceConfigs = JSON.parse(localStorage.getItem('zeus_configs') || '[]');
     
-    // Инициализация тестовых конфигов
+    // Инициализация конфигов
     if(marketplaceConfigs.length === 0) {
         marketplaceConfigs = [
-            { id: 1, name: 'PvP God Config', description: 'Максимальный набор настроек для PvP. Высокий DPS, идеальный аим.', price: 99, author: 'ZeusTeam', file_url: '/configs/pvp_god.json' },
-            { id: 2, name: 'Legit Config', description: 'Легитимные настройки для скрытной игры. Почти не детектится.', price: 49, author: 'ProPlayer', file_url: '/configs/legit.json' },
-            { id: 3, name: 'Farm Config', description: 'Оптимизирован для фарма ресурсов и автоматизации.', price: 29, author: 'Farmer', file_url: '/configs/farm.json' },
-            { id: 4, name: 'Anarchy Config', description: 'Для анархии и хардкор серверов. Пробив любых защит.', price: 149, author: 'HackerOne', file_url: '/configs/anarchy.json' }
+            { id: 1, name: '🔥 PvP God Config', description: 'Максимальный набор настроек для PvP. Высокий DPS, идеальный аим, автоматическое POTION', price: 299, author: 'ZeusTeam', file_url: 'configs/pvp_god.json', premiumDiscount: true },
+            { id: 2, name: '👑 Legit Config', description: 'Легитимные настройки для скрытной игры. Почти не детектится на античитах.', price: 149, author: 'ProPlayer', file_url: 'configs/legit.json', premiumDiscount: true },
+            { id: 3, name: '🌾 Farm Config', description: 'Оптимизирован для фарма ресурсов, авто-фермы, X-Ray руд', price: 99, author: 'Farmer', file_url: 'configs/farm.json', premiumDiscount: false },
+            { id: 4, name: '💀 Anarchy Config', description: 'Для анархии и хардкор серверов. Пробив любых защит, кристаллы PvP', price: 399, author: 'HackerOne', file_url: 'configs/anarchy.json', premiumDiscount: true },
+            { id: 5, name: '🎯 SilentAim Config', description: 'Скрытный аимбот с плавным наведением', price: 199, author: 'Ghost', file_url: 'configs/silentaim.json', premiumDiscount: true },
+            { id: 6, name: '🚀 SpeedRun Config', description: 'Максимальная скорость для спидранов', price: 79, author: 'Speedster', file_url: 'configs/speedrun.json', premiumDiscount: false }
         ];
         localStorage.setItem('zeus_configs', JSON.stringify(marketplaceConfigs));
     }
@@ -237,7 +307,52 @@
     const navMarketBtn = document.getElementById('navMarketBtn');
     const navProfileBtn = document.getElementById('navProfileBtn');
 
-    // Глобальные функции для HTML onclick
+    // Функции модального окна
+    window.openTopupModal = function() {
+        document.getElementById('topupModal').style.display = 'flex';
+        document.getElementById('topupAmount').value = '';
+        document.getElementById('topupMsg').innerHTML = '';
+    }
+    
+    window.closeTopupModal = function() {
+        document.getElementById('topupModal').style.display = 'none';
+    }
+    
+    window.processTopup = function() {
+        if(!currentUser) return;
+        let amount = parseInt(document.getElementById('topupAmount').value);
+        const msgDiv = document.getElementById('topupMsg');
+        
+        if(isNaN(amount)) {
+            msgDiv.innerHTML = '<span class="error">❌ Введите сумму</span>';
+            return;
+        }
+        if(amount < 100) {
+            msgDiv.innerHTML = '<span class="error">❌ Минимальная сумма пополнения: 100 ₽</span>';
+            return;
+        }
+        if(amount > 100000) {
+            msgDiv.innerHTML = '<span class="error">❌ Максимальная сумма пополнения: 100 000 ₽</span>';
+            return;
+        }
+        
+        // Обновляем баланс
+        if(!userProfiles[currentUser.id]) {
+            userProfiles[currentUser.id] = { balance: 0 };
+        }
+        if(!userProfiles[currentUser.id].balance) {
+            userProfiles[currentUser.id].balance = 0;
+        }
+        
+        userProfiles[currentUser.id].balance += amount;
+        localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
+        
+        msgDiv.innerHTML = `<span class="success">✅ Баланс пополнен на ${amount} ₽!</span>`;
+        loadProfileData();
+        
+        setTimeout(() => closeTopupModal(), 1500);
+    }
+    
     window.scrollToSection = function(id) { 
         document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); 
     }
@@ -281,7 +396,6 @@
         } 
     }
 
-    // Генерация HWID
     function generateHWID() {
         let hwid = localStorage.getItem('zeus_hwid');
         if(!hwid){
@@ -291,12 +405,11 @@
         return hwid;
     }
 
-    // Привязка HWID
     window.bindHWID = function() {
         if(!currentUser) return;
         const hwid = generateHWID();
         if(!userProfiles[currentUser.id]) {
-            userProfiles[currentUser.id] = {};
+            userProfiles[currentUser.id] = { balance: 0 };
         }
         userProfiles[currentUser.id].hwid = hwid;
         localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
@@ -304,18 +417,19 @@
         loadProfileData();
     }
 
-    // Загрузка данных профиля
     function loadProfileData() {
         if(!currentUser) return;
         
         const profile = userProfiles[currentUser.id] || { 
             subscription_type: 'free', 
             subscription_until: null, 
-            nickname: currentUser.user_metadata?.nickname || currentUser.email.split('@')[0] 
+            nickname: currentUser.user_metadata?.nickname || currentUser.email.split('@')[0],
+            balance: 0
         };
         
         document.getElementById('profileNick').innerText = profile.nickname || currentUser.email.split('@')[0];
         document.getElementById('profileEmail').innerText = currentUser.email;
+        document.getElementById('balanceAmount').innerText = (profile.balance || 0).toLocaleString();
         
         const isPremium = profile.subscription_type === 'paid' && profile.subscription_until && new Date(profile.subscription_until) > new Date();
         
@@ -327,63 +441,99 @@
             subStatusSpan.className = 'badge badge-premium';
             subUntilSpan.innerText = new Date(profile.subscription_until).toLocaleDateString();
             document.getElementById('premiumDownloadBtn').disabled = false;
-            document.getElementById('buyPremiumBtn').innerHTML = 'Продлить Premium (7 дней) - 199₽';
+            document.getElementById('buyPremiumBtn').innerHTML = '<i class="fas fa-crown"></i> Продлить Premium (30 дней) - 499₽';
         } else {
             subStatusSpan.innerText = 'БЕСПЛАТНАЯ'; 
             subStatusSpan.className = 'badge badge-free';
-            subUntilSpan.innerText = 'Бесплатная версия';
+            subUntilSpan.innerText = 'Нет активной подписки';
             document.getElementById('premiumDownloadBtn').disabled = true;
-            document.getElementById('buyPremiumBtn').innerHTML = 'Купить Premium (7 дней) - 199₽';
+            document.getElementById('buyPremiumBtn').innerHTML = '<i class="fas fa-crown"></i> Купить Premium (30 дней) - 499₽';
         }
         
         document.getElementById('hwidText').innerText = profile.hwid || 'Не привязан';
     }
 
-    // Покупка премиума
     window.buyPremium = function() {
         if(!currentUser) return;
-        const until = new Date();
-        until.setDate(until.getDate() + 7);
         
-        if(!userProfiles[currentUser.id]) {
-            userProfiles[currentUser.id] = {};
+        const profile = userProfiles[currentUser.id] || { balance: 0 };
+        const balance = profile.balance || 0;
+        const PREMIUM_PRICE = 499;
+        
+        if(balance >= PREMIUM_PRICE) {
+            // Списываем деньги
+            profile.balance -= PREMIUM_PRICE;
+            
+            // Активируем подписку
+            const until = new Date();
+            until.setDate(until.getDate() + 30);
+            profile.subscription_type = 'paid';
+            profile.subscription_until = until.toISOString();
+            
+            userProfiles[currentUser.id] = profile;
+            localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
+            
+            alert(`✅ Premium подписка активирована на 30 дней! Списано ${PREMIUM_PRICE} ₽`);
+            loadProfileData();
+            loadMarketplace();
+            loadMyPurchases();
+        } else {
+            alert(`❌ Недостаточно средств! Нужно ${PREMIUM_PRICE} ₽, у вас ${balance} ₽. Пополните баланс.`);
+            openTopupModal();
         }
-        userProfiles[currentUser.id].subscription_type = 'paid';
-        userProfiles[currentUser.id].subscription_until = until.toISOString();
-        localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
-        
-        alert('✅ Premium подписка активирована на 7 дней!');
-        loadProfileData();
-        loadMarketplace();
-        loadMyPurchases();
     }
 
-    // Загрузка магазина
     function loadMarketplace() {
-        const profile = userProfiles[currentUser?.id] || {};
+        const profile = userProfiles[currentUser?.id] || { balance: 0, subscription_type: 'free' };
+        const balance = profile.balance || 0;
         const isPremiumActive = profile.subscription_type === 'paid' && profile.subscription_until && new Date(profile.subscription_until) > new Date();
         const purchases = userPurchases[currentUser?.id] || [];
         
         let html = '';
         for(let cfg of marketplaceConfigs) {
             const isPurchased = purchases.includes(cfg.id);
-            const canDownload = isPurchased || isPremiumActive;
+            let finalPrice = cfg.price;
+            let discountText = '';
+            
+            if(isPremiumActive && cfg.premiumDiscount && !isPurchased) {
+                finalPrice = Math.floor(cfg.price / 2);
+                discountText = '<span style="color:#2ecc71; font-size:12px;"> (50% скидка по Premium)</span>';
+            }
+            
+            const canAfford = balance >= finalPrice;
             
             html += `<div class="card">
                 <div class="card-icon"><i class="fas fa-cogs"></i></div>
                 <h3>${cfg.name}</h3>
                 <p>${cfg.description}</p>
-                <p class="config-price"><i class="fas fa-coins"></i> ${cfg.price} ₽</p>
-                <div>${canDownload ? `<button class="download-btn" onclick="downloadConfig(${cfg.id})"><i class="fas fa-download"></i> Скачать конфиг</button>` : `<button class="download-btn" onclick="buyConfig(${cfg.id}, ${cfg.price})"><i class="fas fa-shopping-cart"></i> Купить за ${cfg.price}₽</button>`}</div>
+                <p class="config-price">
+                    <i class="fas fa-coins"></i> ${finalPrice} ₽
+                    ${discountText}
+                    ${cfg.price !== finalPrice ? `<span style="text-decoration:line-through; color:#999; margin-left:10px;">${cfg.price}₽</span>` : ''}
+                </p>
+                <div>${isPurchased ? 
+                    `<button class="download-btn" onclick="downloadConfig(${cfg.id})"><i class="fas fa-download"></i> Скачать конфиг</button>` : 
+                    `<button class="download-btn" onclick="buyConfig(${cfg.id}, ${finalPrice})" ${!canAfford ? 'disabled' : ''}>
+                        <i class="fas fa-shopping-cart"></i> ${canAfford ? 'Купить' : 'Недостаточно средств'}
+                    </button>`
+                }</div>
                 <p style="font-size:12px;margin-top:10px;">Автор: ${cfg.author}</p>
             </div>`;
         }
         document.getElementById('marketplaceGrid').innerHTML = html;
     }
 
-    // Покупка конфига
     window.buyConfig = function(configId, price) {
         if(!currentUser) return;
+        
+        const profile = userProfiles[currentUser.id] || { balance: 0 };
+        const balance = profile.balance || 0;
+        
+        if(balance < price) {
+            alert(`❌ Недостаточно средств! Нужно ${price} ₽, у вас ${balance} ₽`);
+            openTopupModal();
+            return;
+        }
         
         if(!userPurchases[currentUser.id]) {
             userPurchases[currentUser.id] = [];
@@ -394,20 +544,38 @@
             return;
         }
         
+        // Списываем деньги
+        profile.balance -= price;
+        userProfiles[currentUser.id] = profile;
+        localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
+        
+        // Добавляем покупку
         userPurchases[currentUser.id].push(configId);
         localStorage.setItem('zeus_purchases', JSON.stringify(userPurchases));
-        alert(`✅ Конфиг успешно куплен за ${price}₽!`);
+        
+        alert(`✅ Конфиг успешно куплен за ${price} ₽!`);
+        loadProfileData();
         loadMarketplace();
         loadMyPurchases();
     }
 
-    // Скачивание конфига
     window.downloadConfig = function(configId) {
         const config = marketplaceConfigs.find(c => c.id === configId);
-        alert(`📥 Скачивание конфига: ${config.name}\nФайл: ${config.file_url}`);
+        alert(`📥 Скачивание конфига: ${config.name}\nФайл будет сохранен в папку configs/`);
+        
+        // Создаем и скачиваем файл
+        const data = JSON.stringify({ name: config.name, description: config.description, version: "1.0" }, null, 2);
+        const blob = new Blob([data], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = config.file_url.split('/').pop();
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     }
 
-    // Загрузка покупок пользователя
     function loadMyPurchases() {
         if(!currentUser) return;
         
@@ -424,29 +592,48 @@
                 html += `<div class="card">
                     <h3>${config.name}</h3>
                     <p>${config.description}</p>
-                    <button class="download-btn" onclick="downloadConfig(${config.id})">Скачать</button>
+                    <button class="download-btn" onclick="downloadConfig(${config.id})"><i class="fas fa-download"></i> Скачать</button>
                 </div>`;
             }
         }
         document.getElementById('myPurchasesList').innerHTML = html;
     }
 
-    // Скачивание клиента
     window.downloadClient = function(type) {
         if(type === 'free') {
-            alert('📥 Скачивание ZeusClient Free...\nСсылка: https://zeusclient.com/download/free');
+            // Создаем и скачиваем .jar файл (имитация)
+            const content = "// ZeusClient Free for Minecraft 1.12.2\n// Бесплатная версия с базовыми функциями";
+            const blob = new Blob([content], {type: 'application/java-archive'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ZeusClient-Free-1.12.2.jar';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert('📥 Скачивание ZeusClient Free... Файл сохранен в папку загрузок');
         } else {
             const profile = userProfiles[currentUser?.id] || {};
             const isPremiumActive = profile.subscription_type === 'paid' && profile.subscription_until && new Date(profile.subscription_until) > new Date();
             if(isPremiumActive) {
-                alert('📥 Скачивание ZeusClient Premium...\nСсылка: https://zeusclient.com/download/premium');
+                const content = "// ZeusClient Premium for Minecraft 1.12.2\n// Полная версия со всеми функциями\n// Включая: Aimbot, ESP, Fly, Speed, AntiCheat Bypass";
+                const blob = new Blob([content], {type: 'application/java-archive'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'ZeusClient-Premium-1.12.2.jar';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                alert('📥 Скачивание ZeusClient Premium... Файл сохранен в папку загрузок');
             } else { 
                 alert('❌ Premium версия доступна только по подписке! Купите Premium в личном кабинете.'); 
             }
         }
     }
 
-    // Регистрация
     window.register = async function() {
         const nick = document.getElementById('regNick').value.trim();
         const email = document.getElementById('regEmail').value.trim();
@@ -467,13 +654,13 @@
         if(error) { 
             msgDiv.innerHTML = '<span class="error">❌ ' + error.message + '</span>'; 
         } else { 
-            // Сохраняем профиль в localStorage
             userProfiles[data.user.id] = {
                 nickname: nick,
                 email: email,
                 subscription_type: 'free',
                 subscription_until: null,
-                hwid: null
+                hwid: null,
+                balance: 0
             };
             localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
             
@@ -482,7 +669,6 @@
         }
     }
 
-    // Логин
     window.login = async function() {
         const email = document.getElementById('loginEmail').value.trim();
         const pass = document.getElementById('loginPass').value;
@@ -517,7 +703,8 @@
                     email: currentUser.email,
                     subscription_type: 'free',
                     subscription_until: null,
-                    hwid: null
+                    hwid: null,
+                    balance: 0
                 };
                 localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
             }
@@ -545,7 +732,6 @@
         }
     }
 
-    // Обработка подтверждения email
     async function handleEmailConfirmation() {
         const hash = window.location.hash;
         if(hash && hash.includes('access_token')) {
@@ -561,13 +747,11 @@
         }
     }
 
-    // Подписка на изменения
     supabaseClient.auth.onAuthStateChange((event, session) => { 
         if(event === 'SIGNED_IN') checkUserAndUpdateUI(); 
         else if(event === 'SIGNED_OUT') location.reload(); 
     });
     
-    // Инициализация
     handleEmailConfirmation();
     checkUserAndUpdateUI();
 </script>
