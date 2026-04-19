@@ -170,10 +170,6 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        .screenshot-container img:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 50px rgba(255,215,0,0.5);
-        }
         .screenshot-caption {
             margin-top: 10px;
             color: #ffd700;
@@ -333,17 +329,17 @@
 </a>
 
 <nav class="navbar">
-    <div class="logo" onclick="showHome()">
+    <div class="logo" onclick="window.showHome()">
         <div class="logo-icon"><i class="fas fa-bolt"></i></div>
         <div class="logo-text">ZEUS<span>CLIENT</span></div>
     </div>
     <div class="nav-links">
-        <a onclick="showHome()"><i class="fas fa-home"></i> Главная</a>
-        <a onclick="showFeatures()"><i class="fas fa-star"></i> Возможности</a>
-        <a id="navMarketBtn" onclick="showMarketplace()" class="hidden"><i class="fas fa-store"></i> Магазин конфигов</a>
-        <a id="navProfileBtn" onclick="showProfile()" class="hidden"><i class="fas fa-user"></i> Личный кабинет</a>
-        <div id="nav-auth"><a onclick="showAuthForm()"><i class="fas fa-user"></i> Войти</a></div>
-        <div id="nav-profile" class="hidden"><div class="user-info"><i class="fas fa-crown"></i><span id="navNick">...</span><button class="logout-btn" onclick="logout()">Выйти</button></div></div>
+        <a onclick="window.showHome()"><i class="fas fa-home"></i> Главная</a>
+        <a onclick="window.showFeatures()"><i class="fas fa-star"></i> Возможности</a>
+        <a id="navMarketBtn" onclick="window.showMarketplace()" class="hidden"><i class="fas fa-store"></i> Магазин конфигов</a>
+        <a id="navProfileBtn" onclick="window.showProfile()" class="hidden"><i class="fas fa-user"></i> Личный кабинет</a>
+        <div id="nav-auth"><a onclick="window.showAuthForm()"><i class="fas fa-user"></i> Войти</a></div>
+        <div id="nav-profile" class="hidden"><div class="user-info"><i class="fas fa-crown"></i><span id="navNick">...</span><button class="logout-btn" onclick="window.logout()">Выйти</button></div></div>
     </div>
 </nav>
 
@@ -369,7 +365,7 @@
                 <div class="stat"><div class="stat-number">5000+</div><div class="stat-label">Пользователей</div></div>
                 <div class="stat"><div class="stat-number">24/7</div><div class="stat-label">Поддержка</div></div>
             </div>
-            <button class="download-btn" onclick="showAuthForm()" style="margin-top: 30px;">
+            <button class="download-btn" onclick="window.showAuthForm()" style="margin-top: 30px;">
                 <i class="fas fa-download"></i> Скачать ZeusClient
             </button>
         </div>
@@ -441,7 +437,7 @@
                 <i class="fas fa-crown" style="font-size: 32px; color: #ffd700;"></i>
                 <h3 style="color: #ffd700; margin-top: 10px;">Premium открывает ВСЕ функции!</h3>
                 <p>Всего за 499₽ на 30 дней вы получаете доступ к полному арсеналу возможностей.</p>
-                <button class="download-btn" onclick="showAuthForm()" style="margin-top: 15px; padding: 10px 25px; font-size: 16px;">Купить Premium</button>
+                <button class="download-btn" onclick="window.showAuthForm()" style="margin-top: 15px; padding: 10px 25px; font-size: 16px;">Купить Premium</button>
             </div>
         </div>
     </div>
@@ -452,18 +448,18 @@
                 <h3><i class="fas fa-sign-in-alt"></i> Вход</h3>
                 <input type="email" id="loginEmail" class="auth-input" placeholder="Email">
                 <input type="password" id="loginPass" class="auth-input" placeholder="Пароль">
-                <button class="auth-btn" onclick="login()">Войти</button>
+                <button class="auth-btn" onclick="window.login()">Войти</button>
                 <div id="loginMsg"></div>
-                <div class="switch-auth" style="text-align:center; margin-top:20px;">Нет аккаунта? <a onclick="showRegister()" style="color:#ffd700; cursor:pointer;">Регистрация</a></div>
+                <div class="switch-auth" style="text-align:center; margin-top:20px;">Нет аккаунта? <a onclick="window.showRegister()" style="color:#ffd700; cursor:pointer;">Регистрация</a></div>
             </div>
             <div id="registerCard" class="auth-card hidden">
                 <h3><i class="fas fa-user-plus"></i> Регистрация</h3>
                 <input type="text" id="regNick" class="auth-input" placeholder="Никнейм">
                 <input type="email" id="regEmail" class="auth-input" placeholder="Email">
                 <input type="password" id="regPass" class="auth-input" placeholder="Пароль (6+ символов)">
-                <button class="auth-btn" onclick="register()">Зарегистрироваться</button>
+                <button class="auth-btn" onclick="window.register()">Зарегистрироваться</button>
                 <div id="regMsg"></div>
-                <div class="switch-auth" style="text-align:center; margin-top:20px;">Уже есть аккаунт? <a onclick="showLogin()" style="color:#ffd700; cursor:pointer;">Войти</a></div>
+                <div class="switch-auth" style="text-align:center; margin-top:20px;">Уже есть аккаунт? <a onclick="window.showLogin()" style="color:#ffd700; cursor:pointer;">Войти</a></div>
             </div>
         </div>
     </div>
@@ -479,7 +475,7 @@
                     <div class="info-card balance-card">
                         <i class="fas fa-wallet"></i> Баланс<br>
                         <span class="balance-amount" id="balanceAmount">0</span> ₽<br>
-                        <button class="download-btn" style="padding:8px 20px;font-size:14px;margin-top:10px;" onclick="openTopupModal()">
+                        <button class="download-btn" style="padding:8px 20px;font-size:14px;margin-top:10px;" onclick="window.openTopupModal()">
                             <i class="fas fa-plus-circle"></i> Пополнить
                         </button>
                     </div>
@@ -488,7 +484,7 @@
                     <div class="info-card"><i class="fas fa-microchip"></i> HWID/UUID<br><span id="hwidText">Не привязан</span><br><span id="hwidNote" style="font-size:10px; opacity:0.7;"></span></div>
                 </div>
                 <div style="margin-top:20px;">
-                    <button class="auth-btn" onclick="buyPremium()" id="buyPremiumBtn" style="width:auto;padding:10px 30px;">
+                    <button class="auth-btn" onclick="window.buyPremium()" id="buyPremiumBtn" style="width:auto;padding:10px 30px;">
                         <i class="fas fa-crown"></i> Купить Premium (30 дней) - 499₽
                     </button>
                 </div>
@@ -501,7 +497,7 @@
                     <div class="card-icon"><i class="fas fa-box-open"></i></div>
                     <h3>ZeusClient FREE <span class="version-badge free-version">1.12.2</span></h3>
                     <p>Бесплатная версия для Minecraft 1.12.2</p>
-                    <button class="download-btn" onclick="downloadClient('free')" id="freeDownloadBtn">
+                    <button class="download-btn" onclick="window.downloadClient('free')" id="freeDownloadBtn">
                         <i class="fas fa-download"></i> Скачать (Free 1.12.2)
                     </button>
                     <div id="freeFileStatus" class="file-status"></div>
@@ -510,7 +506,7 @@
                     <div class="card-icon"><i class="fas fa-gem"></i></div>
                     <h3>ZeusClient PREMIUM <span class="version-badge premium-version">1.16.5</span></h3>
                     <p>Премиум версия для Minecraft 1.16.5</p>
-                    <button id="premiumDownloadBtn" class="download-btn" onclick="downloadClient('premium')" disabled>
+                    <button id="premiumDownloadBtn" class="download-btn" onclick="window.downloadClient('premium')" disabled>
                         <i class="fas fa-download"></i> Скачать (Premium 1.16.5)
                     </button>
                     <div id="premiumFileStatus" class="file-status"></div>
@@ -534,7 +530,7 @@
 
 <div id="topupModal" class="modal">
     <div class="modal-content">
-        <span class="close-modal" onclick="closeTopupModal()">×</span>
+        <span class="close-modal" onclick="window.closeTopupModal()">×</span>
         <h3><i class="fas fa-credit-card"></i> Пополнение баланса</h3>
         <p style="margin-bottom:20px;">Введите сумму и данные карты для оплаты</p>
         
@@ -558,7 +554,7 @@
         <label style="display:block; margin-bottom:5px; margin-top:10px;">Имя держателя:</label>
         <input type="text" id="cardName" class="auth-input" placeholder="NAME SURNAME">
         
-        <button class="auth-btn" onclick="processCardPayment()" style="margin-top:20px;">
+        <button class="auth-btn" onclick="window.processCardPayment()" style="margin-top:20px;">
             <i class="fas fa-lock"></i> Оплатить
         </button>
         <div id="topupMsg" style="margin-top:15px;"></div>
@@ -569,10 +565,11 @@
 </div>
 
 <script>
-    // Supabase подключение
-    const SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+(function() {
+    // Supabase подключение (используем уникальное имя)
+    const _SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
+    const _SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
+    const supabaseClient = window.supabase.createClient(_SUPABASE_URL, _SUPABASE_KEY);
     
     let currentUser = null;
     let currentProfile = null;
@@ -615,12 +612,9 @@
     }
     
     async function updateRegisteredCount() {
-        const { data, error } = await supabase.from('profiles').select('id', { count: 'exact', head: true });
+        const { data, error } = await supabaseClient.from('profiles').select('id', { count: 'exact', head: true });
         if(data) {
             document.getElementById('registeredCount').innerText = data.length || 0;
-        } else {
-            let profiles = JSON.parse(localStorage.getItem('zeus_profiles') || '{}');
-            document.getElementById('registeredCount').innerText = Object.keys(profiles).length;
         }
     }
     
@@ -628,7 +622,7 @@
     updateRegisteredCount();
     setInterval(() => { updateVisitorStats(); updateRegisteredCount(); }, 30000);
     
-    // ========== ФУНКЦИИ ==========
+    // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
     function generateHWID() {
         let hwid = localStorage.getItem('zeus_hwid');
         if(!hwid){
@@ -660,10 +654,10 @@
         document.body.removeChild(link);
     }
     
-    // ========== ЗАГРУЗКА ДАННЫХ ПОЛЬЗОВАТЕЛЯ ИЗ SUPABASE ==========
+    // ========== ЗАГРУЗКА ДАННЫХ ПОЛЬЗОВАТЕЛЯ ==========
     async function loadUserProfile() {
         if(!currentUser) return;
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
             .from('profiles')
             .select('*')
             .eq('id', currentUser.id)
@@ -672,8 +666,7 @@
         if(data) {
             currentProfile = data;
         } else if(!data && !error) {
-            // Создаем профиль если его нет
-            const { data: newProfile, error: insertError } = await supabase
+            const { data: newProfile, error: insertError } = await supabaseClient
                 .from('profiles')
                 .insert({
                     id: currentUser.id,
@@ -730,7 +723,7 @@
         
         setTimeout(async () => {
             const newBalance = (currentProfile?.balance || 0) + amount;
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('profiles')
                 .update({ balance: newBalance })
                 .eq('id', currentUser.id);
@@ -738,11 +731,11 @@
             if(error) {
                 msgDiv.innerHTML = '<span class="error">❌ Ошибка пополнения</span>';
             } else {
-                currentProfile.balance = newBalance;
+                if(currentProfile) currentProfile.balance = newBalance;
                 msgDiv.innerHTML = `<span class="success">✅ Пополнено ${amount} ₽!</span>`;
                 document.getElementById('balanceAmount').innerText = newBalance.toLocaleString();
                 setTimeout(() => {
-                    closeTopupModal();
+                    window.closeTopupModal();
                     document.getElementById('cardNumber').value = '';
                     document.getElementById('cardExpiry').value = '';
                     document.getElementById('cardCvv').value = '';
@@ -762,7 +755,7 @@
             const until = new Date();
             until.setDate(until.getDate() + 30);
             
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('profiles')
                 .update({ 
                     balance: newBalance,
@@ -774,9 +767,11 @@
             if(error) {
                 alert('❌ Ошибка активации Premium');
             } else {
-                currentProfile.balance = newBalance;
-                currentProfile.subscription_type = 'paid';
-                currentProfile.subscription_until = until.toISOString();
+                if(currentProfile) {
+                    currentProfile.balance = newBalance;
+                    currentProfile.subscription_type = 'paid';
+                    currentProfile.subscription_until = until.toISOString();
+                }
                 alert(`✅ Premium активирован на 30 дней! Списано ${PREMIUM_PRICE} ₽`);
                 loadUserProfile();
                 loadMarketplace();
@@ -784,16 +779,16 @@
             }
         } else {
             alert(`❌ Не хватает ${PREMIUM_PRICE - balance} ₽`);
-            openTopupModal();
+            window.openTopupModal();
         }
     }
     
     // ========== МАРКЕТПЛЕЙС ==========
     async function loadMarketplace() {
-        const { data: configs, error } = await supabase.from('marketplace_configs').select('*');
+        const { data: configs, error } = await supabaseClient.from('marketplace_configs').select('*');
         if(error) { document.getElementById('marketplaceGrid').innerHTML = '<p>Ошибка загрузки</p>'; return; }
         
-        const { data: purchases } = await supabase.from('user_purchases').select('config_id').eq('user_id', currentUser?.id || '');
+        const { data: purchases } = await supabaseClient.from('user_purchases').select('config_id').eq('user_id', currentUser?.id || '');
         const purchasedIds = purchases ? purchases.map(p => p.config_id) : [];
         const isPremium = currentProfile?.subscription_type === 'paid' && currentProfile?.subscription_until && new Date(currentProfile.subscription_until) > new Date();
         const balance = currentProfile?.balance || 0;
@@ -812,8 +807,8 @@
                 <p>${cfg.description}</p>
                 <p class="config-price"><i class="fas fa-coins"></i> ${price} ₽</p>
                 ${isPurchased ? 
-                    `<button class="download-btn" onclick="downloadConfig('${cfg.file_name}')"><i class="fas fa-download"></i> Скачать</button>` : 
-                    `<button class="download-btn" onclick="buyConfig(${cfg.id}, ${price})" ${!canAfford ? 'disabled' : ''}>${canAfford ? 'Купить' : 'Не хватает'}</button>`
+                    `<button class="download-btn" onclick="window.downloadConfig('${cfg.file_name}')"><i class="fas fa-download"></i> Скачать</button>` : 
+                    `<button class="download-btn" onclick="window.buyConfig(${cfg.id}, ${price})" ${!canAfford ? 'disabled' : ''}>${canAfford ? 'Купить' : 'Не хватает'}</button>`
                 }
                 <p style="font-size:12px;margin-top:10px;">Автор: ${cfg.author}</p>
             </div>`;
@@ -825,24 +820,24 @@
         if(!currentUser) return;
         if((currentProfile?.balance || 0) < price) {
             alert(`❌ Не хватает ${price - (currentProfile?.balance || 0)} ₽`);
-            openTopupModal();
+            window.openTopupModal();
             return;
         }
         
-        const { data: existing } = await supabase.from('user_purchases').select('id').eq('user_id', currentUser.id).eq('config_id', configId);
+        const { data: existing } = await supabaseClient.from('user_purchases').select('id').eq('user_id', currentUser.id).eq('config_id', configId);
         if(existing && existing.length > 0) {
             alert('Конфиг уже куплен');
             return;
         }
         
         const newBalance = (currentProfile?.balance || 0) - price;
-        const { error: balanceError } = await supabase.from('profiles').update({ balance: newBalance }).eq('id', currentUser.id);
+        const { error: balanceError } = await supabaseClient.from('profiles').update({ balance: newBalance }).eq('id', currentUser.id);
         if(balanceError) { alert('Ошибка покупки'); return; }
         
-        const { error: purchaseError } = await supabase.from('user_purchases').insert({ user_id: currentUser.id, config_id: configId });
+        const { error: purchaseError } = await supabaseClient.from('user_purchases').insert({ user_id: currentUser.id, config_id: configId });
         if(purchaseError) { alert('Ошибка сохранения покупки'); return; }
         
-        currentProfile.balance = newBalance;
+        if(currentProfile) currentProfile.balance = newBalance;
         alert(`✅ Куплено за ${price} ₽`);
         loadUserProfile();
         loadMarketplace();
@@ -861,7 +856,7 @@
     
     async function loadMyPurchases() {
         if(!currentUser) return;
-        const { data: purchases, error } = await supabase
+        const { data: purchases, error } = await supabaseClient
             .from('user_purchases')
             .select('config_id, marketplace_configs(id, name, description, file_name, version)')
             .eq('user_id', currentUser.id);
@@ -879,7 +874,7 @@
                 html += `<div class="card">
                     <h3>${cfg.name} ${badge}</h3>
                     <p>${cfg.description}</p>
-                    <button class="download-btn" onclick="downloadConfig('${cfg.file_name}')">Скачать</button>
+                    <button class="download-btn" onclick="window.downloadConfig('${cfg.file_name}')">Скачать</button>
                 </div>`;
             }
         }
@@ -890,7 +885,7 @@
     window.downloadClient = async function(type) {
         if(!currentUser) {
             alert('Авторизуйтесь');
-            showAuthForm();
+            window.showAuthForm();
             return;
         }
         const hwid = generateHWID();
@@ -919,7 +914,7 @@
     }
     
     // ========== НАВИГАЦИЯ ==========
-    function showHome() {
+    window.showHome = function() {
         document.getElementById('publicContent').classList.remove('hidden');
         document.getElementById('featuresContent').classList.add('hidden');
         document.getElementById('authContent').classList.add('hidden');
@@ -928,7 +923,7 @@
         window.scrollTo(0, 0);
     }
     
-    function showFeatures() {
+    window.showFeatures = function() {
         document.getElementById('publicContent').classList.add('hidden');
         document.getElementById('featuresContent').classList.remove('hidden');
         document.getElementById('authContent').classList.add('hidden');
@@ -937,26 +932,26 @@
         window.scrollTo(0, 0);
     }
     
-    function showAuthForm() {
+    window.showAuthForm = function() {
         document.getElementById('publicContent').classList.add('hidden');
         document.getElementById('featuresContent').classList.add('hidden');
         document.getElementById('authContent').classList.remove('hidden');
         document.getElementById('profileContent').classList.add('hidden');
         document.getElementById('marketplaceContent').classList.add('hidden');
-        showLogin();
+        window.showLogin();
     }
     
-    function showRegister() {
+    window.showRegister = function() {
         document.getElementById('registerCard').classList.remove('hidden');
         document.getElementById('loginCard').classList.add('hidden');
     }
     
-    function showLogin() {
+    window.showLogin = function() {
         document.getElementById('loginCard').classList.remove('hidden');
         document.getElementById('registerCard').classList.add('hidden');
     }
     
-    function showProfile() {
+    window.showProfile = function() {
         if(currentUser){
             document.getElementById('publicContent').classList.add('hidden');
             document.getElementById('featuresContent').classList.add('hidden');
@@ -969,7 +964,7 @@
         }
     }
     
-    function showMarketplace() {
+    window.showMarketplace = function() {
         if(currentUser){
             document.getElementById('publicContent').classList.add('hidden');
             document.getElementById('featuresContent').classList.add('hidden');
@@ -980,13 +975,13 @@
         }
     }
     
-    function openTopupModal() {
+    window.openTopupModal = function() {
         document.getElementById('topupModal').style.display = 'flex';
         document.getElementById('topupAmount').value = '';
         document.getElementById('topupMsg').innerHTML = '';
     }
     
-    function closeTopupModal() {
+    window.closeTopupModal = function() {
         document.getElementById('topupModal').style.display = 'none';
     }
     
@@ -1011,7 +1006,7 @@
         
         msgDiv.innerHTML = '<span>⏳ Регистрация...</span>';
         
-        const { data, error } = await supabase.auth.signUp({ 
+        const { data, error } = await supabaseClient.auth.signUp({ 
             email, 
             password: pass, 
             options: { data: { nickname: nick } } 
@@ -1021,7 +1016,7 @@
             msgDiv.innerHTML = '<span class="error">❌ ' + error.message + '</span>';
         } else {
             msgDiv.innerHTML = '<span class="success">✅ Проверьте почту для подтверждения!</span>';
-            setTimeout(() => showLogin(), 2000);
+            setTimeout(() => window.showLogin(), 2000);
             updateRegisteredCount();
         }
     }
@@ -1035,7 +1030,7 @@
         
         msgDiv.innerHTML = '<span>⏳ Вход...</span>';
         
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
         if(error) {
             msgDiv.innerHTML = '<span class="error">❌ ' + error.message + '</span>';
         } else {
@@ -1045,12 +1040,12 @@
     }
     
     window.logout = async function() {
-        await supabase.auth.signOut();
+        await supabaseClient.auth.signOut();
         location.reload();
     }
     
     async function updateUI() {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await supabaseClient.auth.getSession();
         if(session) {
             currentUser = session.user;
             await loadUserProfile();
@@ -1087,7 +1082,7 @@
             const accessToken = params.get('access_token');
             const refreshToken = params.get('refresh_token');
             if(accessToken && refreshToken) {
-                await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+                await supabaseClient.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
                 window.history.replaceState({}, document.title, window.location.pathname);
                 await updateUI();
                 alert('✅ Email подтвержден!');
@@ -1095,27 +1090,14 @@
         }
     }
     
-    supabase.auth.onAuthStateChange((event, session) => {
+    supabaseClient.auth.onAuthStateChange((event, session) => {
         if(event === 'SIGNED_IN') updateUI();
         else if(event === 'SIGNED_OUT') location.reload();
     });
     
-    // Глобальные функции для onclick
-    window.showHome = showHome;
-    window.showFeatures = showFeatures;
-    window.showAuthForm = showAuthForm;
-    window.showRegister = showRegister;
-    window.showLogin = showLogin;
-    window.showProfile = showProfile;
-    window.showMarketplace = showMarketplace;
-    window.openTopupModal = openTopupModal;
-    window.closeTopupModal = closeTopupModal;
-    window.buyPremium = buyPremium;
-    window.downloadClient = downloadClient;
-    window.downloadConfig = downloadConfig;
-    
     handleEmailConfirmation();
     updateUI();
+})();
 </script>
 </body>
 </html>
