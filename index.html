@@ -96,6 +96,8 @@
         .config-price { font-size: 20px; font-weight: bold; color: #ffd700; margin: 10px 0; }
         .hidden { display: none; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .error { color: #e74c3c; font-size: 14px; margin-top: 10px; display: block; }
+        .success { color: #2ecc71; font-size: 14px; margin-top: 10px; display: block; }
         @media (max-width: 768px) { .navbar { padding: 15px; flex-direction: column; gap: 10px; } .hero h1 { font-size: 40px; } .section { padding: 20px; } }
     </style>
 </head>
@@ -118,16 +120,25 @@
 <div class="container">
     <!-- Публичный контент (без авторизации) -->
     <div id="publicContent">
-        <div id="home" class="hero"><h1>ZEUS CLIENT</h1><p>Мощный чит для Minecraft 1.12.2 | Бесплатная и Премиум версии</p></div>
+        <div id="home" class="hero"><h1>ZEUS CLIENT</h1><p>Мощный чит для Minecraft 1.12.2 | Бесплатная и Премиум версии</p>
+        <div class="stats" style="display: flex; justify-content: center; gap: 70px; flex-wrap: wrap; margin-top: 40px;">
+            <div class="stat"><div class="stat-number" style="font-size: 42px; font-weight: 800; color: #ffd700;">50+</div><div class="stat-label">Функций</div></div>
+            <div class="stat"><div class="stat-number" style="font-size: 42px; font-weight: 800; color: #ffd700;">100%</div><div class="stat-label">Бесплатно</div></div>
+            <div class="stat"><div class="stat-number" style="font-size: 42px; font-weight: 800; color: #ffd700;">24/7</div><div class="stat-label">Поддержка</div></div>
+        </div>
+        </div>
         <div id="features" class="section"><h2><i class="fas fa-star"></i> Возможности</h2><div class="grid">
             <div class="card"><div class="card-icon"><i class="fas fa-shield-alt"></i></div><h3>Анти-детект</h3><p>Лучшая защита от античитов.</p></div>
             <div class="card"><div class="card-icon"><i class="fas fa-crosshairs"></i></div><h3>Aimbot</h3><p>Умное наведение.</p></div>
             <div class="card"><div class="card-icon"><i class="fas fa-eye"></i></div><h3>ESP & X-Ray</h3><p>Подсветка игроков и руд.</p></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-tachometer-alt"></i></div><h3>Оптимизация</h3><p>Высокий FPS на слабых ПК.</p></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-fighter-jet"></i></div><h3>Fly & Speed</h3><p>Различные режимы полета.</p></div>
+            <div class="card"><div class="card-icon"><i class="fas fa-sliders-h"></i></div><h3>Гибкие настройки</h3><p>Полная кастомизация.</p></div>
         </div></div>
     </div>
 
     <!-- Авторизация -->
-    <div id="authContent" class="hidden"><div class="auth-container"><div id="loginCard" class="auth-card"><h3>Вход</h3><input type="email" id="loginEmail" class="auth-input" placeholder="Email"><input type="password" id="loginPass" class="auth-input" placeholder="Пароль"><button class="auth-btn" onclick="login()">Войти</button><div id="loginMsg"></div><div class="switch-auth">Нет аккаунта? <a onclick="showRegister()">Регистрация</a></div></div><div id="registerCard" class="auth-card hidden"><h3>Регистрация</h3><input type="text" id="regNick" class="auth-input" placeholder="Никнейм"><input type="email" id="regEmail" class="auth-input" placeholder="Email"><input type="password" id="regPass" class="auth-input" placeholder="Пароль"><button class="auth-btn" onclick="register()">Зарегистрироваться</button><div id="regMsg"></div><div class="switch-auth">Уже есть аккаунт? <a onclick="showLogin()">Войти</a></div></div></div></div>
+    <div id="authContent" class="hidden"><div class="auth-container"><div id="loginCard" class="auth-card"><h3>Вход</h3><input type="email" id="loginEmail" class="auth-input" placeholder="Email"><input type="password" id="loginPass" class="auth-input" placeholder="Пароль"><button class="auth-btn" onclick="login()">Войти</button><div id="loginMsg"></div><div class="switch-auth" style="text-align:center; margin-top:20px;">Нет аккаунта? <a onclick="showRegister()" style="color:#ffd700; cursor:pointer;">Регистрация</a></div></div><div id="registerCard" class="auth-card hidden"><h3>Регистрация</h3><input type="text" id="regNick" class="auth-input" placeholder="Никнейм"><input type="email" id="regEmail" class="auth-input" placeholder="Email"><input type="password" id="regPass" class="auth-input" placeholder="Пароль (6+ символов)"><button class="auth-btn" onclick="register()">Зарегистрироваться</button><div id="regMsg"></div><div class="switch-auth" style="text-align:center; margin-top:20px;">Уже есть аккаунт? <a onclick="showLogin()" style="color:#ffd700; cursor:pointer;">Войти</a></div></div></div></div>
 
     <!-- Личный кабинет -->
     <div id="profileContent" class="hidden">
@@ -155,7 +166,7 @@
     // SUPABASE
     const SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     
     let currentUser = null;
     let currentProfile = null;
@@ -172,12 +183,48 @@
     const navProfileBtn = document.getElementById('navProfileBtn');
 
     // Helper functions
-    function scrollToSection(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }
-    function showRegister() { document.getElementById('registerCard').classList.remove('hidden'); document.getElementById('loginCard').classList.add('hidden'); }
-    function showLogin() { document.getElementById('loginCard').classList.remove('hidden'); document.getElementById('registerCard').classList.add('hidden'); }
-    function showAuthForm() { publicDiv.classList.add('hidden'); authDiv.classList.remove('hidden'); profileDiv.classList.add('hidden'); marketplaceDiv.classList.add('hidden'); showLogin(); }
-    function showProfile() { if(currentUser){ publicDiv.classList.add('hidden'); authDiv.classList.add('hidden'); profileDiv.classList.remove('hidden'); marketplaceDiv.classList.add('hidden'); loadProfileData(); loadMyPurchases(); } }
-    function showMarketplace() { if(currentUser){ publicDiv.classList.add('hidden'); authDiv.classList.add('hidden'); profileDiv.classList.add('hidden'); marketplaceDiv.classList.remove('hidden'); loadMarketplace(); } }
+    window.scrollToSection = function(id) { 
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); 
+    }
+    
+    window.showRegister = function() { 
+        document.getElementById('registerCard').classList.remove('hidden'); 
+        document.getElementById('loginCard').classList.add('hidden'); 
+    }
+    
+    window.showLogin = function() { 
+        document.getElementById('loginCard').classList.remove('hidden'); 
+        document.getElementById('registerCard').classList.add('hidden'); 
+    }
+    
+    window.showAuthForm = function() { 
+        publicDiv.classList.add('hidden'); 
+        authDiv.classList.remove('hidden'); 
+        profileDiv.classList.add('hidden'); 
+        marketplaceDiv.classList.add('hidden'); 
+        window.showLogin(); 
+    }
+    
+    window.showProfile = function() { 
+        if(currentUser){ 
+            publicDiv.classList.add('hidden'); 
+            authDiv.classList.add('hidden'); 
+            profileDiv.classList.remove('hidden'); 
+            marketplaceDiv.classList.add('hidden'); 
+            loadProfileData(); 
+            loadMyPurchases(); 
+        } 
+    }
+    
+    window.showMarketplace = function() { 
+        if(currentUser){ 
+            publicDiv.classList.add('hidden'); 
+            authDiv.classList.add('hidden'); 
+            profileDiv.classList.add('hidden'); 
+            marketplaceDiv.classList.remove('hidden'); 
+            loadMarketplace(); 
+        } 
+    }
 
     // Генерация HWID (имитация)
     function generateHWID() {
@@ -190,10 +237,10 @@
     }
 
     // Привязка HWID к профилю
-    async function bindHWID() {
+    window.bindHWID = async function() {
         if(!currentUser) return;
         const hwid = generateHWID();
-        const { error } = await supabase.from('profiles').update({ hwid: hwid }).eq('id', currentUser.id);
+        const { error } = await supabaseClient.from('profiles').update({ hwid: hwid }).eq('id', currentUser.id);
         if(error) { alert('Ошибка привязки: ' + error.message); }
         else { alert('HWID успешно привязан!'); loadProfileData(); }
     }
@@ -201,7 +248,7 @@
     // Загрузка данных профиля (подписка, hwid)
     async function loadProfileData() {
         if(!currentUser) return;
-        const { data, error } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+        const { data, error } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
         if(data) {
             currentProfile = data;
             document.getElementById('profileNick').innerText = data.nickname;
@@ -210,26 +257,28 @@
             const subUntilSpan = document.getElementById('subUntil');
             const isPremium = data.subscription_type === 'paid' && new Date(data.subscription_until) > new Date();
             if(isPremium) {
-                subStatusSpan.innerText = 'PREMIUM АКТИВНА'; subStatusSpan.className = 'badge badge-premium';
+                subStatusSpan.innerText = 'PREMIUM АКТИВНА'; 
+                subStatusSpan.className = 'badge badge-premium';
                 subUntilSpan.innerText = new Date(data.subscription_until).toLocaleDateString();
                 document.getElementById('premiumDownloadBtn').disabled = false;
-                document.getElementById('buyPremiumBtn').innerText = 'Продлить Premium';
+                document.getElementById('buyPremiumBtn').innerHTML = 'Продлить Premium (7 дней) - 199₽';
             } else {
-                subStatusSpan.innerText = 'БЕСПЛАТНАЯ'; subStatusSpan.className = 'badge badge-free';
+                subStatusSpan.innerText = 'БЕСПЛАТНАЯ'; 
+                subStatusSpan.className = 'badge badge-free';
                 subUntilSpan.innerText = 'Бесплатная версия';
                 document.getElementById('premiumDownloadBtn').disabled = true;
-                document.getElementById('buyPremiumBtn').innerText = 'Купить Premium (7 дней)';
+                document.getElementById('buyPremiumBtn').innerHTML = 'Купить Premium (7 дней) - 199₽';
             }
             document.getElementById('hwidText').innerText = data.hwid || 'Не привязан';
         }
     }
 
     // Покупка премиума (симуляция оплаты)
-    async function buyPremium() {
+    window.buyPremium = async function() {
         if(!currentUser) return;
         const until = new Date();
         until.setDate(until.getDate() + 7);
-        const { error } = await supabase.from('profiles').update({ subscription_type: 'paid', subscription_until: until.toISOString() }).eq('id', currentUser.id);
+        const { error } = await supabaseClient.from('profiles').update({ subscription_type: 'paid', subscription_until: until.toISOString() }).eq('id', currentUser.id);
         if(error) alert('Ошибка: ' + error.message);
         else { alert('Premium подписка активирована на 7 дней!'); loadProfileData(); loadMarketplace(); loadMyPurchases(); }
     }
@@ -237,10 +286,10 @@
     // Загрузка магазина конфигов
     async function loadMarketplace() {
         if(!currentUser) return;
-        const { data: configs, error } = await supabase.from('marketplace_configs').select('*');
+        const { data: configs, error } = await supabaseClient.from('marketplace_configs').select('*');
         if(error) { document.getElementById('marketplaceGrid').innerHTML = '<p>Ошибка загрузки</p>'; return; }
         // Проверяем, какие конфиги уже куплены
-        const { data: purchases } = await supabase.from('user_purchases').select('config_id').eq('user_id', currentUser.id);
+        const { data: purchases } = await supabaseClient.from('user_purchases').select('config_id').eq('user_id', currentUser.id);
         const purchasedIds = purchases ? purchases.map(p => p.config_id) : [];
         const isPremiumActive = currentProfile?.subscription_type === 'paid' && new Date(currentProfile.subscription_until) > new Date();
         
@@ -251,31 +300,28 @@
             html += `<div class="card"><div class="card-icon"><i class="fas fa-cogs"></i></div>
                     <h3>${cfg.name}</h3><p>${cfg.description}</p><p class="config-price"><i class="fas fa-coins"></i> ${cfg.price} ₽</p>
                     <div>${canDownload ? `<button class="download-btn" onclick="downloadConfig('${cfg.id}', '${cfg.file_url}')"><i class="fas fa-download"></i> Скачать конфиг</button>` : `<button class="download-btn" onclick="buyConfig('${cfg.id}', ${cfg.price})"><i class="fas fa-shopping-cart"></i> Купить за ${cfg.price}₽</button>`}</div>
-                    <p style="font-size:12px;margin-top:10px;">${cfg.author}</p></div>`;
+                    <p style="font-size:12px;margin-top:10px;">Автор: ${cfg.author}</p></div>`;
         }
         document.getElementById('marketplaceGrid').innerHTML = html;
     }
 
     // Покупка конфига
-    async function buyConfig(configId, price) {
+    window.buyConfig = async function(configId, price) {
         if(!currentUser) return;
-        // Здесь должна быть логика оплаты. Для демо просто записываем покупку.
-        const { error } = await supabase.from('user_purchases').insert({ user_id: currentUser.id, config_id: configId, price_paid: price });
+        const { error } = await supabaseClient.from('user_purchases').insert({ user_id: currentUser.id, config_id: configId, price_paid: price });
         if(error) alert('Ошибка покупки: ' + error.message);
         else { alert('Конфиг успешно куплен!'); loadMarketplace(); loadMyPurchases(); }
     }
 
     // Скачивание конфига
-    function downloadConfig(configId, fileUrl) {
-        // В реальности fileUrl должен вести на файл. Здесь имитация.
+    window.downloadConfig = function(configId, fileUrl) {
         alert(`Скачивание конфига ID: ${configId}\nФайл: ${fileUrl}`);
-        // window.location.href = fileUrl;
     }
 
     // Загрузка списка покупок пользователя
     async function loadMyPurchases() {
         if(!currentUser) return;
-        const { data: purchases, error } = await supabase.from('user_purchases').select('config_id, marketplace_configs(name, file_url)').eq('user_id', currentUser.id);
+        const { data: purchases, error } = await supabaseClient.from('user_purchases').select('config_id, marketplace_configs(name, file_url)').eq('user_id', currentUser.id);
         if(error) { document.getElementById('myPurchasesList').innerHTML = '<p>Ошибка</p>'; return; }
         if(!purchases || purchases.length === 0) { document.getElementById('myPurchasesList').innerHTML = '<p>У вас пока нет купленных конфигов.</p>'; return; }
         let html = '';
@@ -286,65 +332,116 @@
     }
 
     // Скачивание клиента (Free или Premium)
-    function downloadClient(type) {
+    window.downloadClient = function(type) {
         if(type === 'free') {
             alert('Скачивание ZeusClient Free... (файл ZeusFree.jar)');
-            // window.location.href = './ZeusFree.jar';
         } else {
             if(currentProfile?.subscription_type === 'paid' && new Date(currentProfile.subscription_until) > new Date()) {
                 alert('Скачивание ZeusClient Premium... (файл ZeusPremium.jar)');
-                // window.location.href = './ZeusPremium.jar';
             } else { alert('Доступно только по Premium подписке!'); }
         }
     }
 
     // Регистрация
-    async function register() {
+    window.register = async function() {
         const nick = document.getElementById('regNick').value.trim();
         const email = document.getElementById('regEmail').value.trim();
         const pass = document.getElementById('regPass').value;
-        if(!nick || !email || !pass) { document.getElementById('regMsg').innerHTML = '❌ Заполните все поля'; return; }
-        const { data, error } = await supabase.auth.signUp({ email, password: pass, options: { data: { nickname: nick } } });
-        if(error) { document.getElementById('regMsg').innerHTML = '❌ ' + error.message; }
-        else { 
+        const msgDiv = document.getElementById('regMsg');
+        
+        if(!nick || !email || !pass) { msgDiv.innerHTML = '<span class="error">❌ Заполните все поля</span>'; return; }
+        if(pass.length < 6) { msgDiv.innerHTML = '<span class="error">❌ Пароль должен быть не менее 6 символов</span>'; return; }
+        
+        msgDiv.innerHTML = '<span>⏳ Регистрация...</span>';
+        
+        const { data, error } = await supabaseClient.auth.signUp({ 
+            email, 
+            password: pass, 
+            options: { data: { nickname: nick } } 
+        });
+        
+        if(error) { 
+            msgDiv.innerHTML = '<span class="error">❌ ' + error.message + '</span>'; 
+        } else { 
             // Создаем профиль в таблице profiles
-            await supabase.from('profiles').insert({ id: data.user.id, nickname: nick, email: email, subscription_type: 'free', subscription_until: null, hwid: null });
-            document.getElementById('regMsg').innerHTML = '✅ Подтвердите email!'; 
-            setTimeout(() => showLogin(), 2000);
+            const { error: profileError } = await supabaseClient.from('profiles').insert({ 
+                id: data.user.id, 
+                nickname: nick, 
+                email: email, 
+                subscription_type: 'free', 
+                subscription_until: null, 
+                hwid: null 
+            });
+            
+            if(profileError) {
+                console.error('Profile creation error:', profileError);
+            }
+            
+            msgDiv.innerHTML = '<span class="success">✅ Подтвердите email! Проверьте почту</span>'; 
+            setTimeout(() => window.showLogin(), 2000);
         }
     }
 
     // Логин
-    async function login() {
+    window.login = async function() {
         const email = document.getElementById('loginEmail').value.trim();
         const pass = document.getElementById('loginPass').value;
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
-        if(error) { document.getElementById('loginMsg').innerHTML = '❌ ' + error.message; }
-        else { await checkUserAndUpdateUI(); }
+        const msgDiv = document.getElementById('loginMsg');
+        
+        if(!email || !pass) { msgDiv.innerHTML = '<span class="error">❌ Заполните все поля</span>'; return; }
+        
+        msgDiv.innerHTML = '<span>⏳ Вход...</span>';
+        
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+        if(error) { 
+            msgDiv.innerHTML = '<span class="error">❌ ' + error.message + '</span>'; 
+        } else { 
+            msgDiv.innerHTML = '<span class="success">✅ Успешный вход!</span>';
+            await checkUserAndUpdateUI(); 
+        }
     }
 
-    async function logout() { await supabase.auth.signOut(); location.reload(); }
+    window.logout = async function() { 
+        await supabaseClient.auth.signOut(); 
+        location.reload(); 
+    }
 
     async function checkUserAndUpdateUI() {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await supabaseClient.auth.getSession();
         if(session) {
             currentUser = session.user;
-            const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
             if(!profile) {
                 // Если профиля нет, создаем
-                await supabase.from('profiles').insert({ id: currentUser.id, nickname: currentUser.user_metadata?.nickname || currentUser.email.split('@')[0], email: currentUser.email, subscription_type: 'free' });
+                await supabaseClient.from('profiles').insert({ 
+                    id: currentUser.id, 
+                    nickname: currentUser.user_metadata?.nickname || currentUser.email.split('@')[0], 
+                    email: currentUser.email, 
+                    subscription_type: 'free' 
+                });
             }
             currentProfile = profile;
             navNickSpan.innerText = currentUser.user_metadata?.nickname || currentUser.email.split('@')[0];
-            publicDiv.classList.add('hidden'); authDiv.classList.add('hidden'); profileDiv.classList.remove('hidden');
-            navAuth.classList.add('hidden'); navProfile.classList.remove('hidden');
-            navMarketBtn.classList.remove('hidden'); navProfileBtn.classList.remove('hidden');
-            loadProfileData(); loadMyPurchases();
+            publicDiv.classList.add('hidden'); 
+            authDiv.classList.add('hidden'); 
+            profileDiv.classList.remove('hidden');
+            navAuth.classList.add('hidden'); 
+            navProfile.classList.remove('hidden');
+            navMarketBtn.classList.remove('hidden'); 
+            navProfileBtn.classList.remove('hidden');
+            loadProfileData(); 
+            loadMyPurchases();
         } else {
-            currentUser = null; currentProfile = null;
-            publicDiv.classList.remove('hidden'); authDiv.classList.add('hidden'); profileDiv.classList.add('hidden'); marketplaceDiv.classList.add('hidden');
-            navAuth.classList.remove('hidden'); navProfile.classList.add('hidden');
-            navMarketBtn.classList.add('hidden'); navProfileBtn.classList.add('hidden');
+            currentUser = null; 
+            currentProfile = null;
+            publicDiv.classList.remove('hidden'); 
+            authDiv.classList.add('hidden'); 
+            profileDiv.classList.add('hidden'); 
+            marketplaceDiv.classList.add('hidden');
+            navAuth.classList.remove('hidden'); 
+            navProfile.classList.add('hidden');
+            navMarketBtn.classList.add('hidden'); 
+            navProfileBtn.classList.add('hidden');
         }
     }
 
@@ -356,15 +453,21 @@
             const accessToken = params.get('access_token');
             const refreshToken = params.get('refresh_token');
             if(accessToken && refreshToken) {
-                await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+                await supabaseClient.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
                 window.history.replaceState({}, document.title, window.location.pathname);
                 await checkUserAndUpdateUI();
-                alert('Email подтвержден!');
+                alert('Email подтвержден! Добро пожаловать в ZeusClient!');
             }
         }
     }
 
-    supabase.auth.onAuthStateChange((event, session) => { if(event === 'SIGNED_IN') checkUserAndUpdateUI(); else if(event === 'SIGNED_OUT') location.reload(); });
+    // Подписка на изменения состояния авторизации
+    supabaseClient.auth.onAuthStateChange((event, session) => { 
+        if(event === 'SIGNED_IN') checkUserAndUpdateUI(); 
+        else if(event === 'SIGNED_OUT') location.reload(); 
+    });
+    
+    // Инициализация
     handleEmailConfirmation();
     checkUserAndUpdateUI();
 </script>
