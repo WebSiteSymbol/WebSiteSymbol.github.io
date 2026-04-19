@@ -71,15 +71,68 @@
         .logout-btn { background: linear-gradient(135deg, #e74c3c, #c0392b); border: none; color: white; padding: 6px 18px; border-radius: 30px; cursor: pointer; transition: 0.3s; }
         .logout-btn:hover { transform: scale(1.05); }
         .container { max-width: 1300px; margin: 0 auto; padding: 50px 20px; }
-        .hero { text-align: center; padding: 80px 30px; background: rgba(0,0,0,0.4); border-radius: 40px; margin-bottom: 50px; backdrop-filter: blur(10px); }
+        .hero {
+            text-align: center;
+            padding: 80px 30px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 40px;
+            margin-bottom: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,215,0,0.2);
+        }
         .hero h1 { font-size: 72px; font-weight: 800; background: linear-gradient(135deg, #ffd700, #ffaa00); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .hero p { font-size: 20px; margin-top: 20px; opacity: 0.9; }
         .section { background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border-radius: 30px; padding: 40px; margin-bottom: 40px; border: 1px solid rgba(255,215,0,0.2); }
         .section h2 { font-size: 32px; color: #ffd700; border-left: 4px solid #ffd700; padding-left: 20px; margin-bottom: 30px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
-        .card { background: rgba(255,255,255,0.05); border-radius: 24px; padding: 25px; text-align: center; border: 1px solid rgba(255,215,0,0.15); transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); border-color: #ffd700; }
-        .card-icon { width: 70px; height: 70px; background: linear-gradient(135deg, #ffd700, #ffaa00); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 30px; color: #1a1a1a; }
-        .download-btn { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #1a1a1a; border: none; padding: 12px 30px; font-size: 18px; font-weight: 800; border-radius: 60px; cursor: pointer; transition: 0.3s; margin-top: 15px; }
+        .section h2 i { margin-right: 15px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+            border-radius: 24px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255,215,0,0.15);
+            transition: 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); border-color: #ffd700; box-shadow: 0 10px 30px rgba(255,215,0,0.1); }
+        .card-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 30px;
+            color: #1a1a1a;
+            transition: 0.3s;
+        }
+        .card:hover .card-icon { transform: scale(1.1) rotate(5deg); }
+        .card h3 { font-size: 22px; margin-bottom: 10px; color: #ffd700; }
+        .card p { font-size: 14px; opacity: 0.8; line-height: 1.6; }
+        .feature-badge {
+            display: inline-block;
+            background: rgba(255,215,0,0.2);
+            border: 1px solid #ffd700;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 11px;
+            margin-top: 12px;
+            color: #ffd700;
+        }
+        .download-btn {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #1a1a1a;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: 800;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 15px;
+        }
         .download-btn:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(255,215,0,0.4); }
         .download-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .auth-container { max-width: 480px; margin: 0 auto; }
@@ -152,6 +205,14 @@
         }
         .file-exists { color: #2ecc71; background: rgba(46,204,113,0.1); }
         .file-missing { color: #e74c3c; background: rgba(231,76,60,0.1); }
+        .category-title {
+            font-size: 24px;
+            color: #ffd700;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,215,0,0.3);
+        }
+        .category-title:first-of-type { margin-top: 0; }
         @media (max-width: 768px) { .navbar { padding: 15px; flex-direction: column; gap: 10px; } .hero h1 { font-size: 40px; } .section { padding: 20px; } }
     </style>
 </head>
@@ -181,20 +242,87 @@
             <h1>ZEUS CLIENT</h1>
             <p>Мощный чит для Minecraft | FREE 1.12.2 | PREMIUM 1.16.5</p>
             <div class="stats">
-                <div class="stat"><div class="stat-number">50+</div><div class="stat-label">Функций</div></div>
-                <div class="stat"><div class="stat-number">1000+</div><div class="stat-label">Пользователей</div></div>
+                <div class="stat"><div class="stat-number">80+</div><div class="stat-label">Функций</div></div>
+                <div class="stat"><div class="stat-number">5000+</div><div class="stat-label">Пользователей</div></div>
                 <div class="stat"><div class="stat-number">24/7</div><div class="stat-label">Поддержка</div></div>
             </div>
         </div>
+        
         <div id="features" class="section">
-            <h2><i class="fas fa-star"></i> Возможности</h2>
+            <h2><i class="fas fa-star"></i> Возможности ZeusClient</h2>
+            <p style="margin-bottom: 30px; opacity: 0.8;">Полный список функций чита для Minecraft. Premium версия открывает доступ ко всем возможностям!</p>
+            
+            <!-- Combat & PVP -->
+            <div class="category-title"><i class="fas fa-crosshairs"></i> Combat & PVP</div>
             <div class="grid">
-                <div class="card"><div class="card-icon"><i class="fas fa-shield-alt"></i></div><h3>Анти-детект</h3><p>Лучшая защита от античитов.</p></div>
-                <div class="card"><div class="card-icon"><i class="fas fa-crosshairs"></i></div><h3>Aimbot</h3><p>Умное наведение на противников.</p></div>
-                <div class="card"><div class="card-icon"><i class="fas fa-eye"></i></div><h3>ESP & X-Ray</h3><p>Подсветка игроков и руд через стены.</p></div>
-                <div class="card"><div class="card-icon"><i class="fas fa-tachometer-alt"></i></div><h3>Оптимизация</h3><p>Высокий FPS на слабых ПК.</p></div>
-                <div class="card"><div class="card-icon"><i class="fas fa-fighter-jet"></i></div><h3>Fly & Speed</h3><p>Различные режимы полета.</p></div>
-                <div class="card"><div class="card-icon"><i class="fas fa-sliders-h"></i></div><h3>Гибкие настройки</h3><p>Полная кастомизация.</p></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-crosshairs"></i></div><h3>Aimbot</h3><p>Автоматическое наведение на противников. Настройка скорости, дистанции, приоритета целей.</p><div class="feature-badge">Premium+Free</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-bullseye"></i></div><h3>KillAura</h3><p>Автоматические удары по всем ближайшим целям. Настройка дистанции, скорости, приоритета.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-hand-fist"></i></div><h3>Critical Hits</h3><p>Автоматические критические удары при атаке. Урон x1.5.</p><div class="feature-badge">Premium+Free</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-click"></i></div><h3>AutoClicker</h3><p>Автокликер с настройкой CPS от 1 до 20. Режимы: левый, правый кнопки.</p><div class="feature-badge">Premium+Free</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-shield-halbed"></i></div><h3>Velocity</h3><p>Уменьшение отдачи при ударах. Настройка горизонтальной и вертикальной отдачи.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-sword"></i></div><h3>Reach</h3><p>Увеличение дистанции атаки до 6+ блоков. Настройка дальности.</p><div class="feature-badge">Premium</div></div>
+            </div>
+            
+            <!-- Movement & Travel -->
+            <div class="category-title"><i class="fas fa-fighter-jet"></i> Movement & Travel</div>
+            <div class="grid">
+                <div class="card"><div class="card-icon"><i class="fas fa-feather"></i></div><h3>Flight</h3><p>Режим полета на выживании. Настройка скорости полета.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-tachometer-alt"></i></div><h3>Speed</h3><p>Увеличение скорости передвижения. Режимы: BHop, Strafe, Ground.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-water"></i></div><h3>Jesus</h3><p>Хождение по воде и лаве. Режимы: Solid, Matrix, Custom.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-arrow-up"></i></div><h3>HighJump</h3><p>Увеличение высоты прыжка. Настройка множителя высоты.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-person-walking-arrow-right"></i></div><h3>Step</h3><p>Подъем на блоки без прыжка. Настройка высоты шага.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-horse"></i></div><h3>NoSlowdown</h3><p>Отсутствие замедления при стрельбе из лука, еде, использовании предметов.</p><div class="feature-badge">Premium+Free</div></div>
+            </div>
+            
+            <!-- Visual & Render -->
+            <div class="category-title"><i class="fas fa-eye"></i> Visual & Render</div>
+            <div class="grid">
+                <div class="card"><div class="card-icon"><i class="fas fa-eye"></i></div><h3>ESP</h3><p>Подсветка игроков, мобов, предметов, сундуков через стены. Настройка цветов.</p><div class="feature-badge">Premium+Free</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-gem"></i></div><h3>X-Ray</h3><p>Просмотр руд и ценных ресурсов сквозь стены. Фильтр руд.</p><div class="feature-badge">Premium+Free</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-vial"></i></div><h3>FullBright</h3><p>Полная яркость в любое время суток. Режимы: Gamma, NightVision.</p><div class="feature-badge">Premium+Free</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-chalkboard"></i></div><h3>Nametags</h3><p>Улучшенные никнеймы игроков. Отображение здоровья, дистанции, брони.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-chart-line"></i></div><h3>HUD</h3><p>Настраиваемый интерфейс. Отображение координат, FPS, пинга, CPS.</p><div class="feature-badge">Premium+Free</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-dice-d6"></i></div><h3>Chams</h3><p>Подсветка игроков и мобов яркими цветами через стены.</p><div class="feature-badge">Premium</div></div>
+            </div>
+            
+            <!-- World & Exploits -->
+            <div class="category-title"><i class="fas fa-globe"></i> World & Exploits</div>
+            <div class="grid">
+                <div class="card"><div class="card-icon"><i class="fas fa-tree"></i></div><h3>Nuker</h3><p>Быстрое разрушение блоков вокруг. Режимы: квадрат, сфера, луч.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-scaffold"></i></div><h3>Scaffold</h3><p>Автоматическая постройка блоков под ногами. Режимы: нормальный, обратный.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-tower-broadcast"></i></div><h3>Tower</h3><p>Быстрый подъем вверх при зажатом прыжке.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-tnt"></i></div><h3>AutoBed</h3><p>Автоматическое разрушение кроватей в BedWars.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-clock"></i></div><h3>Timer</h3><p>Ускорение игрового времени. Настройка множителя от 0.5x до 5x.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-ghost"></i></div><h3>GhostHand</h3><p>Взаимодействие с блоками через стены.</p><div class="feature-badge">Premium</div></div>
+            </div>
+            
+            <!-- Automation & Utilities -->
+            <div class="category-title"><i class="fas fa-robot"></i> Automation & Utilities</div>
+            <div class="grid">
+                <div class="card"><div class="card-icon"><i class="fas fa-potion"></i></div><h3>AutoPot</h3><p>Автоматическое использование зелий при низком здоровье.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-fish"></i></div><h3>AutoFish</h3><p>Автоматическая рыбалка. Забрасывание удочки, вылавливание рыбы.</p><div class="feature-badge">Premium+Free</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-apple-alt"></i></div><h3>AutoEat</h3><p>Автоматическое поедание еды при низком голоде.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-pearl"></i></div><h3>AutoPearl</h3><p>Автоматическое использование жемчуга при низком здоровье.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-crystal-ball"></i></div><h3>AutoCrystal</h3><p>Автоматическая установка и взрыв кристаллов эндера.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-chart-simple"></i></div><h3>AutoArmor</h3><p>Автоматическая смена брони на лучшую.</p><div class="feature-badge">Premium</div></div>
+            </div>
+            
+            <!-- AntiCheat & Bypass -->
+            <div class="category-title"><i class="fas fa-shield-alt"></i> AntiCheat & Bypass</div>
+            <div class="grid">
+                <div class="card"><div class="card-icon"><i class="fas fa-shield-virus"></i></div><h3>AntiCheat Bypass</h3><p>Обход популярных античитов: Watchdog, AAC, Matrix, Spartan.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-mask"></i></div><h3>AntiBan</h3><p>Защита от бана на серверах. Имитация легитимной игры.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-flag"></i></div><h3>AntiVoid</h3><p>Сохранение жизни при падении в пустоту.</p><div class="feature-badge">Premium+Free</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-snowplow"></i></div><h3>NoFall</h3><p>Отсутствие урона от падения с любой высоты.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-fan"></i></div><h3>AntiKnockback</h3><p>Отсутствие отбрасывания при ударах.</p><div class="feature-badge">Premium</div></div>
+                <div class="card"><div class="card-icon"><i class="fas fa-blinds"></i></div><h3>Disabler</h3><p>Отключение некоторых проверок античита на сервере.</p><div class="feature-badge">Premium</div></div>
+            </div>
+            
+            <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,170,0,0.05)); border-radius: 20px; text-align: center;">
+                <i class="fas fa-crown" style="font-size: 32px; color: #ffd700;"></i>
+                <h3 style="color: #ffd700; margin-top: 10px;">Premium открывает ВСЕ функции!</h3>
+                <p>Всего за 499₽ на 30 дней вы получаете доступ к полному арсеналу возможностей ZeusClient.</p>
+                <button class="download-btn" onclick="showAuthForm()" style="margin-top: 15px; padding: 10px 25px; font-size: 16px;">Купить Premium</button>
             </div>
         </div>
     </div>
@@ -333,7 +461,7 @@
     
     let currentUser = null;
     
-    // Названия файлов для скачивания (реальные файлы в папке)
+    // Названия файлов для скачивания
     const FREE_CLIENT_FILE = 'ZeusClient-1.12.2.jar';
     const PREMIUM_CLIENT_FILE = 'ZeusClient-1.16.5.jar';
     
@@ -381,7 +509,7 @@
         }
     }
     
-    // Реальное скачивание файла из папки
+    // Реальное скачивание файла
     function downloadRealFile(fileName, displayName) {
         const link = document.createElement('a');
         link.href = fileName;
@@ -484,7 +612,7 @@
         }, 1500);
     }
     
-    // DOM Elements и функции
+    // DOM элементы и функции
     const publicDiv = document.getElementById('publicContent');
     const authDiv = document.getElementById('authContent');
     const profileDiv = document.getElementById('profileContent');
