@@ -6,6 +6,7 @@
     <title>Админ-панель ZeusClient</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Poppins',sans-serif;background:#0a0a0a;color:#fff;padding:20px}
@@ -43,6 +44,9 @@
         .badge{display:inline-block;padding:3px 8px;border-radius:15px;font-size:11px}
         .badge-free{background:#2c3e50;color:#95a5a6}
         .badge-premium{background:#f1c40f;color:#000}
+        .loading{text-align:center;padding:50px;color:#ffd700}
+        .refresh-btn{background:#2c3e50;border:1px solid #ffd700;padding:12px 25px;border-radius:10px;cursor:pointer;color:#ffd700}
+        .admin-badge{background:#ffd700;color:#000;padding:2px 8px;border-radius:10px;font-size:10px;margin-left:5px}
     </style>
 </head>
 <body>
@@ -54,6 +58,7 @@
         <div class="stat-card"><i class="fas fa-users"></i> Всего пользователей: <span class="number" id="totalUsers">0</span></div>
         <div class="stat-card"><i class="fas fa-chart-line"></i> Общий баланс: <span class="number" id="totalBalance">0</span> ₽</div>
         <div class="stat-card"><i class="fas fa-crown"></i> Premium: <span class="number" id="premiumCount">0</span></div>
+        <div class="stat-card"><i class="fas fa-sync"></i> <button class="refresh-btn" onclick="loadUsersFromSupabase()"><i class="fas fa-refresh"></i> Обновить</button></div>
     </div>
     
     <div class="search-box">
@@ -61,16 +66,17 @@
         <button onclick="searchUsers()"><i class="fas fa-search"></i> Поиск</button>
         <button onclick="resetSearch()"><i class="fas fa-undo"></i> Сброс</button>
         <button onclick="exportData()"><i class="fas fa-download"></i> Экспорт</button>
-        <button onclick="importData()" id="importBtn"><i class="fas fa-upload"></i> Импорт</button>
-        <input type="file" id="importFile" style="display:none" accept=".json" onchange="handleImport(event)">
+        <button onclick="syncToLocal()"><i class="fas fa-cloud-upload-alt"></i> Синхр. с сайтом</button>
     </div>
     
     <div id="message"></div>
     
-    <div class="users-table">
+    <div id="loadingMessage" class="loading"><i class="fas fa-spinner fa-pulse"></i> Загрузка данных из Supabase...</div>
+    
+    <div class="users-table" id="usersTableContainer" style="display:none">
         <table>
             <thead>
-                <tr><th>ID</th><th>Email</th><th>Никнейм</th><th>Баланс (₽)</th><th>Статус</th><th>Premium до</th><th>Покупки</th><th>Действия</th></tr>
+                <tr><th>ID</th><th>Email</th><th>Никнейм</th><th>Баланс (₽)</th><th>Статус</th><th>Premium до</th><th>HWID</th><th>Действия</th></tr>
             </thead>
             <tbody id="usersTableBody"></tbody>
         </table>
@@ -96,41 +102,114 @@
     <div class="modal-content">
         <h3><i class="fas fa-key"></i> Сброс пароля</h3>
         <p>Пользователь: <strong id="modalPasswordUserEmail"></strong></p>
-        <input type="password" id="newPassword" placeholder="Новый пароль (минимум 6 символов)">
+        <p><i class="fas fa-info-circle"></i> Пароль можно сбросить через Supabase Auth</p>
+        <p><a href="https://app.supabase.com" target="_blank" style="color:#ffd700">Перейти в Supabase Dashboard</a> → Authentication → Users</p>
         <div class="modal-buttons">
-            <button class="btn-primary" onclick="savePassword()">Сменить пароль</button>
-            <button class="btn-danger" onclick="closePasswordModal()">Отмена</button>
+            <button class="btn-danger" onclick="closePasswordModal()">Закрыть</button>
         </div>
     </div>
 </div>
 
 <script>
-    let usersData = {};
-    let purchasesData = {};
-    let configsData = [];
-    let currentEditUserId = null;
-    let currentPasswordUserId = null;
+    // Supabase подключение
+    const SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     
-    function loadData() {
-        const profiles = localStorage.getItem('zeus_profiles');
-        const purchases = localStorage.getItem('zeus_purchases');
-        const configs = localStorage.getItem('zeus_configs');
+    // Список администраторов
+    const ADMIN_EMAILS = ['pochat811@gmail.com', 'seri76759@gmail.com'];
+    
+    let allUsers = [];
+    let filteredUsers = [];
+    let currentEditUserId = null;
+    let marketplaceConfigs = [];
+    let currentAdminEmail = null;
+    
+    // Проверка доступа админа
+    async function checkAdminAccess() {
+        const { data: { session } } = await supabase.auth.getSession();
         
-        usersData = profiles ? JSON.parse(profiles) : {};
-        purchasesData = purchases ? JSON.parse(purchases) : {};
-        configsData = configs ? JSON.parse(configs) : [];
+        if(!session) {
+            // Не авторизован - показываем форму входа
+            const email = prompt('Введите email администратора:');
+            const password = prompt('Введите пароль:');
+            
+            if(email && password) {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if(error) {
+                    alert('Ошибка входа: ' + error.message + '\nДоступ запрещен!');
+                    window.location.href = 'index.html';
+                } else if (ADMIN_EMAILS.includes(email)) {
+                    currentAdminEmail = email;
+                    loadUsersFromSupabase();
+                } else {
+                    alert('У вас нет прав администратора! Доступ разрешен только: ' + ADMIN_EMAILS.join(', '));
+                    await supabase.auth.signOut();
+                    window.location.href = 'index.html';
+                }
+            } else {
+                window.location.href = 'index.html';
+            }
+        } else {
+            const userEmail = session.user.email;
+            if(ADMIN_EMAILS.includes(userEmail)) {
+                currentAdminEmail = userEmail;
+                loadUsersFromSupabase();
+            } else {
+                alert('У вас нет прав администратора! Доступ разрешен только: ' + ADMIN_EMAILS.join(', '));
+                await supabase.auth.signOut();
+                window.location.href = 'index.html';
+            }
+        }
+    }
+    
+    // Загрузка пользователей из Supabase
+    async function loadUsersFromSupabase() {
+        document.getElementById('loadingMessage').style.display = 'block';
+        document.getElementById('usersTableContainer').style.display = 'none';
         
-        updateStats();
-        renderTable();
+        try {
+            // Получаем всех пользователей из таблицы profiles
+            const { data: profiles, error: profilesError } = await supabase
+                .from('profiles')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if(profilesError) throw profilesError;
+            
+            // Получаем конфиги
+            const { data: configs, error: configsError } = await supabase
+                .from('marketplace_configs')
+                .select('*');
+            
+            if(!configsError && configs) {
+                marketplaceConfigs = configs;
+            }
+            
+            allUsers = profiles || [];
+            filteredUsers = [...allUsers];
+            
+            updateStats();
+            renderTable();
+            
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('usersTableContainer').style.display = 'block';
+            
+            // Показываем приветствие для админа
+            showMessage(`👋 Добро пожаловать, администратор! Доступно ${allUsers.length} пользователей`, 'success');
+            
+        } catch(error) {
+            console.error('Ошибка загрузки:', error);
+            document.getElementById('loadingMessage').innerHTML = '<span class="error-msg">❌ Ошибка загрузки данных: ' + error.message + '</span>';
+        }
     }
     
     function updateStats() {
-        const users = Object.values(usersData);
-        document.getElementById('totalUsers').innerText = users.length;
+        document.getElementById('totalUsers').innerText = allUsers.length;
         
         let totalBalance = 0;
         let premiumCount = 0;
-        for(let user of users) {
+        for(let user of allUsers) {
             totalBalance += user.balance || 0;
             if(user.subscription_type === 'paid' && user.subscription_until && new Date(user.subscription_until) > new Date()) {
                 premiumCount++;
@@ -140,52 +219,48 @@
         document.getElementById('premiumCount').innerText = premiumCount;
     }
     
-    function renderTable(filter = '') {
+    function renderTable() {
         const tbody = document.getElementById('usersTableBody');
         tbody.innerHTML = '';
         
-        let users = Object.entries(usersData);
-        
-        if(filter) {
-            users = users.filter(([id, user]) => 
-                user.email.toLowerCase().includes(filter.toLowerCase()) || 
-                (user.nickname || '').toLowerCase().includes(filter.toLowerCase())
-            );
-        }
-        
-        for(let [userId, user] of users) {
+        for(let user of filteredUsers) {
             const isPremium = user.subscription_type === 'paid' && user.subscription_until && new Date(user.subscription_until) > new Date();
-            const purchases = purchasesData[userId] || [];
-            const purchaseNames = purchases.map(id => {
-                const cfg = configsData.find(c => c.id === id);
-                return cfg ? cfg.name : '';
-            }).filter(n => n).join(', ');
+            const isAdmin = ADMIN_EMAILS.includes(user.email);
             
             const row = tbody.insertRow();
-            row.insertCell(0).innerText = userId.substring(0, 8) + '...';
-            row.insertCell(1).innerText = user.email;
+            row.insertCell(0).innerText = user.id.substring(0, 8) + '...';
+            row.insertCell(1).innerHTML = user.email + (isAdmin ? '<span class="admin-badge"><i class="fas fa-crown"></i> ADMIN</span>' : '');
             row.insertCell(2).innerText = user.nickname || '-';
             row.insertCell(3).innerHTML = `<strong style="color:#ffd700">${(user.balance || 0).toLocaleString()} ₽</strong>`;
             row.insertCell(4).innerHTML = `<span class="badge ${isPremium ? 'badge-premium' : 'badge-free'}">${isPremium ? 'PREMIUM' : 'FREE'}</span>`;
             row.insertCell(5).innerText = isPremium ? new Date(user.subscription_until).toLocaleDateString() : '-';
-            row.insertCell(6).innerText = purchaseNames.substring(0, 30) || '-';
+            row.insertCell(6).innerText = user.hwid ? user.hwid.substring(0, 12) + '...' : '-';
             
             const actions = row.insertCell(7);
-            actions.innerHTML = `
-                <button class="edit-btn" onclick="openBalanceModal('${userId}', '${user.email}', ${user.balance || 0})"><i class="fas fa-coins"></i> Баланс</button>
-                <button class="edit-btn" onclick="openPasswordModal('${userId}', '${user.email}')"><i class="fas fa-key"></i> Пароль</button>
-                <button class="delete-btn" onclick="deleteUser('${userId}')"><i class="fas fa-trash"></i> Удалить</button>
-            `;
+            if(!isAdmin) {
+                actions.innerHTML = `
+                    <button class="edit-btn" onclick="openBalanceModal('${user.id}', '${user.email}', ${user.balance || 0})"><i class="fas fa-coins"></i> Баланс</button>
+                    <button class="edit-btn" onclick="openPasswordModal('${user.id}', '${user.email}')"><i class="fas fa-key"></i> Пароль</button>
+                    <button class="delete-btn" onclick="deleteUser('${user.id}')"><i class="fas fa-trash"></i> Удалить</button>
+                `;
+            } else {
+                actions.innerHTML = `<span style="color:#ffd700"><i class="fas fa-crown"></i> Администратор</span>`;
+            }
         }
     }
     
     function searchUsers() {
-        const search = document.getElementById('searchInput').value;
-        renderTable(search);
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        filteredUsers = allUsers.filter(user => 
+            user.email.toLowerCase().includes(search) || 
+            (user.nickname || '').toLowerCase().includes(search)
+        );
+        renderTable();
     }
     
     function resetSearch() {
         document.getElementById('searchInput').value = '';
+        filteredUsers = [...allUsers];
         renderTable();
     }
     
@@ -202,78 +277,102 @@
         currentEditUserId = null;
     }
     
-    function saveBalance() {
+    async function saveBalance() {
         const newBalance = parseInt(document.getElementById('newBalance').value);
         if(isNaN(newBalance) || newBalance < 0 || newBalance > 100000) {
             showMessage('Баланс должен быть от 0 до 100 000 ₽', 'error');
             return;
         }
         
-        if(currentEditUserId && usersData[currentEditUserId]) {
-            usersData[currentEditUserId].balance = newBalance;
-            localStorage.setItem('zeus_profiles', JSON.stringify(usersData));
-            syncToMainConfig();
-            showMessage(`✅ Баланс изменен на ${newBalance.toLocaleString()} ₽`, 'success');
-            closeBalanceModal();
-            updateStats();
-            renderTable();
+        if(currentEditUserId) {
+            try {
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({ balance: newBalance })
+                    .eq('id', currentEditUserId);
+                
+                if(error) throw error;
+                
+                showMessage(`✅ Баланс изменен на ${newBalance.toLocaleString()} ₽`, 'success');
+                closeBalanceModal();
+                await loadUsersFromSupabase();
+                
+            } catch(error) {
+                showMessage('❌ Ошибка: ' + error.message, 'error');
+            }
         }
     }
     
     function openPasswordModal(userId, email) {
-        currentPasswordUserId = userId;
         document.getElementById('modalPasswordUserEmail').innerText = email;
-        document.getElementById('newPassword').value = '';
         document.getElementById('passwordModal').style.display = 'flex';
     }
     
     function closePasswordModal() {
         document.getElementById('passwordModal').style.display = 'none';
-        currentPasswordUserId = null;
     }
     
-    function savePassword() {
-        const newPassword = document.getElementById('newPassword').value;
-        if(!newPassword || newPassword.length < 6) {
-            showMessage('Пароль должен быть минимум 6 символов', 'error');
+    async function deleteUser(userId) {
+        const user = allUsers.find(u => u.id === userId);
+        if(user && ADMIN_EMAILS.includes(user.email)) {
+            showMessage('❌ Нельзя удалить администратора!', 'error');
             return;
         }
         
-        if(currentPasswordUserId && usersData[currentPasswordUserId]) {
-            usersData[currentPasswordUserId].password = newPassword;
-            usersData[currentPasswordUserId].passwordChanged = new Date().toISOString();
-            localStorage.setItem('zeus_profiles', JSON.stringify(usersData));
-            syncToMainConfig();
-            showMessage(`✅ Пароль изменен для ${usersData[currentPasswordUserId].email}`, 'success');
-            closePasswordModal();
-        }
-    }
-    
-    function deleteUser(userId) {
         if(confirm('Вы уверены, что хотите удалить этого пользователя? Данные будут потеряны навсегда!')) {
-            delete usersData[userId];
-            delete purchasesData[userId];
-            localStorage.setItem('zeus_profiles', JSON.stringify(usersData));
-            localStorage.setItem('zeus_purchases', JSON.stringify(purchasesData));
-            syncToMainConfig();
-            showMessage('✅ Пользователь удален', 'success');
-            updateStats();
-            renderTable();
+            try {
+                // Удаляем покупки пользователя
+                await supabase.from('user_purchases').delete().eq('user_id', userId);
+                
+                // Удаляем профиль
+                const { error } = await supabase.from('profiles').delete().eq('id', userId);
+                
+                if(error) throw error;
+                
+                showMessage('✅ Пользователь удален', 'success');
+                await loadUsersFromSupabase();
+                
+            } catch(error) {
+                showMessage('❌ Ошибка: ' + error.message, 'error');
+            }
         }
     }
     
-    function syncToMainConfig() {
-        const config = {
-            users: usersData,
-            purchases: purchasesData,
-            configs: configsData,
-            lastUpdate: new Date().toISOString()
-        };
-        localStorage.setItem('zeus_config_data', JSON.stringify(config));
+    function syncToLocal() {
+        // Синхронизация с localStorage для index.html
+        const profilesData = {};
+        for(let user of allUsers) {
+            profilesData[user.id] = {
+                nickname: user.nickname,
+                email: user.email,
+                balance: user.balance,
+                subscription_type: user.subscription_type,
+                subscription_until: user.subscription_until,
+                hwid: user.hwid
+            };
+        }
         
-        const msgDiv = document.getElementById('message');
-        msgDiv.innerHTML = '<div class="success-msg">✅ Данные синхронизированы с основным сайтом</div>';
-        setTimeout(() => msgDiv.innerHTML = '', 3000);
+        localStorage.setItem('zeus_profiles', JSON.stringify(profilesData));
+        localStorage.setItem('zeus_configs', JSON.stringify(marketplaceConfigs));
+        
+        showMessage('✅ Данные синхронизированы с сайтом', 'success');
+    }
+    
+    function exportData() {
+        const exportData = {
+            users: allUsers,
+            configs: marketplaceConfigs,
+            admins: ADMIN_EMAILS,
+            exportDate: new Date().toISOString()
+        };
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `zeus_users_backup_${new Date().toISOString().slice(0,19)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showMessage('✅ Данные экспортированы', 'success');
     }
     
     function showMessage(text, type) {
@@ -282,70 +381,8 @@
         setTimeout(() => msgDiv.innerHTML = '', 3000);
     }
     
-    function exportData() {
-        const exportData = {
-            users: usersData,
-            purchases: purchasesData,
-            configs: configsData,
-            exportDate: new Date().toISOString()
-        };
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `zeus_backup_${new Date().toISOString().slice(0,19)}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        showMessage('✅ Данные экспортированы', 'success');
-    }
-    
-    function importData() {
-        document.getElementById('importFile').click();
-    }
-    
-    function handleImport(event) {
-        const file = event.target.files[0];
-        if(!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const imported = JSON.parse(e.target.result);
-                if(imported.users) usersData = imported.users;
-                if(imported.purchases) purchasesData = imported.purchases;
-                if(imported.configs) configsData = imported.configs;
-                
-                localStorage.setItem('zeus_profiles', JSON.stringify(usersData));
-                localStorage.setItem('zeus_purchases', JSON.stringify(purchasesData));
-                localStorage.setItem('zeus_configs', JSON.stringify(configsData));
-                syncToMainConfig();
-                
-                showMessage('✅ Данные импортированы успешно', 'success');
-                updateStats();
-                renderTable();
-            } catch(err) {
-                showMessage('❌ Ошибка импорта: неверный формат файла', 'error');
-            }
-        };
-        reader.readAsText(file);
-        document.getElementById('importFile').value = '';
-    }
-    
-    function checkAdminAccess() {
-        const adminKey = localStorage.getItem('zeus_admin_key');
-        if(!adminKey) {
-            const password = prompt('Введите пароль администратора:');
-            if(password === 'zeusadmin2024') {
-                localStorage.setItem('zeus_admin_key', 'authorized');
-            } else {
-                alert('Доступ запрещен!');
-                window.location.href = 'index.html';
-            }
-        }
-    }
-    
+    // Запуск
     checkAdminAccess();
-    loadData();
 </script>
 </body>
 </html>
