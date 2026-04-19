@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель ZeusClient</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Poppins',sans-serif;background:#0a0a0a;color:#fff;padding:20px}
+        .container{max-width:1400px;margin:0 auto}
+        h1{color:#ffd700;margin-bottom:20px;border-left:4px solid #ffd700;padding-left:20px}
+        .stats-bar{display:flex;gap:20px;margin-bottom:30px;flex-wrap:wrap}
+        .stat-card{background:rgba(0,0,0,.6);border-radius:15px;padding:15px 25px;border:1px solid rgba(255,215,0,.3);min-width:150px}
+        .stat-card i{color:#ffd700;margin-right:10px}
+        .stat-card .number{font-size:28px;font-weight:800;color:#ffd700}
+        .search-box{background:rgba(0,0,0,.6);border-radius:15px;padding:15px;margin-bottom:20px;display:flex;gap:10px;flex-wrap:wrap}
+        .search-box input{flex:1;padding:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,215,0,.3);border-radius:10px;color:#fff}
+        .search-box button{padding:12px 25px;background:linear-gradient(135deg,#ffd700,#ffaa00);border:none;border-radius:10px;cursor:pointer;font-weight:700}
+        .users-table{background:rgba(0,0,0,.6);border-radius:15px;overflow-x:auto}
+        table{width:100%;border-collapse:collapse}
+        th,td{padding:12px 15px;text-align:left;border-bottom:1px solid rgba(255,215,0,.2)}
+        th{color:#ffd700;font-weight:700}
+        tr:hover{background:rgba(255,215,0,.05)}
+        .edit-btn,.save-btn,.cancel-btn,.delete-btn{background:#2c3e50;border:none;padding:6px 12px;border-radius:8px;cursor:pointer;margin:0 3px;color:#fff}
+        .edit-btn{background:#f39c12}
+        .save-btn{background:#27ae60}
+        .cancel-btn{background:#e74c3c}
+        .delete-btn{background:#c0392b}
+        .edit-input{background:rgba(255,255,255,.2);border:1px solid #ffd700;border-radius:8px;padding:5px 10px;color:#fff;width:100%}
+        .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);z-index:2000;justify-content:center;align-items:center}
+        .modal-content{background:#1a1a1a;border-radius:30px;padding:30px;max-width:500px;width:90%;border:2px solid #ffd700}
+        .modal-content h3{color:#ffd700;margin-bottom:20px}
+        .modal-content input{width:100%;padding:12px;margin:10px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,215,0,.3);border-radius:10px;color:#fff}
+        .modal-buttons{display:flex;gap:10px;margin-top:20px}
+        .btn-primary{background:linear-gradient(135deg,#ffd700,#ffaa00);border:none;padding:12px 25px;border-radius:10px;cursor:pointer;font-weight:700;flex:1}
+        .btn-danger{background:#e74c3c;border:none;padding:12px 25px;border-radius:10px;cursor:pointer;color:#fff;flex:1}
+        .back-link{display:inline-block;margin-bottom:20px;color:#ffd700;text-decoration:none}
+        .back-link:hover{text-decoration:underline}
+        .success-msg{background:rgba(46,204,113,.2);border:1px solid #2ecc71;border-radius:10px;padding:10px;margin:10px 0;color:#2ecc71}
+        .error-msg{background:rgba(231,76,60,.2);border:1px solid #e74c3c;border-radius:10px;padding:10px;margin:10px 0;color:#e74c3c}
+        .badge{display:inline-block;padding:3px 8px;border-radius:15px;font-size:11px}
+        .badge-free{background:#2c3e50;color:#95a5a6}
+        .badge-premium{background:#f1c40f;color:#000}
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> На главную</a>
+    <h1><i class="fas fa-cog"></i> Админ-панель управления пользователями</h1>
+    
+    <div class="stats-bar">
+        <div class="stat-card"><i class="fas fa-users"></i> Всего пользователей: <span class="number" id="totalUsers">0</span></div>
+        <div class="stat-card"><i class="fas fa-chart-line"></i> Общий баланс: <span class="number" id="totalBalance">0</span> ₽</div>
+        <div class="stat-card"><i class="fas fa-crown"></i> Premium: <span class="number" id="premiumCount">0</span></div>
+    </div>
+    
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Поиск по email или нику...">
+        <button onclick="searchUsers()"><i class="fas fa-search"></i> Поиск</button>
+        <button onclick="resetSearch()"><i class="fas fa-undo"></i> Сброс</button>
+        <button onclick="exportData()"><i class="fas fa-download"></i> Экспорт</button>
+        <button onclick="importData()" id="importBtn"><i class="fas fa-upload"></i> Импорт</button>
+        <input type="file" id="importFile" style="display:none" accept=".json" onchange="handleImport(event)">
+    </div>
+    
+    <div id="message"></div>
+    
+    <div class="users-table">
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Email</th><th>Никнейм</th><th>Баланс (₽)</th><th>Статус</th><th>Premium до</th><th>Покупки</th><th>Действия</th></tr>
+            </thead>
+            <tbody id="usersTableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Модальное окно изменения баланса -->
+<div id="balanceModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-wallet"></i> Изменение баланса</h3>
+        <p>Пользователь: <strong id="modalUserEmail"></strong></p>
+        <p>Текущий баланс: <strong id="modalCurrentBalance">0</strong> ₽</p>
+        <input type="number" id="newBalance" placeholder="Новый баланс (0 - 100000)" min="0" max="100000">
+        <div class="modal-buttons">
+            <button class="btn-primary" onclick="saveBalance()">Сохранить</button>
+            <button class="btn-danger" onclick="closeBalanceModal()">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно сброса пароля -->
+<div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-key"></i> Сброс пароля</h3>
+        <p>Пользователь: <strong id="modalPasswordUserEmail"></strong></p>
+        <input type="password" id="newPassword" placeholder="Новый пароль (минимум 6 символов)">
+        <div class="modal-buttons">
+            <button class="btn-primary" onclick="savePassword()">Сменить пароль</button>
+            <button class="btn-danger" onclick="closePasswordModal()">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let usersData = {};
+    let purchasesData = {};
+    let configsData = [];
+    let currentEditUserId = null;
+    let currentPasswordUserId = null;
+    
+    function loadData() {
+        const profiles = localStorage.getItem('zeus_profiles');
+        const purchases = localStorage.getItem('zeus_purchases');
+        const configs = localStorage.getItem('zeus_configs');
+        
+        usersData = profiles ? JSON.parse(profiles) : {};
+        purchasesData = purchases ? JSON.parse(purchases) : {};
+        configsData = configs ? JSON.parse(configs) : [];
+        
+        updateStats();
+        renderTable();
+    }
+    
+    function updateStats() {
+        const users = Object.values(usersData);
+        document.getElementById('totalUsers').innerText = users.length;
+        
+        let totalBalance = 0;
+        let premiumCount = 0;
+        for(let user of users) {
+            totalBalance += user.balance || 0;
+            if(user.subscription_type === 'paid' && user.subscription_until && new Date(user.subscription_until) > new Date()) {
+                premiumCount++;
+            }
+        }
+        document.getElementById('totalBalance').innerText = totalBalance.toLocaleString();
+        document.getElementById('premiumCount').innerText = premiumCount;
+    }
+    
+    function renderTable(filter = '') {
+        const tbody = document.getElementById('usersTableBody');
+        tbody.innerHTML = '';
+        
+        let users = Object.entries(usersData);
+        
+        if(filter) {
+            users = users.filter(([id, user]) => 
+                user.email.toLowerCase().includes(filter.toLowerCase()) || 
+                (user.nickname || '').toLowerCase().includes(filter.toLowerCase())
+            );
+        }
+        
+        for(let [userId, user] of users) {
+            const isPremium = user.subscription_type === 'paid' && user.subscription_until && new Date(user.subscription_until) > new Date();
+            const purchases = purchasesData[userId] || [];
+            const purchaseNames = purchases.map(id => {
+                const cfg = configsData.find(c => c.id === id);
+                return cfg ? cfg.name : '';
+            }).filter(n => n).join(', ');
+            
+            const row = tbody.insertRow();
+            row.insertCell(0).innerText = userId.substring(0, 8) + '...';
+            row.insertCell(1).innerText = user.email;
+            row.insertCell(2).innerText = user.nickname || '-';
+            row.insertCell(3).innerHTML = `<strong style="color:#ffd700">${(user.balance || 0).toLocaleString()} ₽</strong>`;
+            row.insertCell(4).innerHTML = `<span class="badge ${isPremium ? 'badge-premium' : 'badge-free'}">${isPremium ? 'PREMIUM' : 'FREE'}</span>`;
+            row.insertCell(5).innerText = isPremium ? new Date(user.subscription_until).toLocaleDateString() : '-';
+            row.insertCell(6).innerText = purchaseNames.substring(0, 30) || '-';
+            
+            const actions = row.insertCell(7);
+            actions.innerHTML = `
+                <button class="edit-btn" onclick="openBalanceModal('${userId}', '${user.email}', ${user.balance || 0})"><i class="fas fa-coins"></i> Баланс</button>
+                <button class="edit-btn" onclick="openPasswordModal('${userId}', '${user.email}')"><i class="fas fa-key"></i> Пароль</button>
+                <button class="delete-btn" onclick="deleteUser('${userId}')"><i class="fas fa-trash"></i> Удалить</button>
+            `;
+        }
+    }
+    
+    function searchUsers() {
+        const search = document.getElementById('searchInput').value;
+        renderTable(search);
+    }
+    
+    function resetSearch() {
+        document.getElementById('searchInput').value = '';
+        renderTable();
+    }
+    
+    function openBalanceModal(userId, email, currentBalance) {
+        currentEditUserId = userId;
+        document.getElementById('modalUserEmail').innerText = email;
+        document.getElementById('modalCurrentBalance').innerText = currentBalance.toLocaleString();
+        document.getElementById('newBalance').value = currentBalance;
+        document.getElementById('balanceModal').style.display = 'flex';
+    }
+    
+    function closeBalanceModal() {
+        document.getElementById('balanceModal').style.display = 'none';
+        currentEditUserId = null;
+    }
+    
+    function saveBalance() {
+        const newBalance = parseInt(document.getElementById('newBalance').value);
+        if(isNaN(newBalance) || newBalance < 0 || newBalance > 100000) {
+            showMessage('Баланс должен быть от 0 до 100 000 ₽', 'error');
+            return;
+        }
+        
+        if(currentEditUserId && usersData[currentEditUserId]) {
+            usersData[currentEditUserId].balance = newBalance;
+            localStorage.setItem('zeus_profiles', JSON.stringify(usersData));
+            syncToMainConfig();
+            showMessage(`✅ Баланс изменен на ${newBalance.toLocaleString()} ₽`, 'success');
+            closeBalanceModal();
+            updateStats();
+            renderTable();
+        }
+    }
+    
+    function openPasswordModal(userId, email) {
+        currentPasswordUserId = userId;
+        document.getElementById('modalPasswordUserEmail').innerText = email;
+        document.getElementById('newPassword').value = '';
+        document.getElementById('passwordModal').style.display = 'flex';
+    }
+    
+    function closePasswordModal() {
+        document.getElementById('passwordModal').style.display = 'none';
+        currentPasswordUserId = null;
+    }
+    
+    function savePassword() {
+        const newPassword = document.getElementById('newPassword').value;
+        if(!newPassword || newPassword.length < 6) {
+            showMessage('Пароль должен быть минимум 6 символов', 'error');
+            return;
+        }
+        
+        if(currentPasswordUserId && usersData[currentPasswordUserId]) {
+            usersData[currentPasswordUserId].password = newPassword;
+            usersData[currentPasswordUserId].passwordChanged = new Date().toISOString();
+            localStorage.setItem('zeus_profiles', JSON.stringify(usersData));
+            syncToMainConfig();
+            showMessage(`✅ Пароль изменен для ${usersData[currentPasswordUserId].email}`, 'success');
+            closePasswordModal();
+        }
+    }
+    
+    function deleteUser(userId) {
+        if(confirm('Вы уверены, что хотите удалить этого пользователя? Данные будут потеряны навсегда!')) {
+            delete usersData[userId];
+            delete purchasesData[userId];
+            localStorage.setItem('zeus_profiles', JSON.stringify(usersData));
+            localStorage.setItem('zeus_purchases', JSON.stringify(purchasesData));
+            syncToMainConfig();
+            showMessage('✅ Пользователь удален', 'success');
+            updateStats();
+            renderTable();
+        }
+    }
+    
+    function syncToMainConfig() {
+        const config = {
+            users: usersData,
+            purchases: purchasesData,
+            configs: configsData,
+            lastUpdate: new Date().toISOString()
+        };
+        localStorage.setItem('zeus_config_data', JSON.stringify(config));
+        
+        const msgDiv = document.getElementById('message');
+        msgDiv.innerHTML = '<div class="success-msg">✅ Данные синхронизированы с основным сайтом</div>';
+        setTimeout(() => msgDiv.innerHTML = '', 3000);
+    }
+    
+    function showMessage(text, type) {
+        const msgDiv = document.getElementById('message');
+        msgDiv.innerHTML = `<div class="${type === 'success' ? 'success-msg' : 'error-msg'}">${text}</div>`;
+        setTimeout(() => msgDiv.innerHTML = '', 3000);
+    }
+    
+    function exportData() {
+        const exportData = {
+            users: usersData,
+            purchases: purchasesData,
+            configs: configsData,
+            exportDate: new Date().toISOString()
+        };
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `zeus_backup_${new Date().toISOString().slice(0,19)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showMessage('✅ Данные экспортированы', 'success');
+    }
+    
+    function importData() {
+        document.getElementById('importFile').click();
+    }
+    
+    function handleImport(event) {
+        const file = event.target.files[0];
+        if(!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const imported = JSON.parse(e.target.result);
+                if(imported.users) usersData = imported.users;
+                if(imported.purchases) purchasesData = imported.purchases;
+                if(imported.configs) configsData = imported.configs;
+                
+                localStorage.setItem('zeus_profiles', JSON.stringify(usersData));
+                localStorage.setItem('zeus_purchases', JSON.stringify(purchasesData));
+                localStorage.setItem('zeus_configs', JSON.stringify(configsData));
+                syncToMainConfig();
+                
+                showMessage('✅ Данные импортированы успешно', 'success');
+                updateStats();
+                renderTable();
+            } catch(err) {
+                showMessage('❌ Ошибка импорта: неверный формат файла', 'error');
+            }
+        };
+        reader.readAsText(file);
+        document.getElementById('importFile').value = '';
+    }
+    
+    function checkAdminAccess() {
+        const adminKey = localStorage.getItem('zeus_admin_key');
+        if(!adminKey) {
+            const password = prompt('Введите пароль администратора:');
+            if(password === 'zeusadmin2024') {
+                localStorage.setItem('zeus_admin_key', 'authorized');
+            } else {
+                alert('Доступ запрещен!');
+                window.location.href = 'index.html';
+            }
+        }
+    }
+    
+    checkAdminAccess();
+    loadData();
+</script>
+</body>
+</html>
