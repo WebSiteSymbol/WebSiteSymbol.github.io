@@ -80,6 +80,7 @@
         .card-icon { width: 70px; height: 70px; background: linear-gradient(135deg, #ffd700, #ffaa00); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 30px; color: #1a1a1a; }
         .download-btn { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #1a1a1a; border: none; padding: 12px 30px; font-size: 18px; font-weight: 800; border-radius: 60px; cursor: pointer; transition: 0.3s; margin-top: 15px; }
         .download-btn:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(255,215,0,0.4); }
+        .download-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .auth-container { max-width: 480px; margin: 0 auto; }
         .auth-card { background: rgba(0,0,0,0.95); border-radius: 30px; padding: 40px; border: 1px solid rgba(255,215,0,0.3); }
         .auth-input { width: 100%; padding: 15px; margin: 12px 0; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: 15px; color: white; font-size: 16px; }
@@ -138,6 +139,14 @@
         }
         .premium-version { color: #ffd700; border: 1px solid #ffd700; }
         .free-version { color: #95a5a6; border: 1px solid #95a5a6; }
+        .file-status {
+            font-size: 12px;
+            margin-top: 10px;
+            padding: 5px;
+            border-radius: 8px;
+        }
+        .file-exists { color: #2ecc71; background: rgba(46,204,113,0.1); }
+        .file-missing { color: #e74c3c; background: rgba(231,76,60,0.1); }
         @media (max-width: 768px) { .navbar { padding: 15px; flex-direction: column; gap: 10px; } .hero h1 { font-size: 40px; } .section { padding: 20px; } }
     </style>
 </head>
@@ -242,13 +251,19 @@
                     <div class="card-icon"><i class="fas fa-box-open"></i></div>
                     <h3>ZeusClient FREE <span class="version-badge free-version">1.12.2</span></h3>
                     <p>Бесплатная версия для Minecraft 1.12.2 с базовыми функциями</p>
-                    <button class="download-btn" onclick="downloadClient('free')"><i class="fas fa-download"></i> Скачать (Free 1.12.2)</button>
+                    <button class="download-btn" onclick="downloadClient('free')" id="freeDownloadBtn">
+                        <i class="fas fa-download"></i> Скачать (Free 1.12.2)
+                    </button>
+                    <div id="freeFileStatus" class="file-status"></div>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i class="fas fa-gem"></i></div>
                     <h3>ZeusClient PREMIUM <span class="version-badge premium-version">1.16.5</span></h3>
                     <p>Премиум версия для Minecraft 1.16.5. Все функции + эксклюзивные возможности</p>
-                    <button id="premiumDownloadBtn" class="download-btn" onclick="downloadClient('premium')" disabled><i class="fas fa-download"></i> Скачать (Premium 1.16.5)</button>
+                    <button id="premiumDownloadBtn" class="download-btn" onclick="downloadClient('premium')" disabled>
+                        <i class="fas fa-download"></i> Скачать (Premium 1.16.5)
+                    </button>
+                    <div id="premiumFileStatus" class="file-status"></div>
                 </div>
             </div>
         </div>
@@ -288,6 +303,10 @@
     
     let currentUser = null;
     
+    // Названия файлов для скачивания
+    const FREE_CLIENT_FILE = 'ZeusClient-Free-1.12.2.jar';
+    const PREMIUM_CLIENT_FILE = 'ZeusClient-Premium-1.16.5.jar';
+    
     // Хранилище данных
     let userProfiles = JSON.parse(localStorage.getItem('zeus_profiles') || '{}');
     let userPurchases = JSON.parse(localStorage.getItem('zeus_purchases') || '{}');
@@ -296,16 +315,63 @@
     // Инициализация конфигов
     if(marketplaceConfigs.length === 0) {
         marketplaceConfigs = [
-            { id: 1, name: '🔥 PvP God Config', description: 'Максимальный набор настроек для PvP. Высокий DPS, идеальный аим, автоматическое POTION', price: 299, author: 'ZeusTeam', file_url: 'configs/pvp_god.json', premiumDiscount: true, version: '1.16.5' },
-            { id: 2, name: '👑 Legit Config', description: 'Легитимные настройки для скрытной игры. Почти не детектится на античитах.', price: 149, author: 'ProPlayer', file_url: 'configs/legit.json', premiumDiscount: true, version: '1.12.2' },
-            { id: 3, name: '🌾 Farm Config', description: 'Оптимизирован для фарма ресурсов, авто-фермы, X-Ray руд', price: 99, author: 'Farmer', file_url: 'configs/farm.json', premiumDiscount: false, version: '1.16.5' },
-            { id: 4, name: '💀 Anarchy Config', description: 'Для анархии и хардкор серверов. Пробив любых защит, кристаллы PvP', price: 399, author: 'HackerOne', file_url: 'configs/anarchy.json', premiumDiscount: true, version: '1.16.5' },
-            { id: 5, name: '🎯 SilentAim Config', description: 'Скрытный аимбот с плавным наведением', price: 199, author: 'Ghost', file_url: 'configs/silentaim.json', premiumDiscount: true, version: '1.12.2' },
-            { id: 6, name: '🚀 SpeedRun Config', description: 'Максимальная скорость для спидранов', price: 79, author: 'Speedster', file_url: 'configs/speedrun.json', premiumDiscount: false, version: '1.16.5' }
+            { id: 1, name: '🔥 PvP God Config', description: 'Максимальный набор настроек для PvP. Высокий DPS, идеальный аим, автоматическое POTION', price: 299, author: 'ZeusTeam', file_name: 'pvp_god_config.json', premiumDiscount: true, version: '1.16.5' },
+            { id: 2, name: '👑 Legit Config', description: 'Легитимные настройки для скрытной игры. Почти не детектится на античитах.', price: 149, author: 'ProPlayer', file_name: 'legit_config.json', premiumDiscount: true, version: '1.12.2' },
+            { id: 3, name: '🌾 Farm Config', description: 'Оптимизирован для фарма ресурсов, авто-фермы, X-Ray руд', price: 99, author: 'Farmer', file_name: 'farm_config.json', premiumDiscount: false, version: '1.16.5' },
+            { id: 4, name: '💀 Anarchy Config', description: 'Для анархии и хардкор серверов. Пробив любых защит, кристаллы PvP', price: 399, author: 'HackerOne', file_name: 'anarchy_config.json', premiumDiscount: true, version: '1.16.5' },
+            { id: 5, name: '🎯 SilentAim Config', description: 'Скрытный аимбот с плавным наведением', price: 199, author: 'Ghost', file_name: 'silentaim_config.json', premiumDiscount: true, version: '1.12.2' },
+            { id: 6, name: '🚀 SpeedRun Config', description: 'Максимальная скорость для спидранов', price: 79, author: 'Speedster', file_name: 'speedrun_config.json', premiumDiscount: false, version: '1.16.5' }
         ];
         localStorage.setItem('zeus_configs', JSON.stringify(marketplaceConfigs));
     }
-
+    
+    // Функция проверки существования файла
+    async function checkFileExists(fileName) {
+        try {
+            const response = await fetch(fileName, { method: 'HEAD' });
+            return response.ok;
+        } catch {
+            return false;
+        }
+    }
+    
+    // Функция скачивания файла
+    function downloadFile(fileName, displayName) {
+        const link = document.createElement('a');
+        link.href = fileName;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    // Проверка статуса файлов при загрузке профиля
+    async function checkFilesStatus() {
+        const freeExists = await checkFileExists(FREE_CLIENT_FILE);
+        const premiumExists = await checkFileExists(PREMIUM_CLIENT_FILE);
+        
+        const freeStatusDiv = document.getElementById('freeFileStatus');
+        const premiumStatusDiv = document.getElementById('premiumFileStatus');
+        
+        if (freeStatusDiv) {
+            if (freeExists) {
+                freeStatusDiv.innerHTML = '<span class="file-exists">✅ Файл найден на сервере</span>';
+                document.getElementById('freeDownloadBtn').disabled = false;
+            } else {
+                freeStatusDiv.innerHTML = '<span class="file-missing">⚠️ Файл не найден! Поместите ' + FREE_CLIENT_FILE + ' в папку с сайтом</span>';
+                document.getElementById('freeDownloadBtn').disabled = false; // Все равно даем скачать, но с предупреждением
+            }
+        }
+        
+        if (premiumStatusDiv) {
+            if (premiumExists) {
+                premiumStatusDiv.innerHTML = '<span class="file-exists">✅ Файл найден на сервере</span>';
+            } else {
+                premiumStatusDiv.innerHTML = '<span class="file-missing">⚠️ Файл не найден! Поместите ' + PREMIUM_CLIENT_FILE + ' в папку с сайтом</span>';
+            }
+        }
+    }
+    
     // DOM Elements
     const publicDiv = document.getElementById('publicContent');
     const authDiv = document.getElementById('authContent');
@@ -392,6 +458,7 @@
             marketplaceDiv.classList.add('hidden'); 
             loadProfileData(); 
             loadMyPurchases(); 
+            checkFilesStatus();
         } 
     }
     
@@ -565,26 +632,35 @@
         loadMyPurchases();
     }
 
-    window.downloadConfig = function(configId) {
+    window.downloadConfig = async function(configId) {
         const config = marketplaceConfigs.find(c => c.id === configId);
-        const data = JSON.stringify({ 
-            name: config.name, 
-            description: config.description, 
-            version: config.version,
-            minecraft_version: config.version,
-            author: config.author,
-            created: new Date().toISOString()
-        }, null, 2);
-        const blob = new Blob([data], {type: 'application/json'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${config.name.toLowerCase().replace(/ /g, '_')}_mc${config.version}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        alert(`📥 Скачивание конфига: ${config.name} для Minecraft ${config.version}`);
+        const fileExists = await checkFileExists(config.file_name);
+        
+        if(fileExists) {
+            downloadFile(config.file_name, config.name);
+            alert(`📥 Скачивание конфига: ${config.name}`);
+        } else {
+            // Если файла нет, создаем его
+            const data = JSON.stringify({ 
+                name: config.name, 
+                description: config.description, 
+                version: config.version,
+                minecraft_version: config.version,
+                author: config.author,
+                price: config.price,
+                created: new Date().toISOString()
+            }, null, 2);
+            const blob = new Blob([data], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = config.file_name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert(`📥 Файл ${config.name} не найден на сервере, создан автоматически!`);
+        }
     }
 
     function loadMyPurchases() {
@@ -611,55 +687,27 @@
         document.getElementById('myPurchasesList').innerHTML = html;
     }
 
-    window.downloadClient = function(type) {
+    window.downloadClient = async function(type) {
         if(type === 'free') {
-            const content = `// ZeusClient Free for Minecraft 1.12.2
-// Бесплатная версия с базовыми функциями
-// Версия: 2.0.0
-// Поддерживаемые версии: 1.12.2
-// Функции: ESP, X-Ray, Fly, Speed, Aimbot (базовый)
-// Установка: поместите файл в папку .minecraft/mods/`;
-            
-            const blob = new Blob([content], {type: 'application/java-archive'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'ZeusClient-Free-1.12.2.jar';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            alert('📥 Скачивание ZeusClient Free для Minecraft 1.12.2...\nФайл сохранен в папку загрузок');
+            const fileExists = await checkFileExists(FREE_CLIENT_FILE);
+            if(fileExists) {
+                downloadFile(FREE_CLIENT_FILE, 'ZeusClient Free 1.12.2');
+                alert('📥 Скачивание ZeusClient Free для Minecraft 1.12.2...');
+            } else {
+                alert(`❌ Файл ${FREE_CLIENT_FILE} не найден!\n\nПоместите файл мода в ту же папку, где находится index.html\n\nТекущая директория: ${window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'))}`);
+            }
         } else {
             const profile = userProfiles[currentUser?.id] || {};
             const isPremiumActive = profile.subscription_type === 'paid' && profile.subscription_until && new Date(profile.subscription_until) > new Date();
+            
             if(isPremiumActive) {
-                const content = `// ZeusClient Premium for Minecraft 1.16.5
-// ПОЛНАЯ ВЕРСИЯ СО ВСЕМИ ФУНКЦИЯМИ
-// Версия: 3.0.0-PREMIUM
-// Поддерживаемые версии: 1.16.5, 1.16.4, 1.16.3
-// Функции:
-// - Продвинутый Aimbot с настройками
-// - ESP (игроки, мобы, предметы, сундуки)
-// - X-Ray через стены
-// - Fly + Speed + Jesus
-// - AntiCheat Bypass
-// - AutoClicker, AutoPot, AutoPearl
-// - Scaffold, Tower, BedBomb
-// - KillAura, Criticals
-// - И многое другое!
-// Установка: поместите файл в папку .minecraft/mods/ для версии 1.16.5`;
-                
-                const blob = new Blob([content], {type: 'application/java-archive'});
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'ZeusClient-Premium-1.16.5.jar';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                alert('📥 Скачивание ZeusClient Premium для Minecraft 1.16.5...\nФайл сохранен в папку загрузок');
+                const fileExists = await checkFileExists(PREMIUM_CLIENT_FILE);
+                if(fileExists) {
+                    downloadFile(PREMIUM_CLIENT_FILE, 'ZeusClient Premium 1.16.5');
+                    alert('📥 Скачивание ZeusClient Premium для Minecraft 1.16.5...');
+                } else {
+                    alert(`❌ Файл ${PREMIUM_CLIENT_FILE} не найден!\n\nПоместите файл мода в ту же папку, где находится index.html\n\nТекущая директория: ${window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'))}`);
+                }
             } else { 
                 alert('❌ Premium версия для Minecraft 1.16.5 доступна только по подписке! Купите Premium в личном кабинете.'); 
             }
@@ -751,6 +799,7 @@
             navProfileBtn.classList.remove('hidden');
             loadProfileData(); 
             loadMyPurchases();
+            checkFilesStatus();
         } else {
             currentUser = null;
             publicDiv.classList.remove('hidden'); 
