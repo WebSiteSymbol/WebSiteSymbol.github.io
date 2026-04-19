@@ -72,7 +72,6 @@
         .logout-btn:hover { transform: scale(1.05); }
         .container { max-width: 1300px; margin: 0 auto; padding: 50px 20px; }
         
-        /* Онлайн статистика */
         .online-stats {
             position: fixed;
             bottom: 20px;
@@ -89,16 +88,9 @@
             flex-wrap: wrap;
             font-weight: 500;
         }
-        .online-stats span {
-            color: #ffd700;
-            font-weight: bold;
-        }
-        .online-stats i {
-            margin-right: 5px;
-            color: #ffd700;
-        }
+        .online-stats span { color: #ffd700; font-weight: bold; }
+        .online-stats i { margin-right: 5px; color: #ffd700; }
         
-        /* Ссылка на админ-панель */
         .admin-panel-link {
             position: fixed;
             bottom: 20px;
@@ -124,7 +116,6 @@
             box-shadow: 0 0 15px rgba(255,215,0,0.2);
         }
         
-        /* Главная секция */
         .home-section {
             background: rgba(0,0,0,0.5);
             backdrop-filter: blur(10px);
@@ -149,10 +140,7 @@
             margin: 0 auto;
             opacity: 0.9;
         }
-        .home-section .highlight {
-            color: #ffd700;
-            font-weight: bold;
-        }
+        .home-section .highlight { color: #ffd700; font-weight: bold; }
         .server-list {
             margin-top: 30px;
             padding: 20px;
@@ -160,12 +148,8 @@
             border-radius: 20px;
             display: inline-block;
         }
-        .server-list span {
-            color: #ffd700;
-            font-family: monospace;
-        }
+        .server-list span { color: #ffd700; font-family: monospace; }
         
-        /* Секция возможностей */
         .features-section {
             background: rgba(0,0,0,0.5);
             backdrop-filter: blur(10px);
@@ -296,12 +280,7 @@
             overflow-y: auto;
         }
         .modal-content h3 { color: #ffd700; margin-bottom: 20px; }
-        .close-modal {
-            float: right;
-            cursor: pointer;
-            font-size: 28px;
-            color: #ffd700;
-        }
+        .close-modal { float: right; cursor: pointer; font-size: 28px; color: #ffd700; }
         .version-badge {
             display: inline-block;
             background: rgba(0,0,0,0.5);
@@ -330,42 +309,45 @@
             border-bottom: 1px solid rgba(255,215,0,0.3);
         }
         .category-title:first-of-type { margin-top: 0; }
-        @media (max-width: 768px) { .navbar { padding: 15px; flex-direction: column; gap: 10px; } .home-section h1 { font-size: 32px; } .section-title { font-size: 24px; } .online-stats { bottom: 10px; right: 10px; font-size: 10px; padding: 5px 10px; gap: 10px; } .admin-panel-link { bottom: 10px; left: 10px; font-size: 10px; padding: 6px 12px; } }
+        @media (max-width: 768px) { 
+            .navbar { padding: 15px; flex-direction: column; gap: 10px; } 
+            .home-section h1 { font-size: 32px; } 
+            .section-title { font-size: 24px; } 
+            .online-stats { bottom: 10px; right: 10px; font-size: 10px; padding: 5px 10px; gap: 10px; } 
+            .admin-panel-link { bottom: 10px; left: 10px; font-size: 10px; padding: 6px 12px; }
+        }
     </style>
 </head>
 <body>
 <div class="bg"></div>
 <div class="overlay"></div>
 
-<!-- Онлайн статистика -->
 <div class="online-stats">
     <div><i class="fas fa-users"></i> Онлайн: <span id="onlineCount">0</span></div>
     <div><i class="fas fa-chart-line"></i> Всего: <span id="totalVisitors">0</span></div>
     <div><i class="fas fa-user-check"></i> Зарег: <span id="registeredCount">0</span></div>
 </div>
 
-<!-- Ссылка на админ-панель -->
 <a href="config.html" class="admin-panel-link">
     <i class="fas fa-cog"></i> Админ-панель
 </a>
 
 <nav class="navbar">
-    <div class="logo" onclick="window.showHome()">
+    <div class="logo" onclick="showHome()">
         <div class="logo-icon"><i class="fas fa-bolt"></i></div>
         <div class="logo-text">ZEUS<span>CLIENT</span></div>
     </div>
     <div class="nav-links">
-        <a onclick="window.showHome()"><i class="fas fa-home"></i> Главная</a>
-        <a onclick="window.showFeatures()"><i class="fas fa-star"></i> Возможности</a>
-        <a id="navMarketBtn" onclick="window.showMarketplace()" class="hidden"><i class="fas fa-store"></i> Магазин конфигов</a>
-        <a id="navProfileBtn" onclick="window.showProfile()" class="hidden"><i class="fas fa-user"></i> Личный кабинет</a>
-        <div id="nav-auth"><a onclick="window.showAuthForm()"><i class="fas fa-user"></i> Войти</a></div>
-        <div id="nav-profile" class="hidden"><div class="user-info"><i class="fas fa-crown"></i><span id="navNick">...</span><button class="logout-btn" onclick="window.logout()">Выйти</button></div></div>
+        <a onclick="showHome()"><i class="fas fa-home"></i> Главная</a>
+        <a onclick="showFeatures()"><i class="fas fa-star"></i> Возможности</a>
+        <a id="navMarketBtn" onclick="showMarketplace()" class="hidden"><i class="fas fa-store"></i> Магазин конфигов</a>
+        <a id="navProfileBtn" onclick="showProfile()" class="hidden"><i class="fas fa-user"></i> Личный кабинет</a>
+        <div id="nav-auth"><a onclick="showAuthForm()"><i class="fas fa-user"></i> Войти</a></div>
+        <div id="nav-profile" class="hidden"><div class="user-info"><i class="fas fa-crown"></i><span id="navNick">...</span><button class="logout-btn" onclick="logout()">Выйти</button></div></div>
     </div>
 </nav>
 
 <div class="container">
-    <!-- Главная страница -->
     <div id="publicContent">
         <div class="home-section">
             <h1>⚡ ZeusClient ⚡</h1>
@@ -387,13 +369,12 @@
                 <div class="stat"><div class="stat-number">5000+</div><div class="stat-label">Пользователей</div></div>
                 <div class="stat"><div class="stat-number">24/7</div><div class="stat-label">Поддержка</div></div>
             </div>
-            <button class="download-btn" onclick="window.showAuthForm()" style="margin-top: 30px;">
+            <button class="download-btn" onclick="showAuthForm()" style="margin-top: 30px;">
                 <i class="fas fa-download"></i> Скачать ZeusClient
             </button>
         </div>
     </div>
 
-    <!-- Страница возможностей -->
     <div id="featuresContent" class="hidden">
         <div class="features-section">
             <div class="screenshot-container">
@@ -406,7 +387,6 @@
             <h2 class="section-title"><i class="fas fa-star"></i> Все возможности ZeusClient</h2>
             <p style="margin-bottom: 30px; opacity: 0.8;">Полный список функций чита для Minecraft. Premium версия открывает доступ ко всем возможностям!</p>
             
-            <!-- Combat & PVP -->
             <div class="category-title"><i class="fas fa-crosshairs"></i> Combat & PVP</div>
             <div class="grid">
                 <div class="card"><div class="card-icon"><i class="fas fa-crosshairs"></i></div><h3>Aimbot</h3><p>Автоматическое наведение на противников.</p><div class="feature-badge">Premium+Free</div></div>
@@ -417,7 +397,6 @@
                 <div class="card"><div class="card-icon"><i class="fas fa-sword"></i></div><h3>Reach</h3><p>Увеличение дистанции атаки.</p><div class="feature-badge">Premium</div></div>
             </div>
             
-            <!-- Movement & Travel -->
             <div class="category-title"><i class="fas fa-fighter-jet"></i> Movement & Travel</div>
             <div class="grid">
                 <div class="card"><div class="card-icon"><i class="fas fa-feather"></i></div><h3>Flight</h3><p>Режим полета на выживании.</p><div class="feature-badge">Premium</div></div>
@@ -428,7 +407,6 @@
                 <div class="card"><div class="card-icon"><i class="fas fa-horse"></i></div><h3>NoSlowdown</h3><p>Отсутствие замедления.</p><div class="feature-badge">Premium+Free</div></div>
             </div>
             
-            <!-- Visual & Render -->
             <div class="category-title"><i class="fas fa-eye"></i> Visual & Render</div>
             <div class="grid">
                 <div class="card"><div class="card-icon"><i class="fas fa-eye"></i></div><h3>ESP</h3><p>Подсветка игроков через стены.</p><div class="feature-badge">Premium+Free</div></div>
@@ -439,7 +417,6 @@
                 <div class="card"><div class="card-icon"><i class="fas fa-dice-d6"></i></div><h3>Chams</h3><p>Подсветка игроков цветами.</p><div class="feature-badge">Premium</div></div>
             </div>
             
-            <!-- World & Exploits -->
             <div class="category-title"><i class="fas fa-globe"></i> World & Exploits</div>
             <div class="grid">
                 <div class="card"><div class="card-icon"><i class="fas fa-tree"></i></div><h3>Nuker</h3><p>Быстрое разрушение блоков.</p><div class="feature-badge">Premium</div></div>
@@ -450,7 +427,6 @@
                 <div class="card"><div class="card-icon"><i class="fas fa-ghost"></i></div><h3>GhostHand</h3><p>Взаимодействие через стены.</p><div class="feature-badge">Premium</div></div>
             </div>
             
-            <!-- AntiCheat & Bypass -->
             <div class="category-title"><i class="fas fa-shield-alt"></i> AntiCheat & Bypass</div>
             <div class="grid">
                 <div class="card"><div class="card-icon"><i class="fas fa-shield-virus"></i></div><h3>AntiCheat Bypass</h3><p>Обход Vulkan, Matrix, AAC.</p><div class="feature-badge">Premium</div></div>
@@ -465,35 +441,33 @@
                 <i class="fas fa-crown" style="font-size: 32px; color: #ffd700;"></i>
                 <h3 style="color: #ffd700; margin-top: 10px;">Premium открывает ВСЕ функции!</h3>
                 <p>Всего за 499₽ на 30 дней вы получаете доступ к полному арсеналу возможностей.</p>
-                <button class="download-btn" onclick="window.showAuthForm()" style="margin-top: 15px; padding: 10px 25px; font-size: 16px;">Купить Premium</button>
+                <button class="download-btn" onclick="showAuthForm()" style="margin-top: 15px; padding: 10px 25px; font-size: 16px;">Купить Premium</button>
             </div>
         </div>
     </div>
 
-    <!-- Авторизация -->
     <div id="authContent" class="hidden">
         <div class="auth-container">
             <div id="loginCard" class="auth-card">
                 <h3><i class="fas fa-sign-in-alt"></i> Вход</h3>
                 <input type="email" id="loginEmail" class="auth-input" placeholder="Email">
                 <input type="password" id="loginPass" class="auth-input" placeholder="Пароль">
-                <button class="auth-btn" onclick="window.login()">Войти</button>
+                <button class="auth-btn" onclick="login()">Войти</button>
                 <div id="loginMsg"></div>
-                <div class="switch-auth" style="text-align:center; margin-top:20px;">Нет аккаунта? <a onclick="window.showRegister()" style="color:#ffd700; cursor:pointer;">Регистрация</a></div>
+                <div class="switch-auth" style="text-align:center; margin-top:20px;">Нет аккаунта? <a onclick="showRegister()" style="color:#ffd700; cursor:pointer;">Регистрация</a></div>
             </div>
             <div id="registerCard" class="auth-card hidden">
                 <h3><i class="fas fa-user-plus"></i> Регистрация</h3>
                 <input type="text" id="regNick" class="auth-input" placeholder="Никнейм">
                 <input type="email" id="regEmail" class="auth-input" placeholder="Email">
                 <input type="password" id="regPass" class="auth-input" placeholder="Пароль (6+ символов)">
-                <button class="auth-btn" onclick="window.register()">Зарегистрироваться</button>
+                <button class="auth-btn" onclick="register()">Зарегистрироваться</button>
                 <div id="regMsg"></div>
-                <div class="switch-auth" style="text-align:center; margin-top:20px;">Уже есть аккаунт? <a onclick="window.showLogin()" style="color:#ffd700; cursor:pointer;">Войти</a></div>
+                <div class="switch-auth" style="text-align:center; margin-top:20px;">Уже есть аккаунт? <a onclick="showLogin()" style="color:#ffd700; cursor:pointer;">Войти</a></div>
             </div>
         </div>
     </div>
 
-    <!-- Личный кабинет -->
     <div id="profileContent" class="hidden">
         <div class="section" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border-radius: 30px; padding: 40px; margin-bottom: 40px; border: 1px solid rgba(255,215,0,0.2);">
             <h2><i class="fas fa-id-card"></i> Мой профиль</h2>
@@ -505,7 +479,7 @@
                     <div class="info-card balance-card">
                         <i class="fas fa-wallet"></i> Баланс<br>
                         <span class="balance-amount" id="balanceAmount">0</span> ₽<br>
-                        <button class="download-btn" style="padding:8px 20px;font-size:14px;margin-top:10px;" onclick="window.openTopupModal()">
+                        <button class="download-btn" style="padding:8px 20px;font-size:14px;margin-top:10px;" onclick="openTopupModal()">
                             <i class="fas fa-plus-circle"></i> Пополнить
                         </button>
                     </div>
@@ -514,7 +488,7 @@
                     <div class="info-card"><i class="fas fa-microchip"></i> HWID/UUID<br><span id="hwidText">Не привязан</span><br><span id="hwidNote" style="font-size:10px; opacity:0.7;"></span></div>
                 </div>
                 <div style="margin-top:20px;">
-                    <button class="auth-btn" onclick="window.buyPremium()" id="buyPremiumBtn" style="width:auto;padding:10px 30px;">
+                    <button class="auth-btn" onclick="buyPremium()" id="buyPremiumBtn" style="width:auto;padding:10px 30px;">
                         <i class="fas fa-crown"></i> Купить Premium (30 дней) - 499₽
                     </button>
                 </div>
@@ -527,7 +501,7 @@
                     <div class="card-icon"><i class="fas fa-box-open"></i></div>
                     <h3>ZeusClient FREE <span class="version-badge free-version">1.12.2</span></h3>
                     <p>Бесплатная версия для Minecraft 1.12.2</p>
-                    <button class="download-btn" onclick="window.downloadClient('free')" id="freeDownloadBtn">
+                    <button class="download-btn" onclick="downloadClient('free')" id="freeDownloadBtn">
                         <i class="fas fa-download"></i> Скачать (Free 1.12.2)
                     </button>
                     <div id="freeFileStatus" class="file-status"></div>
@@ -536,7 +510,7 @@
                     <div class="card-icon"><i class="fas fa-gem"></i></div>
                     <h3>ZeusClient PREMIUM <span class="version-badge premium-version">1.16.5</span></h3>
                     <p>Премиум версия для Minecraft 1.16.5</p>
-                    <button id="premiumDownloadBtn" class="download-btn" onclick="window.downloadClient('premium')" disabled>
+                    <button id="premiumDownloadBtn" class="download-btn" onclick="downloadClient('premium')" disabled>
                         <i class="fas fa-download"></i> Скачать (Premium 1.16.5)
                     </button>
                     <div id="premiumFileStatus" class="file-status"></div>
@@ -549,7 +523,6 @@
         </div>
     </div>
 
-    <!-- Маркетплейс конфигов -->
     <div id="marketplaceContent" class="hidden">
         <div class="section" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border-radius: 30px; padding: 40px; margin-bottom: 40px; border: 1px solid rgba(255,215,0,0.2);">
             <h2><i class="fas fa-store"></i> Маркетплейс конфигураций</h2>
@@ -559,10 +532,9 @@
     </div>
 </div>
 
-<!-- Модальное окно пополнения баланса -->
 <div id="topupModal" class="modal">
     <div class="modal-content">
-        <span class="close-modal" onclick="window.closeTopupModal()">×</span>
+        <span class="close-modal" onclick="closeTopupModal()">×</span>
         <h3><i class="fas fa-credit-card"></i> Пополнение баланса</h3>
         <p style="margin-bottom:20px;">Введите сумму и данные карты для оплаты</p>
         
@@ -586,7 +558,7 @@
         <label style="display:block; margin-bottom:5px; margin-top:10px;">Имя держателя:</label>
         <input type="text" id="cardName" class="auth-input" placeholder="NAME SURNAME">
         
-        <button class="auth-btn" onclick="window.processCardPayment()" style="margin-top:20px;">
+        <button class="auth-btn" onclick="processCardPayment()" style="margin-top:20px;">
             <i class="fas fa-lock"></i> Оплатить
         </button>
         <div id="topupMsg" style="margin-top:15px;"></div>
@@ -597,48 +569,18 @@
 </div>
 
 <script>
-    // Инициализация Supabase
-    const _SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
-    const _SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
-    const supabaseClient = window.supabase.createClient(_SUPABASE_URL, _SUPABASE_KEY);
+    // Supabase подключение
+    const SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     
     let currentUser = null;
+    let currentProfile = null;
     
-    // Названия файлов
     const FREE_CLIENT_FILE = 'ZeusClient-1.12.2.jar';
     const PREMIUM_CLIENT_FILE = 'ZeusClient-1.16.5.jar';
     
-    // Хранилище данных
-    let userProfiles = JSON.parse(localStorage.getItem('zeus_profiles') || '{}');
-    let userPurchases = JSON.parse(localStorage.getItem('zeus_purchases') || '{}');
-    let marketplaceConfigs = JSON.parse(localStorage.getItem('zeus_configs') || '[]');
-    
-    // Инициализация конфигов
-    if(marketplaceConfigs.length === 0) {
-        marketplaceConfigs = [
-            { id: 1, name: '🔥 PvP God Config', description: 'Максимальные настройки для PvP', price: 299, author: 'ZeusTeam', premiumDiscount: true, version: '1.16.5', fileName: 'pvp_god_config.json' },
-            { id: 2, name: '👑 Legit Config', description: 'Легитимные настройки', price: 149, author: 'ProPlayer', premiumDiscount: true, version: '1.12.2', fileName: 'legit_config.json' },
-            { id: 3, name: '🌾 Farm Config', description: 'Для фарма ресурсов', price: 99, author: 'Farmer', premiumDiscount: false, version: '1.16.5', fileName: 'farm_config.json' },
-            { id: 4, name: '💀 Anarchy Config', description: 'Для анархии', price: 399, author: 'HackerOne', premiumDiscount: true, version: '1.16.5', fileName: 'anarchy_config.json' },
-            { id: 5, name: '🎯 SilentAim Config', description: 'Скрытный аимбот', price: 199, author: 'Ghost', premiumDiscount: true, version: '1.12.2', fileName: 'silentaim_config.json' },
-            { id: 6, name: '🚀 SpeedRun Config', description: 'Для спидранов', price: 79, author: 'Speedster', premiumDiscount: false, version: '1.16.5', fileName: 'speedrun_config.json' }
-        ];
-        localStorage.setItem('zeus_configs', JSON.stringify(marketplaceConfigs));
-    }
-    
-    // Функция синхронизации с админ-панелью
-    function syncWithAdminPanel() {
-        const configData = {
-            users: userProfiles,
-            purchases: userPurchases,
-            configs: marketplaceConfigs,
-            lastUpdate: new Date().toISOString()
-        };
-        localStorage.setItem('zeus_config_data', JSON.stringify(configData));
-    }
-    
     // ========== СИСТЕМА ПОДСЧЕТА ПОСЕТИТЕЛЕЙ ==========
-    
     function getVisitorId() {
         let visitorId = localStorage.getItem('zeus_visitor_id');
         if(!visitorId){
@@ -650,21 +592,11 @@
     
     function updateVisitorStats() {
         let stats = localStorage.getItem('zeus_visitor_stats');
-        let visitorData;
-        
-        if(stats) {
-            visitorData = JSON.parse(stats);
-        } else {
-            visitorData = { total: 0, onlineList: [], lastDate: null };
-        }
-        
+        let visitorData = stats ? JSON.parse(stats) : { total: 0, onlineList: [], lastDate: null };
         const visitorId = getVisitorId();
         const now = Date.now();
         const FIVE_MINUTES = 5 * 60 * 1000;
-        
-        let onlineList = visitorData.onlineList || [];
-        onlineList = onlineList.filter(item => (now - item.time) < FIVE_MINUTES);
-        
+        let onlineList = (visitorData.onlineList || []).filter(item => (now - item.time) < FIVE_MINUTES);
         const existingIndex = onlineList.findIndex(item => item.id === visitorId);
         if(existingIndex === -1) {
             onlineList.push({ id: visitorId, time: now });
@@ -676,96 +608,27 @@
         } else {
             onlineList[existingIndex].time = now;
         }
-        
         visitorData.onlineList = onlineList;
         localStorage.setItem('zeus_visitor_stats', JSON.stringify(visitorData));
         document.getElementById('onlineCount').innerText = onlineList.length;
         document.getElementById('totalVisitors').innerText = visitorData.total || 0;
     }
     
-    function updateRegisteredCount() {
-        let profiles = JSON.parse(localStorage.getItem('zeus_profiles') || '{}');
-        const count = Object.keys(profiles).length;
-        document.getElementById('registeredCount').innerText = count;
+    async function updateRegisteredCount() {
+        const { data, error } = await supabase.from('profiles').select('id', { count: 'exact', head: true });
+        if(data) {
+            document.getElementById('registeredCount').innerText = data.length || 0;
+        } else {
+            let profiles = JSON.parse(localStorage.getItem('zeus_profiles') || '{}');
+            document.getElementById('registeredCount').innerText = Object.keys(profiles).length;
+        }
     }
     
     updateVisitorStats();
     updateRegisteredCount();
     setInterval(() => { updateVisitorStats(); updateRegisteredCount(); }, 30000);
     
-    // ========== ФУНКЦИИ НАВИГАЦИИ ==========
-    
-    window.showHome = function() {
-        document.getElementById('publicContent').classList.remove('hidden');
-        document.getElementById('featuresContent').classList.add('hidden');
-        document.getElementById('authContent').classList.add('hidden');
-        document.getElementById('profileContent').classList.add('hidden');
-        document.getElementById('marketplaceContent').classList.add('hidden');
-        window.scrollTo(0, 0);
-    }
-    
-    window.showFeatures = function() {
-        document.getElementById('publicContent').classList.add('hidden');
-        document.getElementById('featuresContent').classList.remove('hidden');
-        document.getElementById('authContent').classList.add('hidden');
-        document.getElementById('profileContent').classList.add('hidden');
-        document.getElementById('marketplaceContent').classList.add('hidden');
-        window.scrollTo(0, 0);
-    }
-    
-    window.showAuthForm = function() {
-        document.getElementById('publicContent').classList.add('hidden');
-        document.getElementById('featuresContent').classList.add('hidden');
-        document.getElementById('authContent').classList.remove('hidden');
-        document.getElementById('profileContent').classList.add('hidden');
-        document.getElementById('marketplaceContent').classList.add('hidden');
-        window.showLogin();
-    }
-    
-    window.showRegister = function() {
-        document.getElementById('registerCard').classList.remove('hidden');
-        document.getElementById('loginCard').classList.add('hidden');
-    }
-    
-    window.showLogin = function() {
-        document.getElementById('loginCard').classList.remove('hidden');
-        document.getElementById('registerCard').classList.add('hidden');
-    }
-    
-    window.showProfile = function() {
-        if(currentUser){
-            document.getElementById('publicContent').classList.add('hidden');
-            document.getElementById('featuresContent').classList.add('hidden');
-            document.getElementById('authContent').classList.add('hidden');
-            document.getElementById('profileContent').classList.remove('hidden');
-            document.getElementById('marketplaceContent').classList.add('hidden');
-            loadProfileData();
-            loadMyPurchases();
-            checkFilesStatus();
-        }
-    }
-    
-    window.showMarketplace = function() {
-        if(currentUser){
-            document.getElementById('publicContent').classList.add('hidden');
-            document.getElementById('featuresContent').classList.add('hidden');
-            document.getElementById('authContent').classList.add('hidden');
-            document.getElementById('profileContent').classList.add('hidden');
-            document.getElementById('marketplaceContent').classList.remove('hidden');
-            loadMarketplace();
-        }
-    }
-    
-    window.openTopupModal = function() {
-        document.getElementById('topupModal').style.display = 'flex';
-        document.getElementById('topupAmount').value = '';
-        document.getElementById('topupMsg').innerHTML = '';
-    }
-    
-    window.closeTopupModal = function() {
-        document.getElementById('topupModal').style.display = 'none';
-    }
-    
+    // ========== ФУНКЦИИ ==========
     function generateHWID() {
         let hwid = localStorage.getItem('zeus_hwid');
         if(!hwid){
@@ -785,9 +648,7 @@
         try {
             const response = await fetch(fileName, { method: 'HEAD' });
             return response.ok;
-        } catch {
-            return false;
-        }
+        } catch { return false; }
     }
     
     function downloadFile(fileName) {
@@ -799,141 +660,149 @@
         document.body.removeChild(link);
     }
     
-    async function checkFilesStatus() {
-        const freeExists = await checkFileExists(FREE_CLIENT_FILE);
-        const premiumExists = await checkFileExists(PREMIUM_CLIENT_FILE);
+    // ========== ЗАГРУЗКА ДАННЫХ ПОЛЬЗОВАТЕЛЯ ИЗ SUPABASE ==========
+    async function loadUserProfile() {
+        if(!currentUser) return;
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', currentUser.id)
+            .single();
         
-        const freeDiv = document.getElementById('freeFileStatus');
-        const premiumDiv = document.getElementById('premiumFileStatus');
-        
-        if(freeDiv) {
-            freeDiv.innerHTML = freeExists ? 
-                '<span class="file-exists">✅ Файл найден: ' + FREE_CLIENT_FILE + '</span>' : 
-                '<span class="file-missing">⚠️ Файл не найден! Поместите ' + FREE_CLIENT_FILE + ' в папку с сайтом</span>';
+        if(data) {
+            currentProfile = data;
+        } else if(!data && !error) {
+            // Создаем профиль если его нет
+            const { data: newProfile, error: insertError } = await supabase
+                .from('profiles')
+                .insert({
+                    id: currentUser.id,
+                    email: currentUser.email,
+                    nickname: currentUser.user_metadata?.nickname || currentUser.email.split('@')[0],
+                    balance: 0,
+                    subscription_type: 'free'
+                })
+                .select()
+                .single();
+            if(newProfile) currentProfile = newProfile;
         }
         
-        if(premiumDiv) {
-            premiumDiv.innerHTML = premiumExists ? 
-                '<span class="file-exists">✅ Файл найден: ' + PREMIUM_CLIENT_FILE + '</span>' : 
-                '<span class="file-missing">⚠️ Файл не найден! Поместите ' + PREMIUM_CLIENT_FILE + ' в папку с сайтом</span>';
+        if(currentProfile) {
+            document.getElementById('profileNick').innerText = currentProfile.nickname;
+            document.getElementById('profileEmail').innerText = currentUser.email;
+            document.getElementById('balanceAmount').innerText = (currentProfile.balance || 0).toLocaleString();
+            document.getElementById('hwidText').innerText = generateHWID();
+            
+            const isPremium = currentProfile.subscription_type === 'paid' && currentProfile.subscription_until && new Date(currentProfile.subscription_until) > new Date();
+            if(isPremium) {
+                document.getElementById('subStatus').innerText = 'PREMIUM АКТИВНА';
+                document.getElementById('subStatus').className = 'badge badge-premium';
+                document.getElementById('subUntil').innerText = new Date(currentProfile.subscription_until).toLocaleDateString();
+                document.getElementById('premiumDownloadBtn').disabled = false;
+            } else {
+                document.getElementById('subStatus').innerText = 'БЕСПЛАТНАЯ';
+                document.getElementById('subStatus').className = 'badge badge-free';
+                document.getElementById('subUntil').innerText = 'Нет подписки';
+                document.getElementById('premiumDownloadBtn').disabled = true;
+            }
         }
     }
     
+    // ========== ПОПОЛНЕНИЕ БАЛАНСА ==========
     window.processCardPayment = function() {
         if(!currentUser) return;
-        
         let amount = parseInt(document.getElementById('topupAmount').value);
         const cardNumber = document.getElementById('cardNumber').value.trim();
         const cardExpiry = document.getElementById('cardExpiry').value.trim();
         const cardCvv = document.getElementById('cardCvv').value.trim();
-        const cardName = document.getElementById('cardName').value.trim();
         const msgDiv = document.getElementById('topupMsg');
         
         if(isNaN(amount) || amount < 100 || amount > 100000) {
             msgDiv.innerHTML = '<span class="error">❌ Сумма от 100 до 100 000 ₽</span>';
             return;
         }
-        
         const cleanCard = cardNumber.replace(/\s/g, '');
-        if(cleanCard.length < 16) {
-            msgDiv.innerHTML = '<span class="error">❌ Некорректный номер карты</span>';
-            return;
-        }
-        
-        if(!cardExpiry.match(/^(0[1-9]|1[0-2])\/(2[4-9]|[3-9][0-9])$/)) {
-            msgDiv.innerHTML = '<span class="error">❌ Некорректный срок (MM/YY)</span>';
-            return;
-        }
-        
-        if(cardCvv.length < 3) {
-            msgDiv.innerHTML = '<span class="error">❌ Некорректный CVV</span>';
-            return;
-        }
+        if(cleanCard.length < 16) { msgDiv.innerHTML = '<span class="error">❌ Некорректный номер карты</span>'; return; }
+        if(!cardExpiry.match(/^(0[1-9]|1[0-2])\/(2[4-9]|[3-9][0-9])$/)) { msgDiv.innerHTML = '<span class="error">❌ Некорректный срок (MM/YY)</span>'; return; }
+        if(cardCvv.length < 3) { msgDiv.innerHTML = '<span class="error">❌ Некорректный CVV</span>'; return; }
         
         msgDiv.innerHTML = '<span>⏳ Обработка...</span>';
         
-        setTimeout(() => {
-            if(!userProfiles[currentUser.id]) userProfiles[currentUser.id] = { balance: 0 };
-            if(!userProfiles[currentUser.id].balance) userProfiles[currentUser.id].balance = 0;
+        setTimeout(async () => {
+            const newBalance = (currentProfile?.balance || 0) + amount;
+            const { error } = await supabase
+                .from('profiles')
+                .update({ balance: newBalance })
+                .eq('id', currentUser.id);
             
-            userProfiles[currentUser.id].balance += amount;
-            localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
-            syncWithAdminPanel();
-            
-            msgDiv.innerHTML = `<span class="success">✅ Пополнено ${amount} ₽!</span>`;
-            loadProfileData();
-            
-            setTimeout(() => {
-                window.closeTopupModal();
-                document.getElementById('cardNumber').value = '';
-                document.getElementById('cardExpiry').value = '';
-                document.getElementById('cardCvv').value = '';
-                document.getElementById('cardName').value = '';
-            }, 1500);
+            if(error) {
+                msgDiv.innerHTML = '<span class="error">❌ Ошибка пополнения</span>';
+            } else {
+                currentProfile.balance = newBalance;
+                msgDiv.innerHTML = `<span class="success">✅ Пополнено ${amount} ₽!</span>`;
+                document.getElementById('balanceAmount').innerText = newBalance.toLocaleString();
+                setTimeout(() => {
+                    closeTopupModal();
+                    document.getElementById('cardNumber').value = '';
+                    document.getElementById('cardExpiry').value = '';
+                    document.getElementById('cardCvv').value = '';
+                }, 1500);
+            }
         }, 1500);
     }
     
-    function loadProfileData() {
+    // ========== ПОКУПКА PREMIUM ==========
+    window.buyPremium = async function() {
         if(!currentUser) return;
-        const profile = userProfiles[currentUser.id] || { subscription_type: 'free', balance: 0, nickname: currentUser.email.split('@')[0] };
-        const hwid = generateHWID();
-        
-        document.getElementById('profileNick').innerText = profile.nickname;
-        document.getElementById('profileEmail').innerText = currentUser.email;
-        document.getElementById('balanceAmount').innerText = (profile.balance || 0).toLocaleString();
-        document.getElementById('hwidText').innerText = hwid;
-        
-        const isPremium = profile.subscription_type === 'paid' && profile.subscription_until && new Date(profile.subscription_until) > new Date();
-        
-        if(isPremium) {
-            document.getElementById('subStatus').innerText = 'PREMIUM АКТИВНА';
-            document.getElementById('subStatus').className = 'badge badge-premium';
-            document.getElementById('subUntil').innerText = new Date(profile.subscription_until).toLocaleDateString();
-            document.getElementById('premiumDownloadBtn').disabled = false;
-        } else {
-            document.getElementById('subStatus').innerText = 'БЕСПЛАТНАЯ';
-            document.getElementById('subStatus').className = 'badge badge-free';
-            document.getElementById('subUntil').innerText = 'Нет подписки';
-            document.getElementById('premiumDownloadBtn').disabled = true;
-        }
-    }
-    
-    window.buyPremium = function() {
-        if(!currentUser) return;
-        const profile = userProfiles[currentUser.id] || { balance: 0 };
-        const balance = profile.balance || 0;
+        const balance = currentProfile?.balance || 0;
         const PREMIUM_PRICE = 499;
         
         if(balance >= PREMIUM_PRICE) {
-            profile.balance -= PREMIUM_PRICE;
+            const newBalance = balance - PREMIUM_PRICE;
             const until = new Date();
             until.setDate(until.getDate() + 30);
-            profile.subscription_type = 'paid';
-            profile.subscription_until = until.toISOString();
-            userProfiles[currentUser.id] = profile;
-            localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
-            syncWithAdminPanel();
-            alert(`✅ Premium активирован на 30 дней! Списано ${PREMIUM_PRICE} ₽`);
-            loadProfileData();
-            loadMarketplace();
-            loadMyPurchases();
+            
+            const { error } = await supabase
+                .from('profiles')
+                .update({ 
+                    balance: newBalance,
+                    subscription_type: 'paid',
+                    subscription_until: until.toISOString()
+                })
+                .eq('id', currentUser.id);
+            
+            if(error) {
+                alert('❌ Ошибка активации Premium');
+            } else {
+                currentProfile.balance = newBalance;
+                currentProfile.subscription_type = 'paid';
+                currentProfile.subscription_until = until.toISOString();
+                alert(`✅ Premium активирован на 30 дней! Списано ${PREMIUM_PRICE} ₽`);
+                loadUserProfile();
+                loadMarketplace();
+                loadMyPurchases();
+            }
         } else {
             alert(`❌ Не хватает ${PREMIUM_PRICE - balance} ₽`);
-            window.openTopupModal();
+            openTopupModal();
         }
     }
     
-    function loadMarketplace() {
-        const profile = userProfiles[currentUser?.id] || { balance: 0 };
-        const balance = profile.balance || 0;
-        const isPremium = profile.subscription_type === 'paid' && profile.subscription_until && new Date(profile.subscription_until) > new Date();
-        const purchases = userPurchases[currentUser?.id] || [];
+    // ========== МАРКЕТПЛЕЙС ==========
+    async function loadMarketplace() {
+        const { data: configs, error } = await supabase.from('marketplace_configs').select('*');
+        if(error) { document.getElementById('marketplaceGrid').innerHTML = '<p>Ошибка загрузки</p>'; return; }
+        
+        const { data: purchases } = await supabase.from('user_purchases').select('config_id').eq('user_id', currentUser?.id || '');
+        const purchasedIds = purchases ? purchases.map(p => p.config_id) : [];
+        const isPremium = currentProfile?.subscription_type === 'paid' && currentProfile?.subscription_until && new Date(currentProfile.subscription_until) > new Date();
+        const balance = currentProfile?.balance || 0;
         
         let html = '';
-        for(let cfg of marketplaceConfigs) {
-            const isPurchased = purchases.includes(cfg.id);
+        for(let cfg of configs) {
+            const isPurchased = purchasedIds.includes(cfg.id);
             let price = cfg.price;
-            if(isPremium && cfg.premiumDiscount && !isPurchased) price = Math.floor(cfg.price / 2);
+            if(isPremium && cfg.premium_discount && !isPurchased) price = Math.floor(cfg.price / 2);
             const canAfford = balance >= price;
             const badge = cfg.version === '1.16.5' ? '<span class="version-badge premium-version">1.16.5</span>' : '<span class="version-badge free-version">1.12.2</span>';
             
@@ -943,8 +812,8 @@
                 <p>${cfg.description}</p>
                 <p class="config-price"><i class="fas fa-coins"></i> ${price} ₽</p>
                 ${isPurchased ? 
-                    `<button class="download-btn" onclick="window.downloadConfig('${cfg.fileName}')"><i class="fas fa-download"></i> Скачать</button>` : 
-                    `<button class="download-btn" onclick="window.buyConfig(${cfg.id}, ${price})" ${!canAfford ? 'disabled' : ''}>${canAfford ? 'Купить' : 'Не хватает'}</button>`
+                    `<button class="download-btn" onclick="downloadConfig('${cfg.file_name}')"><i class="fas fa-download"></i> Скачать</button>` : 
+                    `<button class="download-btn" onclick="buyConfig(${cfg.id}, ${price})" ${!canAfford ? 'disabled' : ''}>${canAfford ? 'Купить' : 'Не хватает'}</button>`
                 }
                 <p style="font-size:12px;margin-top:10px;">Автор: ${cfg.author}</p>
             </div>`;
@@ -952,27 +821,30 @@
         document.getElementById('marketplaceGrid').innerHTML = html;
     }
     
-    window.buyConfig = function(configId, price) {
+    window.buyConfig = async function(configId, price) {
         if(!currentUser) return;
-        const profile = userProfiles[currentUser.id] || { balance: 0 };
-        if((profile.balance || 0) < price) {
-            alert(`❌ Не хватает ${price - (profile.balance || 0)} ₽`);
-            window.openTopupModal();
+        if((currentProfile?.balance || 0) < price) {
+            alert(`❌ Не хватает ${price - (currentProfile?.balance || 0)} ₽`);
+            openTopupModal();
             return;
         }
-        if(!userPurchases[currentUser.id]) userPurchases[currentUser.id] = [];
-        if(userPurchases[currentUser.id].includes(configId)) {
+        
+        const { data: existing } = await supabase.from('user_purchases').select('id').eq('user_id', currentUser.id).eq('config_id', configId);
+        if(existing && existing.length > 0) {
             alert('Конфиг уже куплен');
             return;
         }
-        profile.balance -= price;
-        userProfiles[currentUser.id] = profile;
-        localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
-        userPurchases[currentUser.id].push(configId);
-        localStorage.setItem('zeus_purchases', JSON.stringify(userPurchases));
-        syncWithAdminPanel();
+        
+        const newBalance = (currentProfile?.balance || 0) - price;
+        const { error: balanceError } = await supabase.from('profiles').update({ balance: newBalance }).eq('id', currentUser.id);
+        if(balanceError) { alert('Ошибка покупки'); return; }
+        
+        const { error: purchaseError } = await supabase.from('user_purchases').insert({ user_id: currentUser.id, config_id: configId });
+        if(purchaseError) { alert('Ошибка сохранения покупки'); return; }
+        
+        currentProfile.balance = newBalance;
         alert(`✅ Куплено за ${price} ₽`);
-        loadProfileData();
+        loadUserProfile();
         loadMarketplace();
         loadMyPurchases();
     }
@@ -987,32 +859,38 @@
         }
     }
     
-    function loadMyPurchases() {
+    async function loadMyPurchases() {
         if(!currentUser) return;
-        const purchases = userPurchases[currentUser.id] || [];
-        if(purchases.length === 0) {
+        const { data: purchases, error } = await supabase
+            .from('user_purchases')
+            .select('config_id, marketplace_configs(id, name, description, file_name, version)')
+            .eq('user_id', currentUser.id);
+        
+        if(error || !purchases || purchases.length === 0) {
             document.getElementById('myPurchasesList').innerHTML = '<p>Нет покупок</p>';
             return;
         }
+        
         let html = '';
-        for(let id of purchases) {
-            const cfg = marketplaceConfigs.find(c => c.id === id);
+        for(let p of purchases) {
+            const cfg = p.marketplace_configs;
             if(cfg) {
                 const badge = cfg.version === '1.16.5' ? '<span class="version-badge premium-version">1.16.5</span>' : '<span class="version-badge free-version">1.12.2</span>';
                 html += `<div class="card">
                     <h3>${cfg.name} ${badge}</h3>
                     <p>${cfg.description}</p>
-                    <button class="download-btn" onclick="window.downloadConfig('${cfg.fileName}')">Скачать</button>
+                    <button class="download-btn" onclick="downloadConfig('${cfg.file_name}')">Скачать</button>
                 </div>`;
             }
         }
         document.getElementById('myPurchasesList').innerHTML = html;
     }
     
+    // ========== СКАЧИВАНИЕ КЛИЕНТА ==========
     window.downloadClient = async function(type) {
         if(!currentUser) {
             alert('Авторизуйтесь');
-            window.showAuthForm();
+            showAuthForm();
             return;
         }
         const hwid = generateHWID();
@@ -1025,13 +903,12 @@
                 alert(`❌ Файл ${FREE_CLIENT_FILE} не найден`);
             }
         } else {
-            const profile = userProfiles[currentUser.id] || {};
-            const isPremium = profile.subscription_type === 'paid' && profile.subscription_until && new Date(profile.subscription_until) > new Date();
+            const isPremium = currentProfile?.subscription_type === 'paid' && currentProfile?.subscription_until && new Date(currentProfile.subscription_until) > new Date();
             if(isPremium) {
                 const exists = await checkFileExists(PREMIUM_CLIENT_FILE);
                 if(exists) {
                     downloadFile(PREMIUM_CLIENT_FILE);
-                    alert(`📥 ZeusClient Premium 1.16.5\nHWID: ${hwid}\nДо: ${new Date(profile.subscription_until).toLocaleDateString()}`);
+                    alert(`📥 ZeusClient Premium 1.16.5\nHWID: ${hwid}\nДо: ${new Date(currentProfile.subscription_until).toLocaleDateString()}`);
                 } else {
                     alert(`❌ Файл ${PREMIUM_CLIENT_FILE} не найден`);
                 }
@@ -1041,6 +918,88 @@
         }
     }
     
+    // ========== НАВИГАЦИЯ ==========
+    function showHome() {
+        document.getElementById('publicContent').classList.remove('hidden');
+        document.getElementById('featuresContent').classList.add('hidden');
+        document.getElementById('authContent').classList.add('hidden');
+        document.getElementById('profileContent').classList.add('hidden');
+        document.getElementById('marketplaceContent').classList.add('hidden');
+        window.scrollTo(0, 0);
+    }
+    
+    function showFeatures() {
+        document.getElementById('publicContent').classList.add('hidden');
+        document.getElementById('featuresContent').classList.remove('hidden');
+        document.getElementById('authContent').classList.add('hidden');
+        document.getElementById('profileContent').classList.add('hidden');
+        document.getElementById('marketplaceContent').classList.add('hidden');
+        window.scrollTo(0, 0);
+    }
+    
+    function showAuthForm() {
+        document.getElementById('publicContent').classList.add('hidden');
+        document.getElementById('featuresContent').classList.add('hidden');
+        document.getElementById('authContent').classList.remove('hidden');
+        document.getElementById('profileContent').classList.add('hidden');
+        document.getElementById('marketplaceContent').classList.add('hidden');
+        showLogin();
+    }
+    
+    function showRegister() {
+        document.getElementById('registerCard').classList.remove('hidden');
+        document.getElementById('loginCard').classList.add('hidden');
+    }
+    
+    function showLogin() {
+        document.getElementById('loginCard').classList.remove('hidden');
+        document.getElementById('registerCard').classList.add('hidden');
+    }
+    
+    function showProfile() {
+        if(currentUser){
+            document.getElementById('publicContent').classList.add('hidden');
+            document.getElementById('featuresContent').classList.add('hidden');
+            document.getElementById('authContent').classList.add('hidden');
+            document.getElementById('profileContent').classList.remove('hidden');
+            document.getElementById('marketplaceContent').classList.add('hidden');
+            loadUserProfile();
+            loadMyPurchases();
+            checkFilesStatus();
+        }
+    }
+    
+    function showMarketplace() {
+        if(currentUser){
+            document.getElementById('publicContent').classList.add('hidden');
+            document.getElementById('featuresContent').classList.add('hidden');
+            document.getElementById('authContent').classList.add('hidden');
+            document.getElementById('profileContent').classList.add('hidden');
+            document.getElementById('marketplaceContent').classList.remove('hidden');
+            loadMarketplace();
+        }
+    }
+    
+    function openTopupModal() {
+        document.getElementById('topupModal').style.display = 'flex';
+        document.getElementById('topupAmount').value = '';
+        document.getElementById('topupMsg').innerHTML = '';
+    }
+    
+    function closeTopupModal() {
+        document.getElementById('topupModal').style.display = 'none';
+    }
+    
+    async function checkFilesStatus() {
+        const freeExists = await checkFileExists(FREE_CLIENT_FILE);
+        const premiumExists = await checkFileExists(PREMIUM_CLIENT_FILE);
+        const freeDiv = document.getElementById('freeFileStatus');
+        const premiumDiv = document.getElementById('premiumFileStatus');
+        if(freeDiv) freeDiv.innerHTML = freeExists ? '<span class="file-exists">✅ Файл найден</span>' : '<span class="file-missing">⚠️ Файл не найден</span>';
+        if(premiumDiv) premiumDiv.innerHTML = premiumExists ? '<span class="file-exists">✅ Файл найден</span>' : '<span class="file-missing">⚠️ Файл не найден</span>';
+    }
+    
+    // ========== РЕГИСТРАЦИЯ И ВХОД ==========
     window.register = async function() {
         const nick = document.getElementById('regNick').value.trim();
         const email = document.getElementById('regEmail').value.trim();
@@ -1052,23 +1011,17 @@
         
         msgDiv.innerHTML = '<span>⏳ Регистрация...</span>';
         
-        const { data, error } = await supabaseClient.auth.signUp({ email, password: pass, options: { data: { nickname: nick } } });
+        const { data, error } = await supabase.auth.signUp({ 
+            email, 
+            password: pass, 
+            options: { data: { nickname: nick } } 
+        });
         
         if(error) {
             msgDiv.innerHTML = '<span class="error">❌ ' + error.message + '</span>';
         } else {
-            userProfiles[data.user.id] = { 
-                nickname: nick, 
-                email: email, 
-                subscription_type: 'free', 
-                balance: 0,
-                password: pass,
-                registeredAt: new Date().toISOString()
-            };
-            localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
-            syncWithAdminPanel();
-            msgDiv.innerHTML = '<span class="success">✅ Проверьте почту!</span>';
-            setTimeout(() => window.showLogin(), 2000);
+            msgDiv.innerHTML = '<span class="success">✅ Проверьте почту для подтверждения!</span>';
+            setTimeout(() => showLogin(), 2000);
             updateRegisteredCount();
         }
     }
@@ -1082,35 +1035,26 @@
         
         msgDiv.innerHTML = '<span>⏳ Вход...</span>';
         
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
         if(error) {
             msgDiv.innerHTML = '<span class="error">❌ ' + error.message + '</span>';
         } else {
             msgDiv.innerHTML = '<span class="success">✅ Успешно!</span>';
-            await checkUserAndUpdateUI();
+            await updateUI();
         }
     }
     
     window.logout = async function() {
-        await supabaseClient.auth.signOut();
+        await supabase.auth.signOut();
         location.reload();
     }
     
-    async function checkUserAndUpdateUI() {
-        const { data: { session } } = await supabaseClient.auth.getSession();
+    async function updateUI() {
+        const { data: { session } } = await supabase.auth.getSession();
         if(session) {
             currentUser = session.user;
-            if(!userProfiles[currentUser.id]) {
-                userProfiles[currentUser.id] = {
-                    nickname: currentUser.user_metadata?.nickname || currentUser.email.split('@')[0],
-                    email: currentUser.email,
-                    subscription_type: 'free',
-                    balance: 0
-                };
-                localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
-                syncWithAdminPanel();
-                updateRegisteredCount();
-            }
+            await loadUserProfile();
+            
             document.getElementById('navNick').innerText = currentUser.user_metadata?.nickname || currentUser.email.split('@')[0];
             document.getElementById('publicContent').classList.remove('hidden');
             document.getElementById('featuresContent').classList.add('hidden');
@@ -1123,6 +1067,7 @@
             document.getElementById('navProfileBtn').classList.remove('hidden');
         } else {
             currentUser = null;
+            currentProfile = null;
             document.getElementById('publicContent').classList.remove('hidden');
             document.getElementById('featuresContent').classList.add('hidden');
             document.getElementById('authContent').classList.add('hidden');
@@ -1142,21 +1087,35 @@
             const accessToken = params.get('access_token');
             const refreshToken = params.get('refresh_token');
             if(accessToken && refreshToken) {
-                await supabaseClient.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+                await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
                 window.history.replaceState({}, document.title, window.location.pathname);
-                await checkUserAndUpdateUI();
+                await updateUI();
                 alert('✅ Email подтвержден!');
             }
         }
     }
     
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-        if(event === 'SIGNED_IN') checkUserAndUpdateUI();
+    supabase.auth.onAuthStateChange((event, session) => {
+        if(event === 'SIGNED_IN') updateUI();
         else if(event === 'SIGNED_OUT') location.reload();
     });
     
+    // Глобальные функции для onclick
+    window.showHome = showHome;
+    window.showFeatures = showFeatures;
+    window.showAuthForm = showAuthForm;
+    window.showRegister = showRegister;
+    window.showLogin = showLogin;
+    window.showProfile = showProfile;
+    window.showMarketplace = showMarketplace;
+    window.openTopupModal = openTopupModal;
+    window.closeTopupModal = closeTopupModal;
+    window.buyPremium = buyPremium;
+    window.downloadClient = downloadClient;
+    window.downloadConfig = downloadConfig;
+    
     handleEmailConfirmation();
-    checkUserAndUpdateUI();
+    updateUI();
 </script>
 </body>
 </html>
