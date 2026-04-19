@@ -203,14 +203,14 @@
 </div>
 
 <script>
-    // SUPABASE
-    const SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // Инициализация Supabase (используем другое имя переменной)
+    const _SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
+    const _SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
+    const supabaseClient = window.supabase.createClient(_SUPABASE_URL, _SUPABASE_KEY);
     
     let currentUser = null;
     
-    // Хранилище данных в localStorage (имитация БД)
+    // Хранилище данных в localStorage
     let userProfiles = JSON.parse(localStorage.getItem('zeus_profiles') || '{}');
     let userPurchases = JSON.parse(localStorage.getItem('zeus_purchases') || '{}');
     let marketplaceConfigs = JSON.parse(localStorage.getItem('zeus_configs') || '[]');
@@ -237,7 +237,7 @@
     const navMarketBtn = document.getElementById('navMarketBtn');
     const navProfileBtn = document.getElementById('navProfileBtn');
 
-    // Helper functions
+    // Глобальные функции для HTML onclick
     window.scrollToSection = function(id) { 
         document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); 
     }
@@ -257,7 +257,7 @@
         authDiv.classList.remove('hidden'); 
         profileDiv.classList.add('hidden'); 
         marketplaceDiv.classList.add('hidden'); 
-        showLogin(); 
+        window.showLogin(); 
     }
     
     window.showProfile = function() { 
@@ -300,15 +300,19 @@
         }
         userProfiles[currentUser.id].hwid = hwid;
         localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
-        alert('HWID успешно привязан!');
+        alert('✅ HWID успешно привязан!');
         loadProfileData();
     }
 
     // Загрузка данных профиля
-    async function loadProfileData() {
+    function loadProfileData() {
         if(!currentUser) return;
         
-        const profile = userProfiles[currentUser.id] || { subscription_type: 'free', subscription_until: null, nickname: currentUser.user_metadata?.nickname || currentUser.email.split('@')[0] };
+        const profile = userProfiles[currentUser.id] || { 
+            subscription_type: 'free', 
+            subscription_until: null, 
+            nickname: currentUser.user_metadata?.nickname || currentUser.email.split('@')[0] 
+        };
         
         document.getElementById('profileNick').innerText = profile.nickname || currentUser.email.split('@')[0];
         document.getElementById('profileEmail').innerText = currentUser.email;
@@ -336,7 +340,7 @@
     }
 
     // Покупка премиума
-    window.buyPremium = async function() {
+    window.buyPremium = function() {
         if(!currentUser) return;
         const until = new Date();
         until.setDate(until.getDate() + 7);
@@ -348,14 +352,14 @@
         userProfiles[currentUser.id].subscription_until = until.toISOString();
         localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
         
-        alert('Premium подписка активирована на 7 дней!');
+        alert('✅ Premium подписка активирована на 7 дней!');
         loadProfileData();
         loadMarketplace();
         loadMyPurchases();
     }
 
     // Загрузка магазина
-    async function loadMarketplace() {
+    function loadMarketplace() {
         const profile = userProfiles[currentUser?.id] || {};
         const isPremiumActive = profile.subscription_type === 'paid' && profile.subscription_until && new Date(profile.subscription_until) > new Date();
         const purchases = userPurchases[currentUser?.id] || [];
@@ -392,7 +396,7 @@
         
         userPurchases[currentUser.id].push(configId);
         localStorage.setItem('zeus_purchases', JSON.stringify(userPurchases));
-        alert(`Конфиг успешно куплен за ${price}₽!`);
+        alert(`✅ Конфиг успешно куплен за ${price}₽!`);
         loadMarketplace();
         loadMyPurchases();
     }
@@ -400,11 +404,11 @@
     // Скачивание конфига
     window.downloadConfig = function(configId) {
         const config = marketplaceConfigs.find(c => c.id === configId);
-        alert(`Скачивание конфига: ${config.name}\nФайл: ${config.file_url}`);
+        alert(`📥 Скачивание конфига: ${config.name}\nФайл: ${config.file_url}`);
     }
 
     // Загрузка покупок пользователя
-    async function loadMyPurchases() {
+    function loadMyPurchases() {
         if(!currentUser) return;
         
         const purchases = userPurchases[currentUser.id] || [];
@@ -430,14 +434,14 @@
     // Скачивание клиента
     window.downloadClient = function(type) {
         if(type === 'free') {
-            alert('Скачивание ZeusClient Free...\nСсылка: https://zeusclient.com/download/free');
+            alert('📥 Скачивание ZeusClient Free...\nСсылка: https://zeusclient.com/download/free');
         } else {
             const profile = userProfiles[currentUser?.id] || {};
             const isPremiumActive = profile.subscription_type === 'paid' && profile.subscription_until && new Date(profile.subscription_until) > new Date();
             if(isPremiumActive) {
-                alert('Скачивание ZeusClient Premium...\nСсылка: https://zeusclient.com/download/premium');
+                alert('📥 Скачивание ZeusClient Premium...\nСсылка: https://zeusclient.com/download/premium');
             } else { 
-                alert('Premium версия доступна только по подписке! Купите Premium в личном кабинете.'); 
+                alert('❌ Premium версия доступна только по подписке! Купите Premium в личном кабинете.'); 
             }
         }
     }
@@ -454,7 +458,7 @@
         
         msgDiv.innerHTML = '<span>⏳ Регистрация...</span>';
         
-        const { data, error } = await supabase.auth.signUp({ 
+        const { data, error } = await supabaseClient.auth.signUp({ 
             email, 
             password: pass, 
             options: { data: { nickname: nick } } 
@@ -474,7 +478,7 @@
             localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
             
             msgDiv.innerHTML = '<span class="success">✅ Проверьте почту для подтверждения!</span>'; 
-            setTimeout(() => showLogin(), 2000);
+            setTimeout(() => window.showLogin(), 2000);
         }
     }
 
@@ -488,7 +492,7 @@
         
         msgDiv.innerHTML = '<span>⏳ Вход...</span>';
         
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
         if(error) { 
             msgDiv.innerHTML = '<span class="error">❌ ' + error.message + '</span>'; 
         } else { 
@@ -498,12 +502,12 @@
     }
 
     window.logout = async function() { 
-        await supabase.auth.signOut(); 
+        await supabaseClient.auth.signOut(); 
         location.reload(); 
     }
 
     async function checkUserAndUpdateUI() {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await supabaseClient.auth.getSession();
         if(session) {
             currentUser = session.user;
             const profile = userProfiles[currentUser.id];
@@ -549,16 +553,16 @@
             const accessToken = params.get('access_token');
             const refreshToken = params.get('refresh_token');
             if(accessToken && refreshToken) {
-                await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+                await supabaseClient.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
                 window.history.replaceState({}, document.title, window.location.pathname);
                 await checkUserAndUpdateUI();
-                alert('Email подтвержден! Добро пожаловать в ZeusClient!');
+                alert('✅ Email подтвержден! Добро пожаловать в ZeusClient!');
             }
         }
     }
 
     // Подписка на изменения
-    supabase.auth.onAuthStateChange((event, session) => { 
+    supabaseClient.auth.onAuthStateChange((event, session) => { 
         if(event === 'SIGNED_IN') checkUserAndUpdateUI(); 
         else if(event === 'SIGNED_OUT') location.reload(); 
     });
