@@ -221,13 +221,13 @@
 <div class="overlay"></div>
 
 <nav class="navbar">
-    <div class="logo" onclick="scrollToSection('home')">
+    <div class="logo" onclick="goToHome()">
         <div class="logo-icon"><i class="fas fa-bolt"></i></div>
         <div class="logo-text">ZEUS<span>CLIENT</span></div>
     </div>
     <div class="nav-links">
-        <a onclick="scrollToSection('home')"><i class="fas fa-home"></i> Главная</a>
-        <a onclick="scrollToSection('features')"><i class="fas fa-star"></i> Возможности</a>
+        <a onclick="goToHome()"><i class="fas fa-home"></i> Главная</a>
+        <a onclick="goToFeatures()"><i class="fas fa-star"></i> Возможности</a>
         <a id="navMarketBtn" onclick="showMarketplace()" class="hidden"><i class="fas fa-store"></i> Магазин конфигов</a>
         <a id="navProfileBtn" onclick="showProfile()" class="hidden"><i class="fas fa-user"></i> Личный кабинет</a>
         <div id="nav-auth"><a onclick="showAuthForm()"><i class="fas fa-user"></i> Войти</a></div>
@@ -483,6 +483,37 @@
         localStorage.setItem('zeus_configs', JSON.stringify(marketplaceConfigs));
     }
     
+    // Функции навигации
+    window.goToHome = function() {
+        // Показываем публичный контент если не авторизован, или показываем главную в ЛК
+        if(!currentUser) {
+            publicDiv.classList.remove('hidden');
+            authDiv.classList.add('hidden');
+            profileDiv.classList.add('hidden');
+            marketplaceDiv.classList.add('hidden');
+        } else {
+            // Если авторизован, показываем профиль
+            showProfile();
+        }
+        // Скроллим к хедеру
+        document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    window.goToFeatures = function() {
+        if(!currentUser) {
+            publicDiv.classList.remove('hidden');
+            authDiv.classList.add('hidden');
+            profileDiv.classList.add('hidden');
+            marketplaceDiv.classList.add('hidden');
+        } else {
+            showProfile();
+        }
+        // Скроллим к секции возможностей
+        setTimeout(() => {
+            document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+    }
+    
     // Генерация HWID
     function generateHWID() {
         let hwid = localStorage.getItem('zeus_hwid_permanent');
@@ -631,10 +662,6 @@
     
     window.closeTopupModal = function() {
         document.getElementById('topupModal').style.display = 'none';
-    }
-    
-    window.scrollToSection = function(id) { 
-        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); 
     }
     
     window.showRegister = function() { 
