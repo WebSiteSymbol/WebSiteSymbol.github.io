@@ -44,11 +44,10 @@
         .offline-badge{background:#7f8c8d;color:#fff;padding:2px 8px;border-radius:10px;font-size:10px}
         .loading{text-align:center;padding:50px;color:#ffd700}
         .refresh-btn{background:#2c3e50;border:1px solid #ffd700;padding:12px 25px;border-radius:10px;cursor:pointer;color:#ffd700}
-        .logs-btn{background:#8e44ad;border:none;padding:12px 25px;border-radius:10px;cursor:pointer;color:#fff;margin-left:10px}
-        .logs-panel{background:rgba(0,0,0,.8);border-radius:15px;padding:20px;margin-top:20px;max-height:400px;overflow-y:auto}
-        .log-entry{padding:10px;border-bottom:1px solid rgba(255,215,0,.2);font-size:12px}
-        .log-time{color:#ffd700;margin-right:15px}
-        .log-action{color:#2ecc71;margin-right:10px}
+        .online-users-panel{background:rgba(0,0,0,.8);border-radius:15px;padding:20px;margin-top:20px}
+        .online-user-item{display:inline-block;background:rgba(46,204,113,.2);border:1px solid #2ecc71;border-radius:20px;padding:5px 15px;margin:5px;font-size:14px}
+        .online-user-item i{color:#2ecc71;margin-right:5px}
+        .online-count-badge{background:#2ecc71;color:#fff;padding:2px 10px;border-radius:20px;margin-left:10px}
     </style>
 </head>
 <body>
@@ -60,9 +59,8 @@
         <div class="stat-card"><i class="fas fa-users"></i> Пользователей: <span class="number" id="totalUsers">0</span></div>
         <div class="stat-card"><i class="fas fa-chart-line"></i> Общий баланс: <span class="number" id="totalBalance">0</span> ₽</div>
         <div class="stat-card"><i class="fas fa-crown"></i> Premium: <span class="number" id="premiumCount">0</span></div>
-        <div class="stat-card"><i class="fas fa-globe"></i> Онлайн: <span class="number" id="onlineCount">0</span></div>
+        <div class="stat-card"><i class="fas fa-globe"></i> Онлайн: <span class="number" id="onlineCount">0</span> <span id="onlineCountBadge" class="online-count-badge"></span></div>
         <div class="stat-card"><button class="refresh-btn" onclick="loadData()"><i class="fas fa-refresh"></i> Обновить</button></div>
-        <div class="stat-card"><button class="logs-btn" onclick="showLogs()"><i class="fas fa-history"></i> Логи</button></div>
     </div>
     
     <div class="search-box">
@@ -75,6 +73,12 @@
     <div id="message"></div>
     <div id="loading" class="loading"><i class="fas fa-spinner fa-pulse"></i> Загрузка...</div>
     
+    <!-- Панель онлайн пользователей -->
+    <div id="onlineUsersPanel" class="online-users-panel" style="display:none">
+        <h3><i class="fas fa-circle" style="color:#2ecc71; font-size:12px"></i> Онлайн сейчас: <span id="onlineUsersList"></span></h3>
+        <div id="onlineUsersContainer"></div>
+    </div>
+    
     <div class="users-table" id="tableContainer" style="display:none">
         <table>
             <thead>
@@ -82,13 +86,6 @@
             </thead>
             <tbody id="usersBody"></tbody>
         </table>
-    </div>
-    
-    <div id="logsPanel" style="display:none; margin-top:20px">
-        <div class="logs-panel">
-            <h3 style="color:#ffd700; margin-bottom:15px"><i class="fas fa-history"></i> История действий</h3>
-            <div id="logsList"></div>
-        </div>
     </div>
 </div>
 
@@ -108,29 +105,140 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 let allUsers=[],filtered=[],editUserId=null,passwordUserId=null,premiumUserId=null,currentAdminEmail=null;
 
-function getOnlineUsers(){let stats=localStorage.getItem('visitor_stats');if(stats){let data=JSON.parse(stats);let now=Date.now();let online=data.onlineList.filter(i=>(now-i.time)<300000);return online.map(i=>i.id);}return[];}
-function updateOnlineCount(){let online=getOnlineUsers();document.getElementById('onlineCount').innerText=online.length;return online;}
-async function loadData(){document.getElementById('loading').style.display='block';document.getElementById('tableContainer').style.display='none';const{data:profiles,error}=await sb.from('profiles').select('*').order('created_at',{ascending:false});if(error){document.getElementById('loading').innerHTML='<span style="color:#e74c3c">❌ Ошибка: '+error.message+'</span>';return;}allUsers=profiles||[];filtered=[...allUsers];updateStats();renderTable();document.getElementById('loading').style.display='none';document.getElementById('tableContainer').style.display='block';}
-function updateStats(){let total=allUsers.length;let totalBal=0,prem=0;for(let u of allUsers){totalBal+=u.balance||0;if(u.subscription_type==='paid'&&u.subscription_until&&new Date(u.subscription_until)>new Date())prem++;}document.getElementById('totalUsers').innerText=total;document.getElementById('totalBalance').innerText=totalBal.toLocaleString();document.getElementById('premiumCount').innerText=prem;let online=getOnlineUsers();document.getElementById('onlineCount').innerText=online.length;}
-function renderTable(){let tbody=document.getElementById('usersBody');tbody.innerHTML='';let onlineIds=getOnlineUsers();for(let u of filtered){let isPrem=u.subscription_type==='paid'&&u.subscription_until&&new Date(u.subscription_until)>new Date();let isOnline=onlineIds.includes(u.id);let row=tbody.insertRow();row.insertCell(0).innerText=u.email;row.insertCell(1).innerText=u.nickname||'-';row.insertCell(2).innerHTML=`<strong style="color:#ffd700">${(u.balance||0).toLocaleString()} ₽</strong>`;row.insertCell(3).innerHTML=`<span class="badge ${isPrem?'badge-premium':'badge-free'}">${isPrem?'PREMIUM':'FREE'}</span>`;row.insertCell(4).innerText=isPrem?new Date(u.subscription_until).toLocaleDateString():'-';row.insertCell(5).innerHTML=isOnline?'<span class="online-badge">● Онлайн</span>':'<span class="offline-badge">○ Оффлайн</span>';row.insertCell(6).innerHTML=`<button class="edit-btn" onclick="openBalance('${u.id}','${u.email}',${u.balance||0})">💰 Баланс</button><button class="reset-pass-btn" onclick="openPasswordModal('${u.id}','${u.email}')">🔑 Пароль</button><button class="premium-btn" onclick="openPremiumModal('${u.id}','${u.email}',${isPrem},'${u.subscription_until||''}')">👑 Premium</button><button class="delete-btn" onclick="deleteUser('${u.id}')">🗑 Удалить</button>`;}}
-function searchUsers(){let s=document.getElementById('searchInput').value.toLowerCase();filtered=allUsers.filter(u=>u.email.toLowerCase().includes(s)||(u.nickname||'').toLowerCase().includes(s));renderTable();}
-function resetSearch(){document.getElementById('searchInput').value='';filtered=[...allUsers];renderTable();}
+// Получение онлайн пользователей из Supabase
+async function getOnlineUsersFromDB() {
+    try {
+        const { data, error } = await sb
+            .from('online_users')
+            .select('user_id, last_activity')
+            .gte('last_activity', new Date(Date.now() - 5 * 60 * 1000).toISOString());
+        
+        if (error) throw error;
+        return data || [];
+    } catch(e) {
+        console.log('Ошибка получения онлайн:', e);
+        return [];
+    }
+}
+
+// Обновление отображения онлайн пользователей
+async function updateOnlineDisplay() {
+    const onlineUsers = await getOnlineUsersFromDB();
+    const onlineCount = onlineUsers.length;
+    
+    document.getElementById('onlineCount').innerText = onlineCount;
+    document.getElementById('onlineCountBadge').innerText = onlineCount > 0 ? `👥 ${onlineCount}` : '';
+    
+    // Получаем детали пользователей
+    const onlineUserIds = onlineUsers.map(u => u.user_id).filter(id => id);
+    
+    if (onlineUserIds.length > 0) {
+        const { data: profiles } = await sb
+            .from('profiles')
+            .select('id, email, nickname')
+            .in('id', onlineUserIds);
+        
+        const onlineUsersContainer = document.getElementById('onlineUsersContainer');
+        const onlineUsersList = document.getElementById('onlineUsersList');
+        
+        if (profiles && profiles.length > 0) {
+            let html = '';
+            for (let user of profiles) {
+                const lastActivity = onlineUsers.find(u => u.user_id === user.id)?.last_activity;
+                const timeAgo = lastActivity ? Math.floor((Date.now() - new Date(lastActivity)) / 60000) : 0;
+                html += `<div class="online-user-item">
+                    <i class="fas fa-circle"></i> 
+                    <strong>${user.nickname || user.email.split('@')[0]}</strong> 
+                    <span style="font-size:11px; opacity:0.7">(${timeAgo} мин назад)</span>
+                </div>`;
+            }
+            onlineUsersContainer.innerHTML = html;
+            onlineUsersList.innerHTML = profiles.map(u => u.nickname || u.email.split('@')[0]).join(', ');
+        } else {
+            onlineUsersContainer.innerHTML = '<p style="opacity:0.7">Нет активных пользователей</p>';
+            onlineUsersList.innerHTML = 'нет';
+        }
+    } else {
+        document.getElementById('onlineUsersContainer').innerHTML = '<p style="opacity:0.7">Нет активных пользователей</p>';
+        document.getElementById('onlineUsersList').innerHTML = 'нет';
+    }
+    
+    document.getElementById('onlineUsersPanel').style.display = 'block';
+}
+
+async function loadData(){
+    document.getElementById('loading').style.display='block';
+    document.getElementById('tableContainer').style.display='none';
+    
+    // Загружаем всех пользователей
+    const{data:profiles,error}=await sb.from('profiles').select('*').order('created_at',{ascending:false});
+    if(error){document.getElementById('loading').innerHTML='<span style="color:#e74c3c">❌ Ошибка: '+error.message+'</span>';return;}
+    allUsers=profiles||[];
+    filtered=[...allUsers];
+    
+    // Получаем онлайн пользователей
+    const onlineUsers = await getOnlineUsersFromDB();
+    const onlineUserIds = onlineUsers.map(u => u.user_id);
+    
+    updateStats(onlineUserIds);
+    renderTable(onlineUserIds);
+    
+    document.getElementById('loading').style.display='none';
+    document.getElementById('tableContainer').style.display='block';
+    
+    // Обновляем панель онлайн
+    await updateOnlineDisplay();
+}
+
+function updateStats(onlineUserIds){
+    let total=allUsers.length;
+    let totalBal=0,prem=0;
+    for(let u of allUsers){
+        totalBal+=u.balance||0;
+        if(u.subscription_type==='paid'&&u.subscription_until&&new Date(u.subscription_until)>new Date())prem++;
+    }
+    document.getElementById('totalUsers').innerText=total;
+    document.getElementById('totalBalance').innerText=totalBal.toLocaleString();
+    document.getElementById('premiumCount').innerText=prem;
+    document.getElementById('onlineCount').innerText=onlineUserIds.length;
+}
+
+function renderTable(onlineUserIds){
+    let tbody=document.getElementById('usersBody');
+    tbody.innerHTML='';
+    for(let u of filtered){
+        let isPrem=u.subscription_type==='paid'&&u.subscription_until&&new Date(u.subscription_until)>new Date();
+        let isOnline=onlineUserIds.includes(u.id);
+        let row=tbody.insertRow();
+        row.insertCell(0).innerText=u.email;
+        row.insertCell(1).innerText=u.nickname||'-';
+        row.insertCell(2).innerHTML=`<strong style="color:#ffd700">${(u.balance||0).toLocaleString()} ₽</strong>`;
+        row.insertCell(3).innerHTML=`<span class="badge ${isPrem?'badge-premium':'badge-free'}">${isPrem?'PREMIUM':'FREE'}</span>`;
+        row.insertCell(4).innerText=isPrem?new Date(u.subscription_until).toLocaleDateString():'-';
+        row.insertCell(5).innerHTML=isOnline?'<span class="online-badge"><i class="fas fa-circle"></i> Онлайн</span>':'<span class="offline-badge"><i class="fas fa-circle"></i> Оффлайн</span>';
+        row.insertCell(6).innerHTML=`<button class="edit-btn" onclick="window.openBalance('${u.id}','${u.email}',${u.balance||0})">💰 Баланс</button>
+                                    <button class="reset-pass-btn" onclick="window.openPasswordModal('${u.id}','${u.email}')">🔑 Пароль</button>
+                                    <button class="premium-btn" onclick="window.openPremiumModal('${u.id}','${u.email}',${isPrem},'${u.subscription_until||''}')">👑 Premium</button>
+                                    <button class="delete-btn" onclick="window.deleteUser('${u.id}')">🗑 Удалить</button>`;
+    }
+}
+
+function searchUsers(){let s=document.getElementById('searchInput').value.toLowerCase();filtered=allUsers.filter(u=>u.email.toLowerCase().includes(s)||(u.nickname||'').toLowerCase().includes(s));getOnlineUsersFromDB().then(online=>renderTable(online.map(u=>u.user_id)));}
+function resetSearch(){document.getElementById('searchInput').value='';filtered=[...allUsers];getOnlineUsersFromDB().then(online=>renderTable(online.map(u=>u.user_id)));}
 function openBalance(id,email,bal){editUserId=id;document.getElementById('modalUser').innerHTML=`<strong>${email}</strong>`;document.getElementById('modalCurrent').innerText=bal;document.getElementById('newBalance').value=bal;document.getElementById('balanceModal').style.display='flex';}
 function closeBalanceModal(){document.getElementById('balanceModal').style.display='none';editUserId=null;}
-async function saveBalance(){let newBal=parseInt(document.getElementById('newBalance').value);if(isNaN(newBal)||newBal<0||newBal>100000){alert('Баланс от 0 до 100000');return;}if(editUserId){const{error}=await sb.from('profiles').update({balance:newBal}).eq('id',editUserId);if(error){alert('Ошибка: '+error.message);}else{alert('✅ Баланс изменен');await logAction('change_balance',editUserId,{new_balance:newBal});closeBalanceModal();loadData();}}}
+async function saveBalance(){let newBal=parseInt(document.getElementById('newBalance').value);if(isNaN(newBal)||newBal<0||newBal>100000){alert('Баланс от 0 до 100000');return;}if(editUserId){const{error}=await sb.from('profiles').update({balance:newBal}).eq('id',editUserId);if(error){alert('Ошибка: '+error.message);}else{alert('✅ Баланс изменен');closeBalanceModal();loadData();}}}
 function openPasswordModal(id,email){passwordUserId=id;document.getElementById('passwordUser').innerHTML=`<strong>${email}</strong>`;document.getElementById('newPassword').value='';document.getElementById('passwordModal').style.display='flex';}
 function closePasswordModal(){document.getElementById('passwordModal').style.display='none';passwordUserId=null;}
-async function resetPassword(){let newPass=document.getElementById('newPassword').value;if(!newPass||newPass.length<6){alert('Пароль должен быть минимум 6 символов');return;}if(passwordUserId){try{const{error}=await sb.auth.admin.updateUserById(passwordUserId,{password:newPass});if(error){alert('Ошибка: '+error.message);}else{alert('✅ Пароль изменен!');await logAction('reset_password',passwordUserId,{new_password_set:true});closePasswordModal();}}catch(e){alert('Для сброса пароля используйте Supabase Dashboard → Authentication → Users');await logAction('reset_password_failed',passwordUserId,{error:e.message});}}}
+async function resetPassword(){let newPass=document.getElementById('newPassword').value;if(!newPass||newPass.length<6){alert('Пароль должен быть минимум 6 символов');return;}if(passwordUserId){try{const{error}=await sb.auth.admin.updateUserById(passwordUserId,{password:newPass});if(error){alert('Ошибка: '+error.message);}else{alert('✅ Пароль изменен!');closePasswordModal();}}catch(e){alert('Для сброса пароля используйте Supabase Dashboard → Authentication → Users');}}}
 function openPremiumModal(id,email,isPrem,until){premiumUserId=id;document.getElementById('premiumUser').innerHTML=`<strong>${email}</strong>`;document.getElementById('currentPremiumStatus').innerText=isPrem?'Активна':'Неактивна';document.getElementById('currentPremiumUntil').innerText=isPrem?new Date(until).toLocaleDateString():'-';document.getElementById('premiumModal').style.display='flex';}
 function closePremiumModal(){document.getElementById('premiumModal').style.display='none';premiumUserId=null;}
-async function activatePremium(){if(premiumUserId){const until=new Date();until.setDate(until.getDate()+30);const{error}=await sb.from('profiles').update({subscription_type:'paid',subscription_until:until.toISOString()}).eq('id',premiumUserId);if(error){alert('Ошибка: '+error.message);}else{alert('✅ Premium активирован на 30 дней!');await logAction('activate_premium',premiumUserId,{until:until.toISOString()});closePremiumModal();loadData();}}}
-async function removePremium(){if(premiumUserId){if(confirm('Убрать подписку у пользователя?')){const{error}=await sb.from('profiles').update({subscription_type:'free',subscription_until:null}).eq('id',premiumUserId);if(error){alert('Ошибка: '+error.message);}else{alert('✅ Подписка убрана');await logAction('remove_premium',premiumUserId,{});closePremiumModal();loadData();}}}}
-async function deleteUser(id){if(confirm('Удалить пользователя?')){const user=allUsers.find(u=>u.id===id);await logAction('delete_user',id,{email:user?.email});await sb.from('user_purchases').delete().eq('user_id',id);const{error}=await sb.from('profiles').delete().eq('id',id);if(error){alert('Ошибка: '+error.message);}else{alert('✅ Удален');loadData();}}}
-async function logAction(action,targetId,details){try{await sb.from('admin_logs').insert({admin_email:currentAdminEmail,action:action,target_user_id:targetId,target_email:allUsers.find(u=>u.id===targetId)?.email,details:details});}catch(e){console.log('Log error:',e);}}
-async function showLogs(){const panel=document.getElementById('logsPanel');if(panel.style.display==='none'){const{data:logs,error}=await sb.from('admin_logs').select('*').order('created_at',{ascending:false}).limit(50);if(!error&&logs){let html='';for(let log of logs){html+=`<div class="log-entry"><span class="log-time">${new Date(log.created_at).toLocaleString()}</span><span class="log-action">${log.action}</span><span>${log.target_email||log.target_user_id}</span><span style="color:#999;margin-left:10px">${log.details?JSON.stringify(log.details):''}</span></div>`;}document.getElementById('logsList').innerHTML=html;}panel.style.display='block';}else{panel.style.display='none';}}
+async function activatePremium(){if(premiumUserId){const until=new Date();until.setDate(until.getDate()+30);const{error}=await sb.from('profiles').update({subscription_type:'paid',subscription_until:until.toISOString()}).eq('id',premiumUserId);if(error){alert('Ошибка: '+error.message);}else{alert('✅ Premium активирован на 30 дней!');closePremiumModal();loadData();}}}
+async function removePremium(){if(premiumUserId){if(confirm('Убрать подписку у пользователя?')){const{error}=await sb.from('profiles').update({subscription_type:'free',subscription_until:null}).eq('id',premiumUserId);if(error){alert('Ошибка: '+error.message);}else{alert('✅ Подписка убрана');closePremiumModal();loadData();}}}}
+async function deleteUser(id){if(confirm('Удалить пользователя?')){await sb.from('user_purchases').delete().eq('user_id',id);const{error}=await sb.from('profiles').delete().eq('id',id);if(error){alert('Ошибка: '+error.message);}else{alert('✅ Удален');loadData();}}}
 function syncToLocal(){let data={};for(let u of allUsers){data[u.id]={nickname:u.nickname,email:u.email,balance:u.balance,subscription_type:u.subscription_type,subscription_until:u.subscription_until};}localStorage.setItem('zeus_profiles',JSON.stringify(data));alert('✅ Синхронизировано с сайтом');}
-async function checkAdmin(){const{data:{session}}=await sb.auth.getSession();if(!session){let email=prompt('Email администратора:');let pass=prompt('Пароль:');if(email&&pass){let{error}=await sb.auth.signInWithPassword({email,password:pass});if(error){alert('Ошибка входа');window.location.href='index.html';}else{if(email==='pochat811@gmail.com'||email==='seri76759@gmail.com'){currentAdminEmail=email;loadData();setInterval(()=>{updateOnlineCount();renderTable();},10000);}else{alert('Нет прав');window.location.href='index.html';}}}else{window.location.href='index.html';}}else{if(session.user.email==='pochat811@gmail.com'||session.user.email==='seri76759@gmail.com'){currentAdminEmail=session.user.email;loadData();setInterval(()=>{updateOnlineCount();renderTable();},10000);}else{alert('Нет прав');await sb.auth.signOut();window.location.href='index.html';}}}
-window.openBalance=openBalance;window.closeBalanceModal=closeBalanceModal;window.saveBalance=saveBalance;window.openPasswordModal=openPasswordModal;window.closePasswordModal=closePasswordModal;window.resetPassword=resetPassword;window.openPremiumModal=openPremiumModal;window.closePremiumModal=closePremiumModal;window.activatePremium=activatePremium;window.removePremium=removePremium;window.deleteUser=deleteUser;window.searchUsers=searchUsers;window.resetSearch=resetSearch;window.syncToLocal=syncToLocal;window.loadData=loadData;window.showLogs=showLogs;
+async function checkAdmin(){const{data:{session}}=await sb.auth.getSession();if(!session){let email=prompt('Email администратора:');let pass=prompt('Пароль:');if(email&&pass){let{error}=await sb.auth.signInWithPassword({email,password:pass});if(error){alert('Ошибка входа');window.location.href='index.html';}else{if(email==='pochat811@gmail.com'||email==='seri76759@gmail.com'){currentAdminEmail=email;loadData();setInterval(()=>{getOnlineUsersFromDB().then(online=>{renderTable(online.map(u=>u.user_id));updateOnlineDisplay();});},10000);}else{alert('Нет прав');window.location.href='index.html';}}}else{window.location.href='index.html';}}else{if(session.user.email==='pochat811@gmail.com'||session.user.email==='seri76759@gmail.com'){currentAdminEmail=session.user.email;loadData();setInterval(()=>{getOnlineUsersFromDB().then(online=>{renderTable(online.map(u=>u.user_id));updateOnlineDisplay();});},10000);}else{alert('Нет прав');await sb.auth.signOut();window.location.href='index.html';}}}
+window.openBalance=openBalance;window.closeBalanceModal=closeBalanceModal;window.saveBalance=saveBalance;window.openPasswordModal=openPasswordModal;window.closePasswordModal=closePasswordModal;window.resetPassword=resetPassword;window.openPremiumModal=openPremiumModal;window.closePremiumModal=closePremiumModal;window.activatePremium=activatePremium;window.removePremium=removePremium;window.deleteUser=deleteUser;window.searchUsers=searchUsers;window.resetSearch=resetSearch;window.syncToLocal=syncToLocal;window.loadData=loadData;
 checkAdmin();
 })();
 </script>
