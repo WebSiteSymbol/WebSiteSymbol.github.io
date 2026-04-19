@@ -595,16 +595,19 @@
         localStorage.setItem('zeus_configs', JSON.stringify(marketplaceConfigs));
     }
     
-    // СИСТЕМА ПОДСЧЕТА ПОСЕТИТЕЛЕЙ
+    // ========== СИСТЕМА ПОДСЧЕТА ПОСЕТИТЕЛЕЙ ==========
+    
+    // Уникальный ID посетителя
     function getVisitorId() {
         let visitorId = localStorage.getItem('zeus_visitor_id');
         if(!visitorId){
-            visitorId = 'v_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
+            visitorId = 'v_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10);
             localStorage.setItem('zeus_visitor_id', visitorId);
         }
         return visitorId;
     }
     
+    // Обновление статистики (онлайн и всего посетителей)
     function updateVisitorStats() {
         let stats = localStorage.getItem('zeus_visitor_stats');
         let visitorData;
@@ -612,6 +615,7 @@
         if(stats) {
             visitorData = JSON.parse(stats);
         } else {
+            // Первый запуск - создаем новую статистику
             visitorData = { total: 0, onlineList: [], lastDate: null };
         }
         
@@ -619,40 +623,62 @@
         const now = Date.now();
         const FIVE_MINUTES = 5 * 60 * 1000;
         
+        // Очищаем старых онлайн-пользователей (неактивных более 5 минут)
         let onlineList = visitorData.onlineList || [];
+        const oldCount = onlineList.length;
         onlineList = onlineList.filter(item => (now - item.time) < FIVE_MINUTES);
         
+        // Проверяем, есть ли текущий посетитель в списке онлайн
         const existingIndex = onlineList.findIndex(item => item.id === visitorId);
         if(existingIndex === -1) {
+            // Новый посетитель зашел на сайт
             onlineList.push({ id: visitorId, time: now });
             
+            // Увеличиваем общий счетчик ТОЛЬКО если это новый уникальный посетитель (1 раз в день)
             const today = new Date().toDateString();
             if(visitorData.lastDate !== today) {
                 visitorData.total = (visitorData.total || 0) + 1;
                 visitorData.lastDate = today;
+                console.log('Новый уникальный посетитель! Всего: ' + visitorData.total);
             }
         } else {
+            // Обновляем время существующего посетителя
             onlineList[existingIndex].time = now;
         }
         
         visitorData.onlineList = onlineList;
         
+        // Сохраняем в localStorage
         localStorage.setItem('zeus_visitor_stats', JSON.stringify(visitorData));
         
+        // Обновляем отображение на сайте
         document.getElementById('onlineCount').innerText = onlineList.length;
         document.getElementById('totalVisitors').innerText = visitorData.total || 0;
     }
     
+    // Обновление счетчика зарегистрированных пользователей
     function updateRegisteredCount() {
         let profiles = JSON.parse(localStorage.getItem('zeus_profiles') || '{}');
         const count = Object.keys(profiles).length;
         document.getElementById('registeredCount').innerText = count;
     }
     
-    // Запуск статистики
+    // Запуск статистики при загрузке страницы
     updateVisitorStats();
     updateRegisteredCount();
-    setInterval(() => { updateVisitorStats(); updateRegisteredCount(); }, 30000);
+    
+    // Обновляем статистику каждые 30 секунд
+    setInterval(() => { 
+        updateVisitorStats(); 
+        updateRegisteredCount(); 
+    }, 30000);
+    
+    // При закрытии вкладки - ничего не делаем, посетитель останется в онлайн на 5 минут
+    window.addEventListener('beforeunload', function() {
+        // Не удаляем посетителя сразу, он автоматически удалится через 5 минут
+    });
+    
+    // ========== ОСТАЛЬНЫЕ ФУНКЦИИ ==========
     
     // ФУНКЦИИ НАВИГАЦИИ
     window.showHome = function() {
@@ -1020,7 +1046,7 @@
             localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
             msgDiv.innerHTML = '<span class="success">✅ Проверьте почту!</span>';
             setTimeout(() => window.showLogin(), 2000);
-            updateRegisteredCount();
+            updateRegisteredCount(); // Обновляем счетчик зарегистрированных
         }
     }
     
@@ -1059,6 +1085,7 @@
                     balance: 0
                 };
                 localStorage.setItem('zeus_profiles', JSON.stringify(userProfiles));
+                updateRegisteredCount(); // Обновляем счетчик при новом пользователе
             }
             document.getElementById('navNick').innerText = currentUser.user_metadata?.nickname || currentUser.email.split('@')[0];
             document.getElementById('publicContent').classList.remove('hidden');
