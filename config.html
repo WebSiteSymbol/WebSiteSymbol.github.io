@@ -111,278 +111,293 @@
 </div>
 
 <script>
-    // Supabase подключение
-    const SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    
-    // Список администраторов
-    const ADMIN_EMAILS = ['pochat811@gmail.com', 'seri76759@gmail.com'];
-    
-    let allUsers = [];
-    let filteredUsers = [];
-    let currentEditUserId = null;
-    let marketplaceConfigs = [];
-    let currentAdminEmail = null;
-    
-    // Проверка доступа админа
-    async function checkAdminAccess() {
-        const { data: { session } } = await supabase.auth.getSession();
+    (function() {
+        // Supabase подключение (используем другое имя переменной)
+        const _SUPABASE_URL = 'https://itnymezviisjmkttzlag.supabase.co';
+        const _SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bnltZXp2aWlzam1rdHR6bGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MTc3MjUsImV4cCI6MjA5MjA5MzcyNX0.aLDIHtc8nVBe_FtaKeKAGaU_EAitzYZbQAaBWwmAvso';
+        const supabaseClient = window.supabase.createClient(_SUPABASE_URL, _SUPABASE_KEY);
         
-        if(!session) {
-            // Не авторизован - показываем форму входа
-            const email = prompt('Введите email администратора:');
-            const password = prompt('Введите пароль:');
+        // Список администраторов
+        const ADMIN_EMAILS = ['pochat811@gmail.com', 'seri76759@gmail.com'];
+        
+        let allUsers = [];
+        let filteredUsers = [];
+        let currentEditUserId = null;
+        let marketplaceConfigs = [];
+        let currentAdminEmail = null;
+        
+        // Проверка доступа админа
+        async function checkAdminAccess() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
             
-            if(email && password) {
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-                if(error) {
-                    alert('Ошибка входа: ' + error.message + '\nДоступ запрещен!');
-                    window.location.href = 'index.html';
-                } else if (ADMIN_EMAILS.includes(email)) {
-                    currentAdminEmail = email;
-                    loadUsersFromSupabase();
+            if(!session) {
+                // Не авторизован - показываем форму входа
+                const email = prompt('Введите email администратора:');
+                const password = prompt('Введите пароль:');
+                
+                if(email && password) {
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if(error) {
+                        alert('Ошибка входа: ' + error.message + '\nДоступ запрещен!');
+                        window.location.href = 'index.html';
+                    } else if (ADMIN_EMAILS.includes(email)) {
+                        currentAdminEmail = email;
+                        loadUsersFromSupabase();
+                    } else {
+                        alert('У вас нет прав администратора! Доступ разрешен только: ' + ADMIN_EMAILS.join(', '));
+                        await supabaseClient.auth.signOut();
+                        window.location.href = 'index.html';
+                    }
                 } else {
-                    alert('У вас нет прав администратора! Доступ разрешен только: ' + ADMIN_EMAILS.join(', '));
-                    await supabase.auth.signOut();
                     window.location.href = 'index.html';
                 }
             } else {
-                window.location.href = 'index.html';
+                const userEmail = session.user.email;
+                if(ADMIN_EMAILS.includes(userEmail)) {
+                    currentAdminEmail = userEmail;
+                    loadUsersFromSupabase();
+                } else {
+                    alert('У вас нет прав администратора! Доступ разрешен только: ' + ADMIN_EMAILS.join(', '));
+                    await supabaseClient.auth.signOut();
+                    window.location.href = 'index.html';
+                }
             }
-        } else {
-            const userEmail = session.user.email;
-            if(ADMIN_EMAILS.includes(userEmail)) {
-                currentAdminEmail = userEmail;
-                loadUsersFromSupabase();
-            } else {
-                alert('У вас нет прав администратора! Доступ разрешен только: ' + ADMIN_EMAILS.join(', '));
-                await supabase.auth.signOut();
-                window.location.href = 'index.html';
-            }
-        }
-    }
-    
-    // Загрузка пользователей из Supabase
-    async function loadUsersFromSupabase() {
-        document.getElementById('loadingMessage').style.display = 'block';
-        document.getElementById('usersTableContainer').style.display = 'none';
-        
-        try {
-            // Получаем всех пользователей из таблицы profiles
-            const { data: profiles, error: profilesError } = await supabase
-                .from('profiles')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
-            if(profilesError) throw profilesError;
-            
-            // Получаем конфиги
-            const { data: configs, error: configsError } = await supabase
-                .from('marketplace_configs')
-                .select('*');
-            
-            if(!configsError && configs) {
-                marketplaceConfigs = configs;
-            }
-            
-            allUsers = profiles || [];
-            filteredUsers = [...allUsers];
-            
-            updateStats();
-            renderTable();
-            
-            document.getElementById('loadingMessage').style.display = 'none';
-            document.getElementById('usersTableContainer').style.display = 'block';
-            
-            // Показываем приветствие для админа
-            showMessage(`👋 Добро пожаловать, администратор! Доступно ${allUsers.length} пользователей`, 'success');
-            
-        } catch(error) {
-            console.error('Ошибка загрузки:', error);
-            document.getElementById('loadingMessage').innerHTML = '<span class="error-msg">❌ Ошибка загрузки данных: ' + error.message + '</span>';
-        }
-    }
-    
-    function updateStats() {
-        document.getElementById('totalUsers').innerText = allUsers.length;
-        
-        let totalBalance = 0;
-        let premiumCount = 0;
-        for(let user of allUsers) {
-            totalBalance += user.balance || 0;
-            if(user.subscription_type === 'paid' && user.subscription_until && new Date(user.subscription_until) > new Date()) {
-                premiumCount++;
-            }
-        }
-        document.getElementById('totalBalance').innerText = totalBalance.toLocaleString();
-        document.getElementById('premiumCount').innerText = premiumCount;
-    }
-    
-    function renderTable() {
-        const tbody = document.getElementById('usersTableBody');
-        tbody.innerHTML = '';
-        
-        for(let user of filteredUsers) {
-            const isPremium = user.subscription_type === 'paid' && user.subscription_until && new Date(user.subscription_until) > new Date();
-            const isAdmin = ADMIN_EMAILS.includes(user.email);
-            
-            const row = tbody.insertRow();
-            row.insertCell(0).innerText = user.id.substring(0, 8) + '...';
-            row.insertCell(1).innerHTML = user.email + (isAdmin ? '<span class="admin-badge"><i class="fas fa-crown"></i> ADMIN</span>' : '');
-            row.insertCell(2).innerText = user.nickname || '-';
-            row.insertCell(3).innerHTML = `<strong style="color:#ffd700">${(user.balance || 0).toLocaleString()} ₽</strong>`;
-            row.insertCell(4).innerHTML = `<span class="badge ${isPremium ? 'badge-premium' : 'badge-free'}">${isPremium ? 'PREMIUM' : 'FREE'}</span>`;
-            row.insertCell(5).innerText = isPremium ? new Date(user.subscription_until).toLocaleDateString() : '-';
-            row.insertCell(6).innerText = user.hwid ? user.hwid.substring(0, 12) + '...' : '-';
-            
-            const actions = row.insertCell(7);
-            if(!isAdmin) {
-                actions.innerHTML = `
-                    <button class="edit-btn" onclick="openBalanceModal('${user.id}', '${user.email}', ${user.balance || 0})"><i class="fas fa-coins"></i> Баланс</button>
-                    <button class="edit-btn" onclick="openPasswordModal('${user.id}', '${user.email}')"><i class="fas fa-key"></i> Пароль</button>
-                    <button class="delete-btn" onclick="deleteUser('${user.id}')"><i class="fas fa-trash"></i> Удалить</button>
-                `;
-            } else {
-                actions.innerHTML = `<span style="color:#ffd700"><i class="fas fa-crown"></i> Администратор</span>`;
-            }
-        }
-    }
-    
-    function searchUsers() {
-        const search = document.getElementById('searchInput').value.toLowerCase();
-        filteredUsers = allUsers.filter(user => 
-            user.email.toLowerCase().includes(search) || 
-            (user.nickname || '').toLowerCase().includes(search)
-        );
-        renderTable();
-    }
-    
-    function resetSearch() {
-        document.getElementById('searchInput').value = '';
-        filteredUsers = [...allUsers];
-        renderTable();
-    }
-    
-    function openBalanceModal(userId, email, currentBalance) {
-        currentEditUserId = userId;
-        document.getElementById('modalUserEmail').innerText = email;
-        document.getElementById('modalCurrentBalance').innerText = currentBalance.toLocaleString();
-        document.getElementById('newBalance').value = currentBalance;
-        document.getElementById('balanceModal').style.display = 'flex';
-    }
-    
-    function closeBalanceModal() {
-        document.getElementById('balanceModal').style.display = 'none';
-        currentEditUserId = null;
-    }
-    
-    async function saveBalance() {
-        const newBalance = parseInt(document.getElementById('newBalance').value);
-        if(isNaN(newBalance) || newBalance < 0 || newBalance > 100000) {
-            showMessage('Баланс должен быть от 0 до 100 000 ₽', 'error');
-            return;
         }
         
-        if(currentEditUserId) {
+        // Загрузка пользователей из Supabase
+        async function loadUsersFromSupabase() {
+            document.getElementById('loadingMessage').style.display = 'block';
+            document.getElementById('usersTableContainer').style.display = 'none';
+            
             try {
-                const { error } = await supabase
+                // Получаем всех пользователей из таблицы profiles
+                const { data: profiles, error: profilesError } = await supabaseClient
                     .from('profiles')
-                    .update({ balance: newBalance })
-                    .eq('id', currentEditUserId);
+                    .select('*')
+                    .order('created_at', { ascending: false });
                 
-                if(error) throw error;
+                if(profilesError) throw profilesError;
                 
-                showMessage(`✅ Баланс изменен на ${newBalance.toLocaleString()} ₽`, 'success');
-                closeBalanceModal();
-                await loadUsersFromSupabase();
+                // Получаем конфиги
+                const { data: configs, error: configsError } = await supabaseClient
+                    .from('marketplace_configs')
+                    .select('*');
+                
+                if(!configsError && configs) {
+                    marketplaceConfigs = configs;
+                }
+                
+                allUsers = profiles || [];
+                filteredUsers = [...allUsers];
+                
+                updateStats();
+                renderTable();
+                
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('usersTableContainer').style.display = 'block';
+                
+                // Показываем приветствие для админа
+                showMessage(`👋 Добро пожаловать, администратор! Доступно ${allUsers.length} пользователей`, 'success');
                 
             } catch(error) {
-                showMessage('❌ Ошибка: ' + error.message, 'error');
+                console.error('Ошибка загрузки:', error);
+                document.getElementById('loadingMessage').innerHTML = '<span class="error-msg">❌ Ошибка загрузки данных: ' + error.message + '</span>';
             }
-        }
-    }
-    
-    function openPasswordModal(userId, email) {
-        document.getElementById('modalPasswordUserEmail').innerText = email;
-        document.getElementById('passwordModal').style.display = 'flex';
-    }
-    
-    function closePasswordModal() {
-        document.getElementById('passwordModal').style.display = 'none';
-    }
-    
-    async function deleteUser(userId) {
-        const user = allUsers.find(u => u.id === userId);
-        if(user && ADMIN_EMAILS.includes(user.email)) {
-            showMessage('❌ Нельзя удалить администратора!', 'error');
-            return;
         }
         
-        if(confirm('Вы уверены, что хотите удалить этого пользователя? Данные будут потеряны навсегда!')) {
-            try {
-                // Удаляем покупки пользователя
-                await supabase.from('user_purchases').delete().eq('user_id', userId);
+        function updateStats() {
+            document.getElementById('totalUsers').innerText = allUsers.length;
+            
+            let totalBalance = 0;
+            let premiumCount = 0;
+            for(let user of allUsers) {
+                totalBalance += user.balance || 0;
+                if(user.subscription_type === 'paid' && user.subscription_until && new Date(user.subscription_until) > new Date()) {
+                    premiumCount++;
+                }
+            }
+            document.getElementById('totalBalance').innerText = totalBalance.toLocaleString();
+            document.getElementById('premiumCount').innerText = premiumCount;
+        }
+        
+        function renderTable() {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+            
+            for(let user of filteredUsers) {
+                const isPremium = user.subscription_type === 'paid' && user.subscription_until && new Date(user.subscription_until) > new Date();
+                const isAdmin = ADMIN_EMAILS.includes(user.email);
                 
-                // Удаляем профиль
-                const { error } = await supabase.from('profiles').delete().eq('id', userId);
+                const row = tbody.insertRow();
+                row.insertCell(0).innerText = user.id.substring(0, 8) + '...';
+                row.insertCell(1).innerHTML = user.email + (isAdmin ? '<span class="admin-badge"><i class="fas fa-crown"></i> ADMIN</span>' : '');
+                row.insertCell(2).innerText = user.nickname || '-';
+                row.insertCell(3).innerHTML = `<strong style="color:#ffd700">${(user.balance || 0).toLocaleString()} ₽</strong>`;
+                row.insertCell(4).innerHTML = `<span class="badge ${isPremium ? 'badge-premium' : 'badge-free'}">${isPremium ? 'PREMIUM' : 'FREE'}</span>`;
+                row.insertCell(5).innerText = isPremium ? new Date(user.subscription_until).toLocaleDateString() : '-';
+                row.insertCell(6).innerText = user.hwid ? user.hwid.substring(0, 12) + '...' : '-';
                 
-                if(error) throw error;
-                
-                showMessage('✅ Пользователь удален', 'success');
-                await loadUsersFromSupabase();
-                
-            } catch(error) {
-                showMessage('❌ Ошибка: ' + error.message, 'error');
+                const actions = row.insertCell(7);
+                if(!isAdmin) {
+                    actions.innerHTML = `
+                        <button class="edit-btn" onclick="window.openBalanceModal('${user.id}', '${user.email}', ${user.balance || 0})"><i class="fas fa-coins"></i> Баланс</button>
+                        <button class="edit-btn" onclick="window.openPasswordModal('${user.id}', '${user.email}')"><i class="fas fa-key"></i> Пароль</button>
+                        <button class="delete-btn" onclick="window.deleteUser('${user.id}')"><i class="fas fa-trash"></i> Удалить</button>
+                    `;
+                } else {
+                    actions.innerHTML = `<span style="color:#ffd700"><i class="fas fa-crown"></i> Администратор</span>`;
+                }
             }
         }
-    }
-    
-    function syncToLocal() {
-        // Синхронизация с localStorage для index.html
-        const profilesData = {};
-        for(let user of allUsers) {
-            profilesData[user.id] = {
-                nickname: user.nickname,
-                email: user.email,
-                balance: user.balance,
-                subscription_type: user.subscription_type,
-                subscription_until: user.subscription_until,
-                hwid: user.hwid
+        
+        function searchUsers() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            filteredUsers = allUsers.filter(user => 
+                user.email.toLowerCase().includes(search) || 
+                (user.nickname || '').toLowerCase().includes(search)
+            );
+            renderTable();
+        }
+        
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            filteredUsers = [...allUsers];
+            renderTable();
+        }
+        
+        function openBalanceModal(userId, email, currentBalance) {
+            currentEditUserId = userId;
+            document.getElementById('modalUserEmail').innerText = email;
+            document.getElementById('modalCurrentBalance').innerText = currentBalance.toLocaleString();
+            document.getElementById('newBalance').value = currentBalance;
+            document.getElementById('balanceModal').style.display = 'flex';
+        }
+        
+        function closeBalanceModal() {
+            document.getElementById('balanceModal').style.display = 'none';
+            currentEditUserId = null;
+        }
+        
+        async function saveBalance() {
+            const newBalance = parseInt(document.getElementById('newBalance').value);
+            if(isNaN(newBalance) || newBalance < 0 || newBalance > 100000) {
+                showMessage('Баланс должен быть от 0 до 100 000 ₽', 'error');
+                return;
+            }
+            
+            if(currentEditUserId) {
+                try {
+                    const { error } = await supabaseClient
+                        .from('profiles')
+                        .update({ balance: newBalance })
+                        .eq('id', currentEditUserId);
+                    
+                    if(error) throw error;
+                    
+                    showMessage(`✅ Баланс изменен на ${newBalance.toLocaleString()} ₽`, 'success');
+                    closeBalanceModal();
+                    await loadUsersFromSupabase();
+                    
+                } catch(error) {
+                    showMessage('❌ Ошибка: ' + error.message, 'error');
+                }
+            }
+        }
+        
+        function openPasswordModal(userId, email) {
+            document.getElementById('modalPasswordUserEmail').innerText = email;
+            document.getElementById('passwordModal').style.display = 'flex';
+        }
+        
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+        }
+        
+        async function deleteUser(userId) {
+            const user = allUsers.find(u => u.id === userId);
+            if(user && ADMIN_EMAILS.includes(user.email)) {
+                showMessage('❌ Нельзя удалить администратора!', 'error');
+                return;
+            }
+            
+            if(confirm('Вы уверены, что хотите удалить этого пользователя? Данные будут потеряны навсегда!')) {
+                try {
+                    // Удаляем покупки пользователя
+                    await supabaseClient.from('user_purchases').delete().eq('user_id', userId);
+                    
+                    // Удаляем профиль
+                    const { error } = await supabaseClient.from('profiles').delete().eq('id', userId);
+                    
+                    if(error) throw error;
+                    
+                    showMessage('✅ Пользователь удален', 'success');
+                    await loadUsersFromSupabase();
+                    
+                } catch(error) {
+                    showMessage('❌ Ошибка: ' + error.message, 'error');
+                }
+            }
+        }
+        
+        function syncToLocal() {
+            // Синхронизация с localStorage для index.html
+            const profilesData = {};
+            for(let user of allUsers) {
+                profilesData[user.id] = {
+                    nickname: user.nickname,
+                    email: user.email,
+                    balance: user.balance,
+                    subscription_type: user.subscription_type,
+                    subscription_until: user.subscription_until,
+                    hwid: user.hwid
+                };
+            }
+            
+            localStorage.setItem('zeus_profiles', JSON.stringify(profilesData));
+            localStorage.setItem('zeus_configs', JSON.stringify(marketplaceConfigs));
+            
+            showMessage('✅ Данные синхронизированы с сайтом', 'success');
+        }
+        
+        function exportData() {
+            const exportData = {
+                users: allUsers,
+                configs: marketplaceConfigs,
+                admins: ADMIN_EMAILS,
+                exportDate: new Date().toISOString()
             };
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `zeus_users_backup_${new Date().toISOString().slice(0,19)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showMessage('✅ Данные экспортированы', 'success');
         }
         
-        localStorage.setItem('zeus_profiles', JSON.stringify(profilesData));
-        localStorage.setItem('zeus_configs', JSON.stringify(marketplaceConfigs));
+        function showMessage(text, type) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.innerHTML = `<div class="${type === 'success' ? 'success-msg' : 'error-msg'}">${text}</div>`;
+            setTimeout(() => msgDiv.innerHTML = '', 3000);
+        }
         
-        showMessage('✅ Данные синхронизированы с сайтом', 'success');
-    }
-    
-    function exportData() {
-        const exportData = {
-            users: allUsers,
-            configs: marketplaceConfigs,
-            admins: ADMIN_EMAILS,
-            exportDate: new Date().toISOString()
-        };
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `zeus_users_backup_${new Date().toISOString().slice(0,19)}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        showMessage('✅ Данные экспортированы', 'success');
-    }
-    
-    function showMessage(text, type) {
-        const msgDiv = document.getElementById('message');
-        msgDiv.innerHTML = `<div class="${type === 'success' ? 'success-msg' : 'error-msg'}">${text}</div>`;
-        setTimeout(() => msgDiv.innerHTML = '', 3000);
-    }
-    
-    // Запуск
-    checkAdminAccess();
+        // Глобальные функции для onclick
+        window.openBalanceModal = openBalanceModal;
+        window.closeBalanceModal = closeBalanceModal;
+        window.saveBalance = saveBalance;
+        window.openPasswordModal = openPasswordModal;
+        window.closePasswordModal = closePasswordModal;
+        window.deleteUser = deleteUser;
+        window.searchUsers = searchUsers;
+        window.resetSearch = resetSearch;
+        window.exportData = exportData;
+        window.syncToLocal = syncToLocal;
+        window.loadUsersFromSupabase = loadUsersFromSupabase;
+        
+        // Запуск
+        checkAdminAccess();
+    })();
 </script>
 </body>
 </html>
