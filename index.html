@@ -72,6 +72,30 @@
         .logout-btn:hover { transform: scale(1.05); }
         .container { max-width: 1300px; margin: 0 auto; padding: 50px 20px; }
         
+        /* Статистика онлайн */
+        .online-stats {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,215,0,0.3);
+            z-index: 999;
+            font-size: 14px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .online-stats span {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        .online-stats i {
+            margin-right: 5px;
+        }
+        
         /* Главная секция */
         .home-section {
             background: rgba(0,0,0,0.5);
@@ -278,12 +302,19 @@
             border-bottom: 1px solid rgba(255,215,0,0.3);
         }
         .category-title:first-of-type { margin-top: 0; }
-        @media (max-width: 768px) { .navbar { padding: 15px; flex-direction: column; gap: 10px; } .home-section h1 { font-size: 32px; } .section-title { font-size: 24px; } }
+        @media (max-width: 768px) { .navbar { padding: 15px; flex-direction: column; gap: 10px; } .home-section h1 { font-size: 32px; } .section-title { font-size: 24px; } .online-stats { bottom: 10px; right: 10px; font-size: 10px; padding: 5px 10px; } }
     </style>
 </head>
 <body>
 <div class="bg"></div>
 <div class="overlay"></div>
+
+<!-- Онлайн статистика -->
+<div class="online-stats">
+    <div><i class="fas fa-users"></i> Онлайн: <span id="onlineCount">0</span></div>
+    <div><i class="fas fa-chart-line"></i> Всего посетителей: <span id="totalVisitors">0</span></div>
+    <div><i class="fas fa-user-check"></i> Зарегистрировано: <span id="registeredCount">0</span></div>
+</div>
 
 <nav class="navbar">
     <div class="logo" onclick="showHome()">
@@ -550,6 +581,97 @@
     const supabaseClient = window.supabase.createClient(_SUPABASE_URL, _SUPABASE_KEY);
     
     let currentUser = null;
+    
+    // Система подсчета посетителей
+    let visitorStats = JSON.parse(localStorage.getItem('zeus_visitor_stats') || '{"total": 0, "online": new Set(), "lastUpdate": null}');
+    
+    // Генерация уникального ID посетителя
+    function getVisitorId() {
+        let visitorId = localStorage.getItem('zeus_visitor_id');
+        if(!visitorId){
+            visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substring(2, 15);
+            localStorage.setItem('zeus_visitor_id', visitorId);
+        }
+        return visitorId;
+    }
+    
+    // Обновление статистики
+    function updateVisitorStats() {
+        let stats = JSON.parse(localStorage.getItem('zeus_visitor_stats') || '{"total":0, "onlineList": [], "lastUpdate": null}');
+        
+        const visitorId = getVisitorId();
+        const now = Date.now();
+        const FIVE_MINUTES = 5 * 60 * 1000;
+        
+        // Загружаем список онлайн
+        let onlineList = stats.onlineList || [];
+        
+        // Удаляем старых посетителей (старше 5 минут)
+        onlineList = onlineList.filter(item => (now - item.time) < FIVE_MINUTES);
+        
+        // Проверяем, есть ли текущий посетитель в списке
+        const existingIndex = onlineList.findIndex(item => item.id === visitorId);
+        if(existingIndex === -1) {
+            // Новый посетитель
+            onlineList.push({ id: visitorId, time: now });
+            
+            // Увеличиваем общий счетчик только если это новый посетитель за сегодня
+            const lastDate = stats.lastUpdate ? new Date(stats.lastUpdate).toDateString() : null;
+            const today = new Date().toDateString();
+            
+            if(lastDate !== today) {
+                stats.total = (stats.total || 0) + 1;
+                stats.lastUpdate = now;
+            }
+        } else {
+            // Обновляем время существующего посетителя
+            onlineList[existingIndex].time = now;
+        }
+        
+        stats.onlineList = onlineList;
+        stats.online = onlineList.length;
+        
+        localStorage.setItem('zeus_visitor_stats', JSON.stringify(stats));
+        
+        // Обновляем отображение
+        document.getElementById('onlineCount').innerText = stats.online || 0;
+        document.getElementById('totalVisitors').innerText = stats.total || 0;
+    }
+    
+    // Получение количества зарегистрированных пользователей из Supabase
+    async function updateRegisteredCount() {
+        try {
+            const { data, error } = await supabaseClient.auth.admin.listUsers();
+            if(!error && data) {
+                document.getElementById('registeredCount').innerText = data.users.length;
+            } else {
+                // Если нет прав админа, показываем примерное число
+                let profiles = JSON.parse(localStorage.getItem('zeus_profiles') || '{}');
+                const registeredCount = Object.keys(profiles).length;
+                document.getElementById('registeredCount').innerText = registeredCount;
+            }
+        } catch(e) {
+            // Если ошибка, показываем из localStorage
+            let profiles = JSON.parse(localStorage.getItem('zeus_profiles') || '{}');
+            const registeredCount = Object.keys(profiles).length;
+            document.getElementById('registeredCount').innerText = registeredCount;
+        }
+    }
+    
+    // Запускаем обновление статистики
+    updateVisitorStats();
+    updateRegisteredCount();
+    
+    // Обновляем каждые 30 секунд
+    setInterval(() => {
+        updateVisitorStats();
+        updateRegisteredCount();
+    }, 30000);
+    
+    // При закрытии страницы не удаляем посетителя сразу (он удалится через 5 минут автоматически)
+    window.addEventListener('beforeunload', () => {
+        // Не делаем ничего, посетитель останется в списке еще 5 минут
+    });
     
     // Названия файлов для скачивания
     const FREE_CLIENT_FILE = 'ZeusClient-1.12.2.jar';
@@ -1027,6 +1149,9 @@
             
             msgDiv.innerHTML = '<span class="success">✅ Проверьте почту для подтверждения!</span>'; 
             setTimeout(() => window.showLogin(), 2000);
+            
+            // Обновляем счетчик зарегистрированных
+            updateRegisteredCount();
         }
     }
 
@@ -1082,6 +1207,10 @@
             navProfile.classList.remove('hidden');
             navMarketBtn.classList.remove('hidden'); 
             navProfileBtn.classList.remove('hidden');
+            
+            // Обновляем статистику
+            updateVisitorStats();
+            updateRegisteredCount();
         } else {
             currentUser = null;
             publicDiv.classList.remove('hidden');
