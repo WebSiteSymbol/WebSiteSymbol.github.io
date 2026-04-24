@@ -48,7 +48,7 @@
         .card p{font-size:14px;opacity:.8;line-height:1.6}
         .feature-badge{display:inline-block;background:rgba(255,215,0,.2);border:1px solid #ffd700;border-radius:20px;padding:5px 12px;font-size:11px;margin-top:12px;color:#ffd700}
         .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);z-index:2000;justify-content:center;align-items:center}
-        .modal-content{background:linear-gradient(135deg,#1a1a1a,#0a0a0a);border-radius:30px;padding:40px;max-width:550px;width:90%;border:2px solid #ffd700}
+        .modal-content{background:linear-gradient(135deg,#1a1a1a,#0a0a0a);border-radius:30px;padding:40px;max-width:550px;width:90%;border:2px solid #ffd700;max-height:85vh;overflow-y:auto}
         .modal-content h3{color:#ffd700;margin-bottom:20px}
         .close-modal{float:right;cursor:pointer;font-size:28px;color:#ffd700}
         .badge{display:inline-block;padding:5px 15px;border-radius:20px;font-size:12px;font-weight:700;margin-left:10px}
@@ -82,7 +82,7 @@
 <div id="profileContent" class="hidden"><div style="background:rgba(0,0,0,.5);backdrop-filter:blur(10px);border-radius:30px;padding:40px;margin-bottom:40px;border:1px solid rgba(255,215,0,.2)"><h2><i class="fas fa-id-card"></i> Мой профиль</h2><div style="text-align:center"><div style="width:100px;height:100px;background:linear-gradient(135deg,#ffd700,#ffaa00);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:45px"><i class="fas fa-bolt"></i></div><h3 id="profileNick">Загрузка...</h3><p id="profileEmail"></p><div class="profile-stats"><div class="info-card balance-card"><i class="fas fa-wallet"></i> Баланс<br><span class="balance-amount" id="balanceAmount">0</span> ₽<br><button class="download-btn" style="padding:8px 20px;font-size:14px;margin-top:10px" onclick="openTopupModal()"><i class="fas fa-plus-circle"></i> Пополнить</button></div><div class="info-card"><i class="fas fa-gem"></i> Статус подписки<br><span id="subStatus" class="badge badge-free">Бесплатная</span></div><div class="info-card"><i class="fas fa-calendar-alt"></i> Действует до<br><span id="subUntil">-</span></div><div class="info-card"><i class="fas fa-microchip"></i> HWID<br><span id="hwidText">Не привязан</span></div></div><div style="margin-top:20px"><button class="auth-btn" onclick="buyPremium()" id="buyPremiumBtn" style="width:auto;padding:10px 30px"><i class="fas fa-crown"></i> Купить Premium (30 дней) - 199₽</button></div></div></div><div style="background:rgba(0,0,0,.5);backdrop-filter:blur(10px);border-radius:30px;padding:40px;margin-bottom:40px;border:1px solid rgba(255,215,0,.2)"><h2><i class="fas fa-download"></i> Скачать клиент</h2><div class="grid"><div class="card"><div class="card-icon"><i class="fas fa-box-open"></i></div><h3>ZeusClient FREE <span class="version-badge free-version">1.12.2</span></h3><p>Бесплатная версия</p><button class="download-btn" onclick="downloadClient('free')" id="freeDownloadBtn"><i class="fas fa-download"></i> Скачать</button><div id="freeFileStatus" class="file-status"></div></div><div class="card"><div class="card-icon"><i class="fas fa-gem"></i></div><h3>ZeusClient PREMIUM <span class="version-badge premium-version">1.16.5</span></h3><p>Премиум версия</p><button id="premiumDownloadBtn" class="download-btn" onclick="downloadClient('premium')" disabled><i class="fas fa-download"></i> Скачать</button><div id="premiumFileStatus" class="file-status"></div></div></div></div></div>
 <div id="marketplaceContent" class="hidden"><div style="background:rgba(0,0,0,.5);backdrop-filter:blur(10px);border-radius:30px;padding:40px;margin-bottom:40px;border:1px solid rgba(255,215,0,.2)"><h2><i class="fas fa-store"></i> Маркетплейс</h2><div class="coming-soon"><i class="fas fa-tools"></i><h3>В разработке!</h3><p>Магазин конфигов скоро появится</p></div></div></div>
 </div>
-<div id="topupModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeTopupModal()">×</span><h3><i class="fas fa-credit-card"></i> Пополнение баланса</h3><p style="margin-bottom:20px">Введите сумму и данные карты</p><label style="display:block;margin-bottom:5px">Валюта:</label><select id="currencySelect" class="currency-select" onchange="updateCurrencyRate()"><option value="RUB">🇷🇺 Рубли (RUB)</option><option value="KZT">🇰🇿 Тенге (KZT) - 5.5 ₸ за 1₽</option><option value="USD">🇺🇸 Доллары (USD) - 0.011 $ за 1₽</option><option value="BUN">🐲 BUN (BUN) - 1.5 BUN за 1₽</option></select><label style="display:block;margin-bottom:5px">Сумма в выбранной валюте:</label><input type="number" id="topupAmount" class="auth-input" placeholder="Введите сумму" min="10" step="1"><div id="rateInfo" class="rate-info"></div><label style="display:block;margin-bottom:5px;margin-top:15px">Номер карты:</label><input type="text" id="cardNumber" class="auth-input" placeholder="0000 0000 0000 0000" maxlength="19"><div class="card-row" style="display:flex;gap:10px"><div style="flex:1"><label>Срок (MM/YY):</label><input type="text" id="cardExpiry" class="auth-input" placeholder="MM/YY" maxlength="5"></div><div style="flex:1"><label>CVV:</label><input type="password" id="cardCvv" class="auth-input" placeholder="123" maxlength="4"></div></div><label>Имя держателя:</label><input type="text" id="cardName" class="auth-input" placeholder="NAME"><button class="auth-btn" onclick="processCardPayment()" style="margin-top:20px"><i class="fas fa-lock"></i> Оплатить</button><div id="topupMsg"></div></div></div>
+<div id="topupModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeTopupModal()">×</span><h3><i class="fas fa-credit-card"></i> Пополнение баланса</h3><p style="margin-bottom:20px">Введите сумму и данные карты</p><label style="display:block;margin-bottom:5px">Выберите валюту:</label><select id="currencySelect" class="currency-select" onchange="updateCurrencyRate()"><option value="RUB">🇷🇺 Российский рубль (RUB) - 1 ₽</option><option value="USD">🇺🇸 Доллар США (USD) - 0.011 $</option><option value="EUR">🇪🇺 Евро (EUR) - 0.010 €</option><option value="KZT">🇰🇿 Казахстанский тенге (KZT) - 5.5 ₸</option><option value="UAH">🇺🇦 Украинская гривна (UAH) - 0.45 ₴</option><option value="BYN">🇧🇾 Белорусский рубль (BYN) - 0.033 Br</option><option value="GBP">🇬🇧 Британский фунт (GBP) - 0.0085 £</option><option value="CNY">🇨🇳 Китайский юань (CNY) - 0.078 ¥</option><option value="TRY">🇹🇷 Турецкая лира (TRY) - 0.37 ₺</option><option value="BUN">🐲 BUN (BUN) - 1.5 BUN</option></select><label style="display:block;margin-bottom:5px">Сумма в выбранной валюте:</label><input type="number" id="topupAmount" class="auth-input" placeholder="Введите сумму" min="10" step="1"><div id="rateInfo" class="rate-info"></div><label style="display:block;margin-bottom:5px;margin-top:15px">Номер карты:</label><input type="text" id="cardNumber" class="auth-input" placeholder="0000 0000 0000 0000" maxlength="19"><div class="card-row" style="display:flex;gap:10px"><div style="flex:1"><label>Срок (MM/YY):</label><input type="text" id="cardExpiry" class="auth-input" placeholder="MM/YY" maxlength="5"></div><div style="flex:1"><label>CVV:</label><input type="password" id="cardCvv" class="auth-input" placeholder="123" maxlength="4"></div></div><label>Имя держателя:</label><input type="text" id="cardName" class="auth-input" placeholder="NAME"><button class="auth-btn" onclick="processCardPayment()" style="margin-top:20px"><i class="fas fa-lock"></i> Оплатить</button><div id="topupMsg"></div></div></div>
 <script>
 (function(){
 const SB_URL='https://itnymezviisjmkttzlag.supabase.co';
@@ -90,38 +90,56 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 let currentUser=null,currentProfile=null;
 
-// Курсы валют (относительно рубля)
+// Курсы валют (относительно рубля) - 10 валют
 const currencyRates = {
     RUB: 1,
-    KZT: 5.5,
     USD: 0.011,
+    EUR: 0.010,
+    KZT: 5.5,
+    UAH: 0.45,
+    BYN: 0.033,
+    GBP: 0.0085,
+    CNY: 0.078,
+    TRY: 0.37,
     BUN: 1.5
 };
 
 const currencySymbols = {
     RUB: '₽',
-    KZT: '₸',
     USD: '$',
+    EUR: '€',
+    KZT: '₸',
+    UAH: '₴',
+    BYN: 'Br',
+    GBP: '£',
+    CNY: '¥',
+    TRY: '₺',
     BUN: '🐲'
+};
+
+const currencyNames = {
+    RUB: 'Российский рубль',
+    USD: 'Доллар США',
+    EUR: 'Евро',
+    KZT: 'Казахстанский тенге',
+    UAH: 'Украинская гривна',
+    BYN: 'Белорусский рубль',
+    GBP: 'Британский фунт',
+    CNY: 'Китайский юань',
+    TRY: 'Турецкая лира',
+    BUN: 'BUN'
 };
 
 function updateCurrencyRate() {
     const currency = document.getElementById('currencySelect').value;
     const rate = currencyRates[currency];
     const symbol = currencySymbols[currency];
-    let rateText = '';
-    if (currency === 'KZT') {
-        rateText = `1 ₽ = ${rate} ${symbol} | Минимум: ${Math.ceil(10 * rate)} ${symbol}`;
-    } else if (currency === 'USD') {
-        rateText = `1 ₽ = ${rate} ${symbol} | Минимум: ${(10 * rate).toFixed(2)} ${symbol}`;
-    } else if (currency === 'BUN') {
-        rateText = `1 ₽ = ${rate} ${symbol} | Минимум: ${10 * rate} ${symbol}`;
-    } else {
-        rateText = `Минимальная сумма: 10 ${symbol}`;
-    }
+    const name = currencyNames[currency];
+    let minInCurrency = 10 / rate;
+    let rateText = `Курс: 1 ₽ = ${rate} ${symbol} | Минимум: ${Math.ceil(10 / rate)} ${symbol} (≈10₽)`;
     document.getElementById('rateInfo').innerHTML = rateText;
-    document.getElementById('topupAmount').min = 10;
-    document.getElementById('topupAmount').placeholder = `Введите сумму (мин: 10)`;
+    document.getElementById('topupAmount').min = Math.ceil(10 / rate);
+    document.getElementById('topupAmount').placeholder = `Введите сумму (мин: ${Math.ceil(10 / rate)} ${symbol})`;
 }
 
 function getVisitorId(){let id=localStorage.getItem('visitor_id');if(!id){id='v_'+Date.now()+'_'+Math.random().toString(36).substring(2,8);localStorage.setItem('visitor_id',id);}return id;}
@@ -133,7 +151,7 @@ function generateHWID(){let h=localStorage.getItem('hwid');if(!h){let d=navigato
 async function fileExists(f){try{const r=await fetch(f,{method:'HEAD'});return r.ok;}catch{return false;}}
 function downloadFile(f){const a=document.createElement('a');a.href=f;a.download=f;document.body.appendChild(a);a.click();document.body.removeChild(a);}
 async function loadProfile(){if(!currentUser)return;const{data,error}=await sb.from('profiles').select('*').eq('id',currentUser.id).single();if(data){currentProfile=data;}else if(!data&&!error){const{data:newP}=await sb.from('profiles').insert({id:currentUser.id,email:currentUser.email,nickname:currentUser.user_metadata?.nickname||currentUser.email.split('@')[0],balance:0,subscription_type:'free'}).select().single();if(newP)currentProfile=newP;}if(currentProfile){document.getElementById('profileNick').innerText=currentProfile.nickname;document.getElementById('profileEmail').innerText=currentUser.email;document.getElementById('balanceAmount').innerText=(currentProfile.balance||0).toLocaleString();document.getElementById('hwidText').innerText=generateHWID();const isPrem=currentProfile.subscription_type==='paid'&&currentProfile.subscription_until&&new Date(currentProfile.subscription_until)>new Date();if(isPrem){document.getElementById('subStatus').innerText='PREMIUM';document.getElementById('subStatus').className='badge badge-premium';document.getElementById('subUntil').innerText=new Date(currentProfile.subscription_until).toLocaleDateString();document.getElementById('premiumDownloadBtn').disabled=false;}else{document.getElementById('subStatus').innerText='БЕСПЛАТНАЯ';document.getElementById('subStatus').className='badge badge-free';document.getElementById('subUntil').innerText='-';document.getElementById('premiumDownloadBtn').disabled=true;}}}
-window.processCardPayment=function(){if(!currentUser)return;let amountInCurrency = parseFloat(document.getElementById('topupAmount').value);const currency = document.getElementById('currencySelect').value;const rate = currencyRates[currency];const cardNumber = document.getElementById('cardNumber').value.trim();const cardExpiry = document.getElementById('cardExpiry').value.trim();const cardCvv = document.getElementById('cardCvv').value.trim();const msgDiv = document.getElementById('topupMsg');if(isNaN(amountInCurrency) || amountInCurrency < 10){msgDiv.innerHTML='❌ Минимальная сумма: 10 в выбранной валюте';return;}const amountInRUB = amountInCurrency / rate;const cleanCard = cardNumber.replace(/\s/g,'');if(cleanCard.length<16){msgDiv.innerHTML='❌ Неверный номер карты';return;}if(!cardExpiry.match(/^(0[1-9]|1[0-2])\/(2[4-9]|[3-9][0-9])$/)){msgDiv.innerHTML='❌ Неверный срок';return;}if(cardCvv.length<3){msgDiv.innerHTML='❌ Неверный CVV';return;}msgDiv.innerHTML='⏳ Обработка...';setTimeout(async()=>{const newBal=(currentProfile?.balance||0)+amountInRUB;const{error}=await sb.from('profiles').update({balance:newBal}).eq('id',currentUser.id);if(error){msgDiv.innerHTML='❌ Ошибка';}else{if(currentProfile)currentProfile.balance=newBal;msgDiv.innerHTML=`✅ Пополнено ${amountInCurrency.toFixed(2)} ${currencySymbols[currency]} (${amountInRUB.toFixed(2)} ₽)!`;document.getElementById('balanceAmount').innerText=newBal.toLocaleString();setTimeout(()=>{closeTopupModal();document.getElementById('cardNumber').value='';document.getElementById('cardExpiry').value='';document.getElementById('cardCvv').value='';document.getElementById('topupAmount').value='';},1500);}},1500);}
+window.processCardPayment=function(){if(!currentUser)return;let amountInCurrency = parseFloat(document.getElementById('topupAmount').value);const currency = document.getElementById('currencySelect').value;const rate = currencyRates[currency];const cardNumber = document.getElementById('cardNumber').value.trim();const cardExpiry = document.getElementById('cardExpiry').value.trim();const cardCvv = document.getElementById('cardCvv').value.trim();const msgDiv = document.getElementById('topupMsg');const minAmount = Math.ceil(10 / rate);if(isNaN(amountInCurrency) || amountInCurrency < minAmount){msgDiv.innerHTML=`❌ Минимальная сумма: ${minAmount} ${currencySymbols[currency]} (≈10₽)`;return;}const amountInRUB = amountInCurrency * rate;const cleanCard = cardNumber.replace(/\s/g,'');if(cleanCard.length<16){msgDiv.innerHTML='❌ Неверный номер карты';return;}if(!cardExpiry.match(/^(0[1-9]|1[0-2])\/(2[4-9]|[3-9][0-9])$/)){msgDiv.innerHTML='❌ Неверный срок';return;}if(cardCvv.length<3){msgDiv.innerHTML='❌ Неверный CVV';return;}msgDiv.innerHTML='⏳ Обработка...';setTimeout(async()=>{const newBal=(currentProfile?.balance||0)+amountInRUB;const{error}=await sb.from('profiles').update({balance:newBal}).eq('id',currentUser.id);if(error){msgDiv.innerHTML='❌ Ошибка';}else{if(currentProfile)currentProfile.balance=newBal;msgDiv.innerHTML=`✅ Пополнено ${amountInCurrency.toFixed(2)} ${currencySymbols[currency]} (${amountInRUB.toFixed(2)} ₽)!`;document.getElementById('balanceAmount').innerText=newBal.toLocaleString();setTimeout(()=>{closeTopupModal();document.getElementById('cardNumber').value='';document.getElementById('cardExpiry').value='';document.getElementById('cardCvv').value='';document.getElementById('topupAmount').value='';},1500);}},1500);}
 window.buyPremium=async function(){if(!currentUser)return;const bal=currentProfile?.balance||0;const PRICE=199;if(bal>=PRICE){const newBal=bal-PRICE;const until=new Date();until.setDate(until.getDate()+30);const{error}=await sb.from('profiles').update({balance:newBal,subscription_type:'paid',subscription_until:until.toISOString()}).eq('id',currentUser.id);if(error){alert('Ошибка');}else{if(currentProfile){currentProfile.balance=newBal;currentProfile.subscription_type='paid';currentProfile.subscription_until=until;}alert('✅ Premium активирован на 30 дней!');loadProfile();}}else{alert(`❌ Не хватает ${PRICE-bal} ₽`);openTopupModal();}}
 window.downloadClient=async function(type){if(!currentUser){alert('Авторизуйтесь');showAuthForm();return;}const hwid=generateHWID();if(type==='free'){const ok=await fileExists('ZeusClient-1.12.2.jar');if(ok){downloadFile('ZeusClient-1.12.2.jar');alert('Free 1.12.2\nHWID: '+hwid);}else{alert('Файл не найден');}}else{const isPrem=currentProfile?.subscription_type==='paid'&&currentProfile?.subscription_until&&new Date(currentProfile.subscription_until)>new Date();if(isPrem){const ok=await fileExists('ZeusClient-1.16.5.jar');if(ok){downloadFile('ZeusClient-1.16.5.jar');alert('Premium 1.16.5\nHWID: '+hwid);}else{alert('Файл не найден');}}else{alert('Premium только по подписке');}}}
 window.showHome=function(){document.getElementById('publicContent').classList.remove('hidden');document.getElementById('featuresContent').classList.add('hidden');document.getElementById('authContent').classList.add('hidden');document.getElementById('profileContent').classList.add('hidden');document.getElementById('marketplaceContent').classList.add('hidden');window.scrollTo(0,0);}
